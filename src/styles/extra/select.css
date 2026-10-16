@@ -1,0 +1,13 @@
+/* Radix Select states mapped onto the pa-mi menu item look. */
+.pa-trigger .pa-select-icon { display: inline-flex; transition: transform 160ms ease; }
+.pa-trigger[data-state="open"] .pa-select-icon { transform: rotate(180deg); }
+.pa-trigger[data-placeholder] { color: var(--muted-foreground); }
+.pa-trigger:disabled { opacity: var(--opacity-disabled); cursor: default; }
+.pa-select-content { min-width: max(220px, var(--radix-select-trigger-width)); max-height: var(--radix-select-content-available-height); overflow: hidden; z-index: 50; }
+.pa-select-content .pa-mi { outline: none; user-select: none; }
+.pa-select-content .pa-mi[data-highlighted], .pa-select-content .pa-mi[data-state="checked"] { background: var(--accent); color: var(--accent-foreground); }
+.pa-select-content .pa-mi[data-state="checked"] { box-shadow: inset 0 0 0 1px var(--border); }
+.pa-select-content .pa-mi[data-highlighted] { outline: 2px solid var(--ring-paper); outline-offset: -2px; }
+.pa-select-content .pa-mi[data-disabled] { background: transparent; color: var(--muted-foreground); cursor: default; outline: none; }
+.pa-select-scroll { display: flex; justify-content: center; padding: 2px 0; color: var(--muted-foreground); cursor: default; }
+@media (prefers-reduced-motion: reduce) { .pa-trigger .pa-select-icon { transition: none; } }

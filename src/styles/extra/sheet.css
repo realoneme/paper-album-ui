@@ -1,0 +1,10 @@
+/* Sheet: the right edge is the default look (pa-sheet); these mirror the three page edges for other sides. */
+.pa-sheet { display: flex; flex-direction: column; max-width: calc(100% - 32px); overflow-y: auto; }
+.pa-sheet:focus { outline: none; }
+.pa-sheet.pa-sheet-left { right: auto; left: 0; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; box-shadow: 2px 0 0 var(--border), 4px 0 0 var(--muted), 6px 0 0 var(--border), 30px 0 50px var(--backdrop); }
+.pa-sheet.pa-sheet-top, .pa-sheet.pa-sheet-bottom { left: 0; right: 0; width: auto; max-width: none; max-height: calc(100% - 32px); }
+.pa-sheet.pa-sheet-top { bottom: auto; border-radius: 0 0 var(--radius-lg) var(--radius-lg); box-shadow: 0 2px 0 var(--border), 0 4px 0 var(--muted), 0 6px 0 var(--border), 0 30px 50px var(--backdrop); }
+.pa-sheet.pa-sheet-bottom { top: auto; border-radius: var(--radius-lg) var(--radius-lg) 0 0; box-shadow: 0 -2px 0 var(--border), 0 -4px 0 var(--muted), 0 -6px 0 var(--border), 0 -30px 50px var(--backdrop); }
+.pa-sheet-header { display: flex; flex-direction: column; gap: 4px; padding-right: var(--space-8); }
+.pa-sheet-header > * { margin: 0; }
+.pa-sheet-footer { display: flex; flex-direction: column; gap: var(--space-3); margin-top: auto; padding-top: var(--space-4); }

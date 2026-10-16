@@ -1,0 +1,3 @@
+/* Alert Dialog: the consequence sentence reads larger than a dialog caption. */
+.pa-alert-desc { margin: 0; font-size: 15px; line-height: 1.6; }
+.pa-alert-preview { position: absolute; inset: 0; }

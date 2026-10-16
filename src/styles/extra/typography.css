@@ -1,0 +1,4 @@
+/* Typography additions: lists and muted small text. */
+.pa-list { margin: 0; padding-left: var(--space-6); font-size: 16px; line-height: 28px; max-width: 65ch; }
+.pa-list > li + li { margin-top: var(--space-2); }
+p.pa-caption { margin: 0; }

@@ -1,0 +1,5 @@
+/* Radix Checkbox: one indicator, two glyphs; show the dash only when indeterminate. */
+.pa-check .pa-check-indicator { display: inline-flex; }
+.pa-check[data-state="indeterminate"] .pa-check-tick,
+.pa-check:not([data-state="indeterminate"]) .pa-check-dash { display: none; }
+.pa-check[disabled] { opacity: var(--opacity-disabled); cursor: default; }

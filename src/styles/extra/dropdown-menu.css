@@ -1,0 +1,12 @@
+/* Radix menu states (Dropdown Menu, Context Menu, Menubar) mapped onto the pa-menu / pa-mi look. */
+.pa-menu[role="menu"] { z-index: 50; }
+.pa-menu[role="menu"]:focus { outline: none; }
+.pa-menu .pa-mi { user-select: none; }
+.pa-menu .pa-mi:focus-visible { outline-offset: -2px; }
+.pa-mi[data-highlighted], .pa-mi[data-state="open"][aria-haspopup="menu"] { background: var(--accent); color: var(--accent-foreground); }
+.pa-mi.danger[data-highlighted] { color: var(--destructive); }
+.pa-mi[data-disabled] { color: var(--muted-foreground); cursor: default; }
+.pa-mi[data-disabled]:hover { background: transparent; color: var(--muted-foreground); }
+.pa-mi.inset, .pa-grp.inset { padding-left: 38px; }
+.pa-mi-ind { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; flex: none; }
+.pa-mi-dot { width: 8px; height: 8px; border-radius: var(--radius-full); background: currentColor; }

@@ -1,0 +1,7 @@
+/* Radix nests the range inside the track and wraps each thumb in a positioned span. */
+.pa-slider { display: block; touch-action: none; user-select: none; cursor: pointer; }
+.pa-slider .track > .range { top: 0; }
+.pa-slider .thumb { display: block; cursor: grab; }
+.pa-slider .thumb:active { cursor: grabbing; }
+.pa-slider[data-disabled] { opacity: var(--opacity-disabled); cursor: default; }
+.pa-slider[data-disabled] .thumb { cursor: default; }

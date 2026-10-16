@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.vercel/
+.DS_Store
+
+src/styles/tokens.css
+26_inkwash.mp4
+动效风格图鉴.html
+test-results/
+playwright-report/
+*.tsbuildinfo
+
+# keep the lockfile in this repo (Vercel runs npm ci), even though the global gitignore drops it
+!package-lock.json

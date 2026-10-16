@@ -1,0 +1,24 @@
+/* Sidebar — menu buttons share the link look from paper-album.css; groups can collapse; offcanvas collapse via SidebarProvider. */
+.pa-sidebar-content { display: flex; flex-direction: column; gap: 2px; flex: 1; min-height: 0; overflow-y: auto; }
+.pa-sidebar-menu { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.pa-sidebar-menu .pa-sidebar-menu { padding-left: var(--space-4); }
+.pa-sidebar-item { display: block; }
+.pa-sidebar-btn { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-md); background: transparent; font: 500 14px var(--font-sans); text-align: left; text-decoration: none; color: inherit; cursor: pointer; }
+.pa-sidebar-btn:hover { background: color-mix(in srgb, var(--sidebar-accent) 55%, transparent); }
+.pa-sidebar-btn[aria-current="page"], .pa-sidebar-btn[data-active="true"] { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); box-shadow: 0 2px 0 var(--sidebar-border), 0 4px 8px rgba(40, 24, 10, 0.12); font-weight: 600; }
+.pa-sidebar :focus-visible { outline-color: var(--sidebar-ring); }
+.pa-sidebar .grp { display: block; }
+button.grp { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 40px; border: 0; border-radius: var(--radius-md); background: transparent; color: inherit; font-family: var(--font-sans); cursor: pointer; text-align: left; }
+button.grp svg { transition: transform .2s ease; }
+button.grp[aria-expanded="false"] svg { transform: rotate(-90deg); }
+.pa-sidebar-badge { margin-left: auto; font-size: 12px; opacity: .8; font-variant-numeric: tabular-nums; }
+.pa-sidebar-badge.pa-badge { height: 22px; padding: 0 8px; font-size: 11px; opacity: 1; }
+.pa-sidebar-footer { margin-top: auto; padding-top: var(--space-3); border-top: 1px solid var(--sidebar-border); }
+.pa-sidebar-inset { flex: 1; min-width: 0; overflow: auto; padding: 22px 28px; }
+.pa-shell[data-state="collapsed"] .pa-sidebar[data-collapsible="offcanvas"] { display: none; }
+@media (max-width: 640px) {
+  .pa-shell { flex-direction: column; height: auto; }
+  .pa-sidebar { flex: none; box-shadow: inset 0 -2px 0 var(--sidebar-border); }
+  .pa-sidebar-inset { padding: var(--space-4); }
+}
+@media (prefers-reduced-motion: reduce) { button.grp svg { transition: none; } }

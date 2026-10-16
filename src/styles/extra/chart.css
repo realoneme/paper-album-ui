@@ -1,0 +1,15 @@
+/* Chart (Recharts): axis text and grid in paper tokens, legend swatches, tooltip on a top sheet. */
+.pa-chart-frame { margin: 0; display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+.pa-chart-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.pa-chart-title { font-weight: 700; }
+.pa-chart-plot { width: 100%; min-width: 0; }
+.pa-chart-plot .recharts-cartesian-axis-tick-value { fill: var(--muted-foreground); font: 400 11px var(--font-sans); }
+.pa-chart-plot .recharts-cartesian-axis-line, .pa-chart-plot .recharts-cartesian-axis-tick-line { stroke: var(--border); }
+.pa-chart-plot .recharts-cartesian-grid line { stroke: var(--muted); }
+.pa-chart-plot .recharts-surface:focus, .pa-chart-plot .recharts-wrapper:focus { outline: none; }
+.pa-chart-plot .recharts-tooltip-cursor { fill: var(--muted); opacity: 0.6; }
+.pa-chart-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin: 0; padding: 0; list-style: none; font-size: 13px; line-height: 18px; color: var(--muted-foreground); }
+.pa-chart-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.pa-chart-swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.pa-chart-tooltip { padding: 8px 12px; font-size: 13px; line-height: 18px; }
+.pa-chart-tooltip b { display: block; font-weight: 600; }

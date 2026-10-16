@@ -1,0 +1,4 @@
+/* Avatar: the radix image fills the disc; the +N count sits on muted paper. */
+.pa-avatar { position: relative; overflow: hidden; }
+.pa-avatar > img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.pa-avatar.count { background: var(--muted); color: var(--card-foreground); }

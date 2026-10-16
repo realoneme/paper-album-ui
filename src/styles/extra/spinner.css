@@ -1,0 +1,7 @@
+.pa-spinner .pa-spinner-track { stroke: var(--muted); }
+.pa-spinner .pa-spinner-arc { stroke: var(--wood); }
+.pa-spinner.primary .pa-spinner-arc { stroke: var(--primary); }
+.pa-spinner.current .pa-spinner-track { stroke: currentColor; stroke-opacity: 0.25; }
+.pa-spinner.current .pa-spinner-arc { stroke: currentColor; }
+.pa-spinner.sm { width: 18px; height: 18px; }
+.pa-spinner.lg { width: 48px; height: 48px; }

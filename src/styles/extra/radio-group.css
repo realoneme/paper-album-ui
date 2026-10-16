@@ -1,0 +1,2 @@
+.pa-radio-group { gap: 10px; }
+.pa-radio[disabled] { opacity: var(--opacity-disabled); cursor: default; }

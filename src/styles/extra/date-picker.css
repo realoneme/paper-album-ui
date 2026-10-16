@@ -1,0 +1,5 @@
+.pa-date-pop { z-index: 50; outline: none; }
+.pa-date-trigger .pa-date-text { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.pa-date-trigger .pa-date-text > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pa-date-trigger.is-empty .pa-date-text > span { color: var(--muted-foreground); }
+.pa-date-trigger:disabled { opacity: var(--opacity-disabled); cursor: default; }

@@ -1,0 +1,2 @@
+/* Hover Card: a small preview sheet. */
+.pa-hovercard { display: flex; align-items: flex-start; gap: 14px; width: 320px; max-width: calc(100vw - 32px); padding: 18px; z-index: 50; }

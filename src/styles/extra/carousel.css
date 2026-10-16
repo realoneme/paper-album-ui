@@ -1,0 +1,9 @@
+/* Carousel: root holds the viewport plus controls; slides are Embla's flex children. */
+.pa-carousel-root { position: relative; }
+.pa-carousel .track { touch-action: pan-y pinch-zoom; }
+.pa-carousel .slide { min-width: 0; }
+.pa-carousel .slide :is(.pa-photo, img) { transition: opacity 240ms ease; }
+.pa-carousel .slide:last-child { margin-right: 0; }
+.pa-carousel-controls { display: flex; align-items: center; justify-content: center; gap: var(--space-3); }
+.pa-carousel-controls .pa-dots { flex: 0 1 auto; flex-wrap: wrap; }
+@media (prefers-reduced-motion: reduce) { .pa-carousel .slide { transition: none; } }

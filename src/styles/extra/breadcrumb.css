@@ -1,0 +1,4 @@
+/* Breadcrumb — the collapsed-levels key is a compact secondary button. */
+.pa-crumb li { display: inline-flex; align-items: center; }
+.pa-crumb .sep { display: inline-flex; align-items: center; }
+.pa-crumb-ellipsis.pa-btn { min-height: 30px; height: 30px; padding: 0 10px; }

@@ -1,0 +1,2 @@
+/* Kbd group: keys of one shortcut sit 4px apart. */
+.pa-kbd-group { display: inline-flex; align-items: center; gap: var(--space-1); }

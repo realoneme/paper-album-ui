@@ -1,0 +1,4 @@
+/* Table: wide tables scroll inside their wrapper instead of the page. */
+.pa-table-wrap { position: relative; width: 100%; overflow-x: auto; }
+.pa-table th.num { text-align: right; }
+.pa-table td.mono { font: 500 13px var(--font-mono); }

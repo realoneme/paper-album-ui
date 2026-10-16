@@ -1,0 +1,5 @@
+/* Tooltip: the pointer (pa-tooltip::after) follows the side Radix placed it on. */
+.pa-tooltip[data-side] { z-index: 50; }
+.pa-tooltip[data-side="bottom"]::after { bottom: auto; top: -5px; }
+.pa-tooltip[data-side="left"]::after { left: auto; right: -5px; bottom: auto; top: 50%; margin: -5px 0 0; }
+.pa-tooltip[data-side="right"]::after { left: -5px; bottom: auto; top: 50%; margin: -5px 0 0; }

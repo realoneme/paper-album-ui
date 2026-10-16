@@ -1,0 +1,10 @@
+/* Command (cmdk): selection and grouping mapped onto the pa-menu / pa-mi look. */
+.pa-cmd { display: flex; flex-direction: column; width: 100%; max-width: 480px; overflow: hidden; }
+.pa-cmd-list { max-height: 300px; min-width: 0; overflow-y: auto; overscroll-behavior: contain; }
+.pa-cmd-list .pa-mi { user-select: none; }
+.pa-cmd-list .pa-mi[data-selected="true"] { background: var(--accent); color: var(--accent-foreground); }
+.pa-cmd-list .pa-mi[data-disabled="true"] { color: var(--muted-foreground); background: transparent; cursor: default; }
+.pa-cmd-heading { display: block; }
+.pa-cmd-empty { padding: var(--space-6) var(--space-3); text-align: center; font-size: 14px; color: var(--muted-foreground); }
+.pa-dialog.pa-cmd-dialog { padding: 0; width: min(480px, calc(100% - 32px)); overflow: hidden; }
+.pa-cmd-dialog .pa-cmd { max-width: none; box-shadow: none; }

@@ -1,0 +1,3 @@
+/* Menubar: keyboard highlight on a top-level trigger matches its hover. */
+.pa-menubar-trigger[data-highlighted]:not([data-state="open"]), .pa-menubar-trigger:hover:not([data-state="open"]) { background: var(--accent); color: var(--accent-foreground); }
+.pa-menubar { max-width: 100%; flex-wrap: wrap; }

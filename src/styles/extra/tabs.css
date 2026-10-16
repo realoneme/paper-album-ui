@@ -1,0 +1,5 @@
+/* Tabs — panel spacing under the deep rule; Radix sets aria-selected on triggers, which paper-album.css already styles. */
+.pa-tab:disabled { cursor: not-allowed; opacity: .55; }
+.pa-tabs[data-orientation="vertical"] { flex-direction: column; align-items: stretch; }
+.pa-tabs-content { padding: var(--space-4) var(--space-2) 0; }
+.pa-tabs-content:focus-visible { outline-offset: 4px; }

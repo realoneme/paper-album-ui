@@ -1,0 +1,6 @@
+/* Drawer (vaul): a bottom sheet with a grab handle. */
+.pa-drawer { max-height: calc(100% - 32px); overflow-y: auto; }
+.pa-drawer:focus { outline: none; }
+.pa-drawer-header { display: flex; flex-direction: column; gap: 4px; margin-bottom: var(--space-4); }
+.pa-drawer-header > * { margin: 0; }
+.pa-drawer-footer { display: flex; gap: var(--space-3); margin-top: var(--space-4); }

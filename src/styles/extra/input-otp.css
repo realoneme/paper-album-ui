@@ -1,0 +1,5 @@
+/* Caret drawn in the active slot (the real input is transparent, layered over the slots by input-otp). */
+.pa-otp-caret { width: 2px; height: 24px; background: currentColor; animation: pa-otp-blink 1s steps(1, end) infinite; }
+@keyframes pa-otp-blink { 50% { opacity: 0; } }
+.pa-otp.is-disabled { opacity: var(--opacity-disabled); }
+@media (prefers-reduced-motion: reduce) { .pa-otp-caret { animation: none; } }

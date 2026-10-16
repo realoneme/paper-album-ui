@@ -1,0 +1,1 @@
+.pa-tgroup button[disabled] { opacity: var(--opacity-disabled); cursor: default; }

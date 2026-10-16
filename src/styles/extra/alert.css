@@ -1,0 +1,4 @@
+.pa-alert-body { flex: 1; min-width: 0; }
+.pa-alert-title { margin: 0; }
+.pa-alert-desc > p { margin: 0; }
+.pa-alert-desc > p + p { margin-top: 4px; }

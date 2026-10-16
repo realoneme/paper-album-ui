@@ -1,0 +1,7 @@
+/* Popover: the pointer follows Radix's side and alignment. */
+.pa-popover { width: 320px; max-width: calc(100vw - 32px); padding: 18px; z-index: 50; }
+.pa-popover:focus { outline: none; }
+.pa-arrow-up[data-align="center"]::before { left: calc(50% - 7px); }
+.pa-arrow-up[data-align="end"]::before { left: auto; right: 28px; }
+.pa-arrow-up[data-side="top"]::before { top: auto; bottom: -7px; }
+.pa-arrow-up[data-side="left"]::before, .pa-arrow-up[data-side="right"]::before { display: none; }

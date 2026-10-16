@@ -1,0 +1,4 @@
+/* Collapsible — the trigger fills the block; the body only shows when open. */
+.pa-collapsible > .pa-acc-trigger { padding: 0 var(--space-4); }
+.pa-collapsible-label { display: inline-flex; align-items: center; gap: 10px; }
+.pa-collapsible .body[hidden] { display: none; }

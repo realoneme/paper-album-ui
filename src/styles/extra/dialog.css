@@ -1,0 +1,9 @@
+/* Dialog, Alert Dialog, Sheet, Drawer, Command dialog: shared overlay helpers. */
+/* Portaled to <body> (no `container`), overlays pin to the viewport; inside a container they stay absolute. */
+.pa-pop.pa-fixed, .pa-backdrop.pa-fixed { position: fixed; z-index: 50; }
+.pa-dialog { max-height: calc(100% - 32px); overflow-y: auto; }
+.pa-dialog-header { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--space-5); padding-right: var(--space-8); }
+.pa-dialog-header > * { margin: 0; }
+.pa-dialog-desc { margin: 0; }
+.pa-dialog:focus { outline: none; }
+.pa-dialog:focus-visible { outline: 2px solid var(--ring-paper); outline-offset: 2px; }

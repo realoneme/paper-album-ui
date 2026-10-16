@@ -1,0 +1,2 @@
+/* Field description and error render as <p>; drop the default paragraph margin (the field gap spaces them). */
+p.pa-desc, p.pa-error-text { margin: 0; }

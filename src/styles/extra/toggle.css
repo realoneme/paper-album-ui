@@ -1,0 +1,1 @@
+.pa-toggle[disabled] { opacity: var(--opacity-disabled); cursor: default; }

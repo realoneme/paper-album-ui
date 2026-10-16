@@ -1,0 +1,4 @@
+/* Accordion — Radix wraps the trigger in an h3 and the panel in a region. */
+.pa-acc-header { margin: 0; }
+.pa-acc-content { overflow: hidden; }
+.pa-acc-trigger:disabled { cursor: not-allowed; opacity: .55; }

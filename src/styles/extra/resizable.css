@@ -1,0 +1,7 @@
+/* Resizable — react-resizable-panels sets the flex sizes; these keep the crease look and a visible keyboard focus. */
+.pa-resizable[data-panel-group-direction="vertical"] { flex-direction: column; }
+.pa-resizable .pa-resizable { height: auto; border-radius: 0; box-shadow: none; background: transparent; }
+.pa-resizable .pane { overflow: auto; }
+.pa-handle-v:focus-visible, .pa-handle-h:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+.pa-handle-v[data-resize-handle-state="drag"]::after, .pa-handle-h[data-resize-handle-state="drag"]::after { background: var(--wood); }
+.pa-handle-v[data-resize-handle-enabled="false"], .pa-handle-h[data-resize-handle-enabled="false"] { cursor: default; opacity: .5; }

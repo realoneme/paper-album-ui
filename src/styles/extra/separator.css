@@ -1,0 +1,5 @@
+/* Separator — vertical rule inside flex rows and the cut-paper wave between page sections. */
+.pa-vr { flex: none; align-self: center; }
+.pa-wave { display: block; width: 100%; height: 12px; margin: var(--space-4) 0 0; }
+.pa-wave svg { display: block; width: 100%; height: 100%; }
+.pa-wave path { fill: none; stroke: var(--border); stroke-width: 2; }

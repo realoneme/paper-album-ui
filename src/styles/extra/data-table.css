@@ -1,0 +1,11 @@
+/* Data table: toolbar, sortable header buttons and footer. */
+.pa-dt-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+.pa-dt-toolbar .pa-igroup { width: 260px; max-width: 100%; }
+.pa-dt-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: 14px; font-size: 14px; }
+.pa-dt-pager { display: flex; align-items: center; gap: var(--space-3); }
+.pa-table th.pa-dt-check, .pa-table td.pa-dt-check { width: 44px; }
+.pa-table-sort { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; }
+.pa-table th.num .pa-table-sort { flex-direction: row-reverse; }
+.pa-table th[aria-sort="ascending"], .pa-table th[aria-sort="descending"] { color: var(--card-foreground); }
+.pa-table td.pa-dt-empty { height: 96px; text-align: center; color: var(--muted-foreground); }
+.pa-mi .pa-dt-indicator { width: 18px; display: inline-flex; }

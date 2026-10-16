@@ -1,0 +1,20 @@
+/* react-day-picker renders a real table; keep the pa-cal-grid day styles but lay it out as a table. */
+.pa-cal .pa-cal-months { display: flex; flex-wrap: wrap; gap: var(--space-6); }
+.pa-cal:has(.pa-cal-month + .pa-cal-month) { width: auto; }
+.pa-cal .pa-cal-month { width: 268px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; }
+.pa-cal .pa-cal-month > .pa-cal-head { grid-column: 2; grid-row: 1; justify-content: center; margin: 0; }
+.pa-cal .pa-cal-month > .pa-cal-nav-prev { grid-column: 1; grid-row: 1; }
+.pa-cal .pa-cal-month > .pa-cal-nav-next { grid-column: 3; grid-row: 1; }
+.pa-cal .pa-cal-month > table { grid-column: 1 / -1; margin-top: var(--space-3); }
+.pa-cal .pa-cal-nav { width: 36px; }
+.pa-cal .pa-cal-nav[aria-disabled="true"] { opacity: var(--opacity-disabled); cursor: default; }
+.pa-cal table.pa-cal-grid { display: table; width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 2px; }
+.pa-cal table.pa-cal-grid.range { border-spacing: 0 2px; }
+.pa-cal table.pa-cal-grid th.dow { font-weight: 600; }
+.pa-cal table.pa-cal-grid td { padding: 0; }
+.pa-cal table.pa-cal-grid button { display: block; width: 100%; }
+.pa-cal table.pa-cal-grid button:disabled { opacity: var(--opacity-disabled); cursor: default; text-decoration: line-through; }
+.pa-cal table.pa-cal-grid button:disabled:hover { background: transparent; }
+.pa-cal table.pa-cal-grid button.sel:hover { background: var(--primary); }
+.pa-cal table.pa-cal-grid button.mid:hover { background: var(--muted); }
+.pa-cal .pa-cal-hidden { visibility: hidden; }

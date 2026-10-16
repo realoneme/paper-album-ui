@@ -1,0 +1,3 @@
+/* Textarea states missing from paper-album.css (Input has them). */
+.pa-textarea[aria-invalid="true"] { box-shadow: var(--shadow-sunken), inset 0 0 0 2px var(--destructive); }
+.pa-textarea:disabled { opacity: var(--opacity-disabled); }

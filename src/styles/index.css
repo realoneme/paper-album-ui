@@ -1,0 +1,3 @@
+/* Paper Album UI — import this once in your app. Fonts: Fraunces, Instrument Sans, Caveat (Google Fonts). */
+@import './tokens.css';
+@import './paper-album.css';
