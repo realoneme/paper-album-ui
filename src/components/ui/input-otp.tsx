@@ -5,16 +5,30 @@ import { cn } from '@/lib/cn';
 
 export type InputOTPProps = React.ComponentPropsWithoutRef<typeof OTPInput>;
 
-/** One groove per character for codes. Pass `maxLength` (usually 6) and compose groups of slots. */
+/**
+ * One groove per character for codes. Pass `maxLength` (usually 6) and compose groups of slots.
+ * Works controlled (`value` + `onChange`) or uncontrolled (`defaultValue`). input-otp always renders a
+ * controlled <input>, so an uncontrolled `defaultValue` is kept in local state rather than passed down.
+ */
 export const InputOTP = React.forwardRef<React.ElementRef<typeof OTPInput>, InputOTPProps>(
-  ({ className, containerClassName, ...props }, ref) => (
-    <OTPInput
-      ref={ref}
-      containerClassName={cn('pa-otp', props.disabled && 'is-disabled', containerClassName)}
-      className={cn(className)}
-      {...props}
-    />
-  ),
+  ({ className, containerClassName, value, defaultValue, onChange, ...props }, ref) => {
+    const [inner, setInner] = React.useState(() => String(defaultValue ?? ''));
+    const controlled = value !== undefined;
+    const handleChange = (next: string) => {
+      if (!controlled) setInner(next);
+      onChange?.(next);
+    };
+    return (
+      <OTPInput
+        ref={ref}
+        containerClassName={cn('pa-otp', props.disabled && 'is-disabled', containerClassName)}
+        className={cn(className)}
+        value={controlled ? value : inner}
+        onChange={handleChange}
+        {...props}
+      />
+    );
+  },
 );
 InputOTP.displayName = 'InputOTP';
 

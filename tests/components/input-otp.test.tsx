@@ -52,6 +52,19 @@ describe('InputOTP', () => {
     expect(onComplete).toHaveBeenCalledWith('482915');
   });
 
+  it('starts from defaultValue and keeps typing uncontrolled, without React warnings', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const onComplete = vi.fn();
+    render(<Code defaultValue="48" onComplete={onComplete} />);
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveValue('48');
+    await userEvent.type(input, '2913');
+    expect(input).toHaveValue('482913');
+    expect(onComplete).toHaveBeenCalledWith('482913');
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
+  });
+
   it('is disabled when asked', async () => {
     const { container } = render(<Code disabled defaultValue="48" />);
     const input = screen.getByRole('textbox');

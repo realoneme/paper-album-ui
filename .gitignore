@@ -12,3 +12,4 @@ playwright-report/
 
 # keep the lockfile in this repo (Vercel runs npm ci), even though the global gitignore drops it
 !package-lock.json
+.vercel
