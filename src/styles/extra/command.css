@@ -1,7 +1,10 @@
 /* Command (cmdk): selection and grouping mapped onto the pa-menu / pa-mi look. */
 .pa-cmd { display: flex; flex-direction: column; width: 100%; max-width: 480px; overflow: hidden; }
 .pa-cmd-list { max-height: 300px; min-width: 0; overflow-y: auto; overscroll-behavior: contain; }
-.pa-cmd-list .pa-mi { user-select: none; }
+/* One source of truth: cmdk marks the item under the pointer or the arrow keys [data-selected="true"]; :hover never paints. */
+.pa-cmd-list .pa-mi { position: relative; user-select: none; transition: none; }
+.pa-cmd-list .pa-mi::after { content: ""; position: absolute; inset: -1px 0; }
+.pa-cmd-list .pa-mi:hover { background: transparent; }
 .pa-cmd-list .pa-mi[data-selected="true"] { background: var(--accent); color: var(--accent-foreground); }
 .pa-cmd-list .pa-mi[data-disabled="true"] { color: var(--muted-foreground); background: transparent; cursor: default; }
 .pa-cmd-heading { display: block; }

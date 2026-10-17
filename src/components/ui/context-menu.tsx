@@ -1,3 +1,4 @@
+import '@/styles/extra/slide-down.css';
 import '@/styles/extra/dropdown-menu.css';
 import '@/styles/extra/context-menu.css';
 import * as React from 'react';
@@ -11,7 +12,6 @@ export const ContextMenu = ContextMenuPrimitive.Root;
 export const ContextMenuTrigger = ContextMenuPrimitive.Trigger;
 export const ContextMenuGroup = ContextMenuPrimitive.Group;
 export const ContextMenuPortal = ContextMenuPrimitive.Portal;
-export const ContextMenuSub = ContextMenuPrimitive.Sub;
 export const ContextMenuRadioGroup = ContextMenuPrimitive.RadioGroup;
 
 export type ContextMenuProps = React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Root>;
@@ -36,7 +36,7 @@ export const ContextMenuContent = React.forwardRef<React.ElementRef<typeof Conte
       <ContextMenuPrimitive.Portal container={container}>
         <ContextMenuPrimitive.Content
           ref={ref}
-          className={cn('pa-pop pa-menu', className)}
+          className={cn('pa-pop pa-menu pa-slide', className)}
           {...focusProps}
           {...props}
         />
@@ -127,20 +127,59 @@ export function ContextMenuShortcut({ className, ...props }: ContextMenuShortcut
 }
 ContextMenuShortcut.displayName = 'ContextMenuShortcut';
 
+export type ContextMenuSubProps = React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Sub>;
+
+const SubOpenContext = React.createContext<{ open: () => void } | null>(null);
+
+/** A submenu. Controlled (`open` + `onOpenChange`) or not (`defaultOpen`); its trigger opens it on hover without delay. */
+export function ContextMenuSub({ open: openProp, defaultOpen = false, onOpenChange, ...props }: ContextMenuSubProps) {
+  const [inner, setInner] = React.useState(defaultOpen);
+  const open = openProp ?? inner;
+  const setOpen = React.useCallback(
+    (next: boolean) => {
+      if (openProp === undefined) setInner(next);
+      onOpenChange?.(next);
+    },
+    [openProp, onOpenChange],
+  );
+  const sub = React.useMemo(() => ({ open: () => !open && setOpen(true) }), [open, setOpen]);
+  return (
+    <SubOpenContext.Provider value={sub}>
+      <ContextMenuPrimitive.Sub open={open} onOpenChange={setOpen} {...props} />
+    </SubOpenContext.Provider>
+  );
+}
+ContextMenuSub.displayName = 'ContextMenuSub';
+
 export interface ContextMenuSubTriggerProps extends React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubTrigger> {
   inset?: boolean;
 }
 
-/** Opens a submenu (hover, click or the right arrow key). */
+/** Opens a submenu: at once on hover (Radix alone waits 100ms), or on click or the right arrow key. */
 export const ContextMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.SubTrigger>,
   ContextMenuSubTriggerProps
->(({ className, inset, children, ...props }, ref) => (
-  <ContextMenuPrimitive.SubTrigger ref={ref} className={cn('pa-mi', inset && 'inset', className)} {...props}>
-    {children}
-    <span className="end"><ChevronRight className="pa-i sm" aria-hidden /></span>
-  </ContextMenuPrimitive.SubTrigger>
-));
+>(({ className, inset, children, onPointerMove, ...props }, ref) => {
+  const sub = React.useContext(SubOpenContext);
+  return (
+    <ContextMenuPrimitive.SubTrigger
+      ref={ref}
+      className={cn('pa-mi', inset && 'inset', className)}
+      onPointerMove={(event) => {
+        onPointerMove?.(event);
+        if (event.pointerType !== 'mouse' || props.disabled || !sub) return;
+        // Radix handles the move after us and cancels it while the pointer heads for an open submenu.
+        queueMicrotask(() => {
+          if (!event.defaultPrevented) sub.open();
+        });
+      }}
+      {...props}
+    >
+      {children}
+      <span className="end"><ChevronRight className="pa-i sm" aria-hidden /></span>
+    </ContextMenuPrimitive.SubTrigger>
+  );
+});
 ContextMenuSubTrigger.displayName = 'ContextMenuSubTrigger';
 
 export interface ContextMenuSubContentProps extends React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubContent> {
@@ -153,7 +192,7 @@ export const ContextMenuSubContent = React.forwardRef<
   ContextMenuSubContentProps
 >(({ className, container, sideOffset = 6, ...props }, ref) => (
   <ContextMenuPrimitive.Portal container={container}>
-    <ContextMenuPrimitive.SubContent ref={ref} sideOffset={sideOffset} className={cn('pa-pop pa-menu', className)} {...props} />
+    <ContextMenuPrimitive.SubContent ref={ref} sideOffset={sideOffset} className={cn('pa-pop pa-menu pa-slide', className)} {...props} />
   </ContextMenuPrimitive.Portal>
 ));
 ContextMenuSubContent.displayName = 'ContextMenuSubContent';

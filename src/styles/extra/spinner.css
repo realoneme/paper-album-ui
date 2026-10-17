@@ -1,7 +1,16 @@
-.pa-spinner .pa-spinner-track { stroke: var(--muted); }
-.pa-spinner .pa-spinner-arc { stroke: var(--wood); }
-.pa-spinner.primary .pa-spinner-arc { stroke: var(--primary); }
-.pa-spinner.current .pa-spinner-track { stroke: currentColor; stroke-opacity: 0.25; }
-.pa-spinner.current .pa-spinner-arc { stroke: currentColor; }
+/* Spinner: a gooey comet. Balls orbit one after another with an eased turn; the SVG goo filter melts
+   them into one liquid tail. Fill is currentColor, set here from the tone. */
+.pa-spinner.pa-spinner-goo { animation: none; color: var(--wood); overflow: visible; }
+.pa-spinner.pa-spinner-goo.primary { color: var(--primary); }
+.pa-spinner.pa-spinner-goo.current { color: inherit; }
+.pa-spinner-goo .pa-spinner-ball { fill: currentColor; }
+.pa-spinner-goo .pa-spinner-orbit {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  animation: pa-goo-orbit 1.3s cubic-bezier(.55, .1, .35, .9) infinite;
+}
+@keyframes pa-goo-orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .pa-spinner.sm { width: 18px; height: 18px; }
 .pa-spinner.lg { width: 48px; height: 48px; }
+/* Reduced motion: hold the comet still; the tail shape alone still reads as "working". */
+@media (prefers-reduced-motion: reduce) { .pa-spinner-goo .pa-spinner-orbit { animation: none; } }

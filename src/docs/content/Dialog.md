@@ -22,3 +22,23 @@ A modal top sheet over a dimmed page, for focused edits.
   </DialogContent>
 </Dialog>
 ```
+
+## Motion
+
+- Opening grows the sheet out of its trigger and into its place while the backdrop fades in; closing shrinks it back into the trigger. `DialogContent` does this itself (FLIP): it reads the trigger's and its own rect, writes `--from-x`, `--from-y`, `--from-sx`, `--from-sy` and `--from-radius` on the content and sets `data-from="trigger"`; the `pa-grow` keyframes run from that transform to rest (`--dur-slow`, `--ease-paper`) and back on `data-state="closed"` (`--dur-base`, `--ease-in-paper`). Radix waits for the exit keyframe before unmounting.
+- Works portaled into a `container` or fixed to the viewport. With no trigger (controlled `open` only) it scales and fades from the centre instead.
+- The title and body fade in just after the box has grown. Reduced motion: a fade only.
+- `useGrowFromTrigger(ref)` is exported for custom modal content that wants the same motion (add the `pa-grow` class).
+
+```tsx
+const [open, setOpen] = React.useState(false);
+
+<Dialog open={open} onOpenChange={setOpen}>
+  {/* Grows out of this button and shrinks back into it. */}
+  <DialogTrigger asChild><Button variant="secondary">Edit album</Button></DialogTrigger>
+  <DialogContent container={stage /* optional positioned element */}>
+    <DialogHeader><DialogTitle>Edit album</DialogTitle></DialogHeader>
+    …
+  </DialogContent>
+</Dialog>
+```

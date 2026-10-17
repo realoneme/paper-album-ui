@@ -5,9 +5,12 @@ import { cn } from '@/lib/cn';
 
 export type TooltipProviderProps = React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Provider>;
 
-/** Shares open/close delays between tooltips. Tooltip already wraps itself in one. */
-export function TooltipProvider({ delayDuration = 300, ...props }: TooltipProviderProps) {
-  return <TooltipPrimitive.Provider delayDuration={delayDuration} {...props} />;
+/**
+ * Shares open/close delays between tooltips. Tooltip already wraps itself in one.
+ * Labels open immediately on hover (delayDuration 0, skipDelayDuration 0) and pop in within 110ms.
+ */
+export function TooltipProvider({ delayDuration = 0, skipDelayDuration = 0, ...props }: TooltipProviderProps) {
+  return <TooltipPrimitive.Provider delayDuration={delayDuration} skipDelayDuration={skipDelayDuration} {...props} />;
 }
 TooltipProvider.displayName = 'TooltipProvider';
 

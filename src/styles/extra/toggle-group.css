@@ -1,1 +1,30 @@
+.pa-tgroup { position: relative; }
+.pa-tgroup button { position: relative; z-index: 1; }
 .pa-tgroup button[disabled] { opacity: var(--opacity-disabled); cursor: default; }
+
+/* type="single": one paper thumb slides under the chosen item; the item itself stays flat. */
+.pa-tgroup-thumb {
+  position: absolute; top: 0; left: 0; z-index: 0; pointer-events: none;
+  border-radius: 5px; background: var(--card);
+  box-shadow: 0 2px 0 var(--border), 0 4px 8px rgba(40, 24, 10, 0.16);
+  will-change: transform, width;
+}
+.pa-tgroup-thumb[data-animate="true"] {
+  transition:
+    transform var(--dur-base) var(--ease-spring),
+    width var(--dur-base) var(--ease-paper),
+    height var(--dur-base) var(--ease-paper);
+}
+.pa-tgroup[data-thumb="true"] button[aria-checked="true"] { background: transparent; box-shadow: none; }
+.pa-tgroup[data-thumb="true"] button { transition: color var(--dur-fast) var(--ease-paper); }
+
+/* type="multiple": each item rises out of the groove on its own. */
+.pa-tgroup[role="toolbar"] button {
+  transition:
+    background-color var(--dur-base) var(--ease-paper),
+    box-shadow var(--dur-base) var(--ease-paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-tgroup-thumb[data-animate="true"], .pa-tgroup button { transition: none; }
+}

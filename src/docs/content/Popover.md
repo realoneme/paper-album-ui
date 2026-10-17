@@ -14,3 +14,15 @@ A small top sheet opened by a click, with a pointer to its trigger.
   </PopoverContent>
 </Popover>
 ```
+
+## Motion
+
+- Opens with a scale from 0.96, a fade and a 6px slide away from the trigger side (`--dur-base`, `--ease-paper`), growing from Radix's `--radix-popover-content-transform-origin`; closes the reverse way in `--dur-fast`. Reduced motion: a fade only.
+
+```tsx
+<Popover>
+  <PopoverTrigger asChild><Button variant="secondary">Sort</Button></PopoverTrigger>
+  {/* Slides 6px up out of the trigger. */}
+  <PopoverContent side="top" aria-label="Sort photos">…</PopoverContent>
+</Popover>
+```

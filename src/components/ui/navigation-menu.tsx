@@ -8,11 +8,18 @@ export type NavigationMenuProps = React.ComponentPropsWithoutRef<typeof Navigati
 
 /**
  * The site's main navigation. Panels open on hover, click or Enter and render inline under the strip
- * (no viewport); give the root an aria-label.
+ * (no viewport); give the root an aria-label. Hover opens a panel immediately (delayDuration 0,
+ * skipDelayDuration 0) with a 140ms fade.
  */
 export const NavigationMenu = React.forwardRef<React.ElementRef<typeof NavigationMenuPrimitive.Root>, NavigationMenuProps>(
-  ({ className, ...props }, ref) => (
-    <NavigationMenuPrimitive.Root ref={ref} className={cn('pa-navmenu-root', className)} {...props} />
+  ({ className, delayDuration = 0, skipDelayDuration = 0, ...props }, ref) => (
+    <NavigationMenuPrimitive.Root
+      ref={ref}
+      delayDuration={delayDuration}
+      skipDelayDuration={skipDelayDuration}
+      className={cn('pa-navmenu-root', className)}
+      {...props}
+    />
   ),
 );
 NavigationMenu.displayName = 'NavigationMenu';
@@ -35,16 +42,47 @@ export const navigationMenuTriggerStyle = () => 'pa-navmenu-trigger';
 
 export type NavigationMenuTriggerProps = React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>;
 
-/** A top-level item that opens a panel; the chevron turns when open. */
+/** A click this soon after hover opened the panel confirms it instead of toggling it shut. */
+const HOVER_CLICK_GRACE_MS = 1000;
+
+/**
+ * A top-level item that opens a panel; the chevron turns when open. Hover opens it at once, so a click
+ * that lands right after the hover keeps it open (Radix would otherwise toggle it closed again).
+ */
 export const NavigationMenuTrigger = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Trigger>,
   NavigationMenuTriggerProps
->(({ className, children, ...props }, ref) => (
-  <NavigationMenuPrimitive.Trigger ref={ref} className={cn(navigationMenuTriggerStyle(), className)} {...props}>
-    {children}
-    <ChevronDown className="pa-i sm" aria-hidden />
-  </NavigationMenuPrimitive.Trigger>
-));
+>(({ className, children, onPointerEnter, onPointerMove, onClick, ...props }, ref) => {
+  const hoveredAt = React.useRef(0);
+  const noteHover = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType === 'mouse' && event.currentTarget.dataset.state !== 'open') hoveredAt.current = Date.now();
+  };
+  return (
+    <NavigationMenuPrimitive.Trigger
+      ref={ref}
+      className={cn(navigationMenuTriggerStyle(), className)}
+      onPointerEnter={(event) => {
+        onPointerEnter?.(event);
+        noteHover(event);
+      }}
+      onPointerMove={(event) => {
+        onPointerMove?.(event);
+        noteHover(event);
+      }}
+      onClick={(event) => {
+        onClick?.(event);
+        const sinceHover = Date.now() - hoveredAt.current;
+        hoveredAt.current = 0;
+        // Hover has opened (or is about to open) this panel: keep it open rather than toggling it shut.
+        if (sinceHover < HOVER_CLICK_GRACE_MS) event.preventDefault();
+      }}
+      {...props}
+    >
+      {children}
+      <ChevronDown className="pa-i sm" aria-hidden />
+    </NavigationMenuPrimitive.Trigger>
+  );
+});
 NavigationMenuTrigger.displayName = 'NavigationMenuTrigger';
 
 export type NavigationMenuContentProps = React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Content>;

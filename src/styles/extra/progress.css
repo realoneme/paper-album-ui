@@ -1,0 +1,37 @@
+/* Progress: the fill glides to each new value; a soft light band sweeps the filled paper while it runs,
+   and settles into the success tone at 100. Indeterminate: a glowing segment travels back and forth. */
+.pa-progress { position: relative; }
+.pa-progress > .pa-progress-fill {
+  position: relative;
+  overflow: hidden;
+  transition: width 600ms var(--ease-paper), background-color var(--dur-slow) var(--ease-paper), box-shadow var(--dur-slow) var(--ease-paper);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--card) 35%, transparent);
+}
+.pa-progress-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--glow) 75%, transparent) 50%, transparent 70%);
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  animation: pa-progress-sweep 1.8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes pa-progress-sweep { 0% { background-position: 120% 0; } 100% { background-position: -20% 0; } }
+
+.pa-progress.indeterminate > .pa-progress-fill {
+  width: 38%;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--primary) 30%, transparent), var(--primary) 45%, var(--primary) 55%, color-mix(in srgb, var(--primary) 30%, transparent));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--glow) 70%, transparent);
+  animation: pa-progress-travel 1.4s var(--ease-paper) infinite alternate;
+  transition: none;
+}
+.pa-progress.indeterminate > .pa-progress-fill > .pa-progress-glow { animation-duration: 1.4s; }
+/* 38% wide segment: translating by 163% of its own width reaches the right end of the groove. */
+@keyframes pa-progress-travel { 0% { transform: translateX(0); } 100% { transform: translateX(163.2%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-progress > .pa-progress-fill { transition: none; }
+  .pa-progress-glow { display: none; }
+  .pa-progress.indeterminate > .pa-progress-fill { animation: none; transform: translateX(81.6%); }
+}

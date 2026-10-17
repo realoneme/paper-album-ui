@@ -224,8 +224,53 @@ export const CarouselDots = React.forwardRef<HTMLDivElement, CarouselDotsProps>(
 });
 CarouselDots.displayName = 'CarouselDots';
 
+export interface CarouselCounterProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Total when the carousel has not measured yet (defaults to the measured snap count). */
+  count?: number;
+}
+/** "3 / 12": the current page and the total, announced politely as "Slide 3 of 12". */
+export const CarouselCounter = React.forwardRef<HTMLDivElement, CarouselCounterProps>(({ className, count, ...props }, ref) => {
+  const { snapCount, selectedIndex } = useCarousel();
+  const total = snapCount || count || 0;
+  const current = total ? Math.min(selectedIndex + 1, total) : 0;
+  return (
+    <div ref={ref} className={cn('pa-carousel-counter', className)} aria-live="polite" aria-atomic="true" {...props}>
+      <span className="pa-carousel-counter-value" aria-hidden="true">
+        <b>{current}</b>
+        <span className="sep"> / </span>
+        {total}
+      </span>
+      <span className="pa-sr">{`Slide ${current} of ${total}`}</span>
+    </div>
+  );
+});
+CarouselCounter.displayName = 'CarouselCounter';
+
+export interface CarouselIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** `dots` always, `counter` always, or `auto`: dots up to `maxDots` pages, the counter beyond. */
+  variant?: 'auto' | 'dots' | 'counter';
+  /** Most dots `auto` will show before switching to the counter. Default 7. */
+  maxDots?: number;
+  /** Total before the carousel has measured. */
+  count?: number;
+}
+/** Shows where you are and how many there are: dots for short strips, "3 / 12" for long ones. */
+export const CarouselIndicator = React.forwardRef<HTMLDivElement, CarouselIndicatorProps>(
+  ({ variant = 'auto', maxDots = 7, count, ...props }, ref) => {
+    const { snapCount } = useCarousel();
+    const total = snapCount || count || 0;
+    const mode = variant === 'auto' ? (total > maxDots ? 'counter' : 'dots') : variant;
+    return mode === 'counter' ? (
+      <CarouselCounter ref={ref} count={count} data-indicator="counter" {...props} />
+    ) : (
+      <CarouselDots ref={ref} count={count} data-indicator="dots" {...props} />
+    );
+  },
+);
+CarouselIndicator.displayName = 'CarouselIndicator';
+
 export type CarouselControlsProps = React.HTMLAttributes<HTMLDivElement>;
-/** Lays out Previous, dots and Next in one centred row. */
+/** Lays out Previous, dots (or an indicator / counter) and Next in one centred row. */
 export const CarouselControls = React.forwardRef<HTMLDivElement, CarouselControlsProps>(({ className, ...props }, ref) => (
   <div ref={ref} className={cn('pa-carousel-controls', className)} {...props} />
 ));

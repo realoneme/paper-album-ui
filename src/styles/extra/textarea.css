@@ -1,3 +1,11 @@
 /* Textarea states missing from paper-album.css (Input has them). */
 .pa-textarea[aria-invalid="true"] { box-shadow: var(--shadow-sunken), inset 0 0 0 2px var(--destructive); }
 .pa-textarea:disabled { opacity: var(--opacity-disabled); }
+
+/* autoResize: the height follows the content; JS sets min/max (rows) and the fallback height. */
+.pa-textarea.pa-textarea-auto {
+  resize: none; overflow-y: hidden; line-height: 22px; field-sizing: content;
+}
+@supports (field-sizing: content) {
+  .pa-textarea.pa-textarea-auto { overflow-y: auto; }
+}

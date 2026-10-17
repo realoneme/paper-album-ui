@@ -1,2 +1,46 @@
-/* Hover Card: a small preview sheet. */
-.pa-hovercard { display: flex; align-items: flex-start; gap: 14px; width: 320px; max-width: calc(100vw - 32px); padding: 18px; z-index: 50; }
+/* Hover Card: a portrait preview card hanging on a thread from the point where the pointer entered.
+   --thread is the gap to the trigger (HoverCardContent sets it from sideOffset). */
+.pa-hovercard { --thread: 18px; position: relative; display: flex; flex-direction: column; gap: 10px; width: 248px; max-width: calc(100vw - 32px); min-height: 360px; padding: 12px 12px 16px; z-index: 50; transform-origin: 50% calc(-1 * var(--thread)); }
+.pa-hovercard:focus { outline: none; }
+/* The thread and the pin it hangs from, on the trigger's edge. */
+.pa-hovercard::before { content: ""; position: absolute; left: calc(50% - 1px); bottom: 100%; width: 2px; height: var(--thread); border-radius: 1px; background: var(--wood); }
+.pa-hovercard::after { content: ""; position: absolute; left: calc(50% - 4px); top: calc(-1 * var(--thread) - 4px); width: 8px; height: 8px; border-radius: 50%; background: var(--wood); box-shadow: 0 1px 2px rgba(40, 24, 10, 0.3); }
+.pa-hovercard[data-side="top"] { transform-origin: 50% calc(100% + var(--thread)); }
+.pa-hovercard[data-side="top"]::before { bottom: auto; top: 100%; }
+.pa-hovercard[data-side="top"]::after { top: auto; bottom: calc(-1 * var(--thread) - 4px); }
+.pa-hovercard[data-side="left"]::before, .pa-hovercard[data-side="left"]::after,
+.pa-hovercard[data-side="right"]::before, .pa-hovercard[data-side="right"]::after { display: none; }
+
+/* Card layout: portrait photo, name, one line of bio, two stats, a link. */
+.pa-hovercard-photo { display: block; width: 100%; height: 180px; border-radius: var(--radius-md); box-shadow: var(--shadow-sunken); }
+.pa-hovercard-name { margin: 2px 0 0; font: 600 16px var(--font-sans); }
+.pa-hovercard-bio { margin: 0; }
+.pa-hovercard-stats { display: flex; gap: var(--space-5); margin: 0; }
+.pa-hovercard-stats div { display: flex; flex-direction: column; }
+.pa-hovercard-stats dt { order: 2; font-size: 12px; color: var(--muted-foreground); }
+.pa-hovercard-stats dd { order: 1; margin: 0; font: 600 15px var(--font-sans); }
+.pa-hovercard-link { margin-top: auto; font-size: 14px; font-weight: 600; color: inherit; text-underline-offset: 4px; }
+
+/* Motion: it appears within 150ms (drop + fade) and keeps swinging like a pendulum to rest (~900ms).
+   `translate` and `rotate` are separate properties so the two animations do not fight over transform. */
+.pa-hovercard[data-state="open"] { animation: pa-hc-drop 150ms var(--ease-paper) both, pa-hc-swing 900ms var(--ease-paper) both; }
+.pa-hovercard[data-state="closed"] { animation: pa-hc-lift var(--dur-fast) var(--ease-in-paper) both; pointer-events: none; }
+@keyframes pa-hc-drop { from { opacity: 0; translate: 0 -14px; } to { opacity: 1; translate: 0 0; } }
+/* Each swing eases in and out like a pendulum turning at its ends. */
+@keyframes pa-hc-swing {
+  0% { rotate: 14deg; animation-timing-function: ease-in-out; }
+  22% { rotate: -9deg; animation-timing-function: ease-in-out; }
+  42% { rotate: 5deg; animation-timing-function: ease-in-out; }
+  60% { rotate: -3deg; animation-timing-function: ease-in-out; }
+  78% { rotate: 1deg; animation-timing-function: ease-in-out; }
+  100% { rotate: 0deg; }
+}
+@keyframes pa-hc-lift { from { opacity: 1; translate: 0 0; } to { opacity: 0; translate: 0 -10px; } }
+
+/* Reduced motion: no swing, just a fade. */
+@media (prefers-reduced-motion: reduce) {
+  .pa-hovercard[data-state="open"] { animation: pa-hc-fade-in var(--dur-fast) ease both !important; }
+  .pa-hovercard[data-state="closed"] { animation: pa-hc-fade-out var(--dur-instant) ease both !important; }
+}
+@keyframes pa-hc-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pa-hc-fade-out { from { opacity: 1; } to { opacity: 0; } }

@@ -1,3 +1,4 @@
+import '@/styles/extra/badge.css';
 import * as React from 'react';
 import { Slot } from 'radix-ui';
 import { cva, type VariantProps } from 'class-variance-authority';
@@ -16,8 +17,14 @@ export const badgeVariants = cva('pa-badge', {
       warning: 'pa-badge-warning',
       info: 'pa-badge-info',
     },
+    /** `default` 28px, `sm` 22px (12px text and icons), `xs` 18px slim pill (11px text, 10px icons). */
+    size: {
+      default: '',
+      sm: 'pa-badge-sm',
+      xs: 'pa-badge-xs',
+    },
   },
-  defaultVariants: { variant: 'default' },
+  defaultVariants: { variant: 'default', size: 'default' },
 });
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {
@@ -30,9 +37,9 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement>, Varia
  * is not carried by colour alone.
  */
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot.Root : 'span';
-    return <Comp ref={ref} className={cn(badgeVariants({ variant }), className)} {...props} />;
+    return <Comp ref={ref} className={cn(badgeVariants({ variant, size }), className)} {...props} />;
   },
 );
 Badge.displayName = 'Badge';

@@ -1,5 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { endSlide, mockSlideAnimations } from './support/slide-motion';
 import userEvent from '@testing-library/user-event';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import ComboboxDemo from '@/docs/demos/Combobox.demo';
@@ -23,7 +24,11 @@ describe('Combobox', () => {
     expect(list.closest('.pa-pop')).toHaveClass('pa-menu');
     const names = within(list).getAllByRole('option').map((o) => o.textContent);
     expect(names).toEqual(['KyotoJapan', 'Isle of SkyeScotland']);
-    expect(within(list).getByRole('option', { name: /Kyoto/ })).toHaveClass('pa-mi', 'on');
+    // The chosen value carries data-checked (its check mark), never a pinned highlight class.
+    const kyoto = within(list).getByRole('option', { name: /Kyoto/ });
+    expect(kyoto).toHaveClass('pa-mi');
+    expect(kyoto).not.toHaveClass('on');
+    expect(kyoto).toHaveAttribute('data-checked', 'true');
   });
 
   it('filters while typing and shows the empty message', async () => {
@@ -78,5 +83,34 @@ describe('Combobox', () => {
     const input = screen.getByRole('combobox', { name: 'Where' });
     expect(input.closest('.pa-igroup')).toHaveClass('groove');
     expect(input.closest('.pa-combobox')).toHaveClass('outer');
+  });
+});
+
+describe('Combobox highlight and motion', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('the highlight follows the pointer; the chosen value keeps only its check', () => {
+    render(<Combobox label="Location" options={places} defaultValue="kyoto" defaultOpen />);
+    const kyoto = screen.getByRole('option', { name: /Kyoto/ });
+    const skye = screen.getByRole('option', { name: /Isle of Skye/ });
+    fireEvent.pointerMove(skye);
+    expect(skye).toHaveAttribute('data-selected', 'true');
+    expect(kyoto).toHaveAttribute('data-selected', 'false');
+    expect(kyoto).toHaveAttribute('data-checked', 'true');
+    expect(kyoto).not.toHaveClass('on');
+  });
+
+  it('slides the list up on close: data-state="closed" until the animation ends', async () => {
+    mockSlideAnimations();
+    const user = userEvent.setup();
+    render(<Combobox label="Location" options={places} />);
+    await user.click(screen.getByRole('combobox'));
+    const sheet = screen.getByRole('listbox').closest('.pa-pop') as HTMLElement;
+    expect(sheet).toHaveClass('pa-slide');
+    expect(sheet).toHaveAttribute('data-state', 'open');
+    await user.keyboard('{Escape}');
+    expect(sheet).toHaveAttribute('data-state', 'closed');
+    act(() => endSlide(sheet));
+    expect(sheet).not.toBeInTheDocument();
   });
 });

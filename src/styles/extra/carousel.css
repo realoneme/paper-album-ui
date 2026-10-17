@@ -7,3 +7,7 @@
 .pa-carousel-controls { display: flex; align-items: center; justify-content: center; gap: var(--space-3); }
 .pa-carousel-controls .pa-dots { flex: 0 1 auto; flex-wrap: wrap; }
 @media (prefers-reduced-motion: reduce) { .pa-carousel .slide { transition: none; } }
+/* Counter: "3 / 12" in a small groove; tabular numbers so the pill keeps its width while paging. */
+.pa-carousel-counter { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; min-width: 76px; padding: 0 var(--space-3); border-radius: var(--radius-full); background: var(--muted); box-shadow: var(--shadow-sunken); color: var(--card-foreground); font: 500 13px var(--font-sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pa-carousel-counter b { font-weight: 700; }
+.pa-carousel-counter .sep { color: var(--muted-foreground); padding: 0 2px; }

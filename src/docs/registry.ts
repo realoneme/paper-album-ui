@@ -10,6 +10,7 @@ export interface Entry {
   title: string;
   group: DemoGroup;
   height?: number;
+  sortKey: string;
   Demo: DemoModule['default'];
   doc: string;
 }
@@ -24,10 +25,11 @@ export const entries: Entry[] = Object.values(demoModules)
     title: titleOf(m.meta.name),
     group: m.meta.group,
     height: m.meta.height,
+    sortKey: m.meta.sortKey ?? m.meta.name,
     Demo: m.default,
     doc: content(m.meta.name).replace(/^# .*\n+/, ''),
   }))
-  .sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group) || a.name.localeCompare(b.name));
+  .sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group) || a.sortKey.localeCompare(b.sortKey));
 
 export const groups = GROUP_ORDER.map((g) => ({ name: g, items: entries.filter((e) => e.group === g) })).filter((g) => g.items.length);
 

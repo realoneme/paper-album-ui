@@ -1,7 +1,7 @@
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import type { DemoMeta } from '../types';
 
-export const meta: DemoMeta = { name: 'NativeSelect', group: 'Forms', height: 130 };
+export const meta: DemoMeta = { name: 'NativeSelect', group: 'Forms', height: 130, sortKey: 'Select 2' };
 
 export default function NativeSelectDemo() {
   return (

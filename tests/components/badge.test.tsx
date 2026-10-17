@@ -19,6 +19,22 @@ describe('Badge', () => {
     expect(badgeVariants({ variant })).toBe(`pa-badge pa-badge-${variant}`);
   });
 
+  it.each([
+    ['sm', 'pa-badge-sm'],
+    ['xs', 'pa-badge-xs'],
+  ] as const)('applies the %s size class', (size, cls) => {
+    render(<Badge size={size} variant="warning">Tag</Badge>);
+    expect(screen.getByText('Tag')).toHaveClass('pa-badge', 'pa-badge-warning', cls);
+    expect(badgeVariants({ variant: 'warning', size })).toBe(`pa-badge pa-badge-warning ${cls}`);
+  });
+
+  it('adds no size class at the default size', () => {
+    render(<Badge size="default">Tag</Badge>);
+    const badge = screen.getByText('Tag');
+    expect(badge).not.toHaveClass('pa-badge-sm');
+    expect(badge).not.toHaveClass('pa-badge-xs');
+  });
+
   it('renders its child with asChild', () => {
     render(<Badge asChild variant="outline"><a href="#film">Film</a></Badge>);
     expect(screen.getByRole('link', { name: 'Film' })).toHaveClass('pa-badge', 'pa-badge-outline');
@@ -31,5 +47,12 @@ describe('Badge', () => {
       expect(badge.querySelector('svg[aria-hidden="true"]')).not.toBeNull();
     }
     expect(screen.getByText('Featured')).toHaveClass('pa-badge-seal');
+  });
+
+  it('demo shows all three sizes', () => {
+    const { container } = render(<BadgeDemo />);
+    expect(container.querySelectorAll('.pa-badge-sm')).toHaveLength(4);
+    expect(container.querySelectorAll('.pa-badge-xs')).toHaveLength(4);
+    expect(container.querySelector('[data-size="xs"] .pa-badge-warning')).toHaveTextContent('In review');
   });
 });

@@ -1,3 +1,4 @@
+import '@/styles/extra/slide-down.css';
 import '@/styles/extra/select.css';
 import * as React from 'react';
 import { Select as SelectPrimitive } from 'radix-ui';
@@ -27,13 +28,13 @@ SelectTrigger.displayName = 'SelectTrigger';
 
 export type SelectContentProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>;
 
-/** The top sheet holding the options. Positioned under the trigger (`position="popper"`) by default. */
+/** The top sheet holding the options. Positioned under the trigger (`position="popper"`) by default; slides down on open. */
 export const SelectContent = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Content>, SelectContentProps>(
   ({ className, children, position = 'popper', sideOffset = 8, ...props }, ref) => (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         ref={ref}
-        className={cn('pa-pop pa-menu pa-select-content', className)}
+        className={cn('pa-pop pa-menu pa-select-content pa-slide', className)}
         position={position}
         sideOffset={position === 'popper' ? sideOffset : undefined}
         {...props}

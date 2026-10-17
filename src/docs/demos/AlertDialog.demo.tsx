@@ -22,7 +22,8 @@ const CONSEQUENCE = '“Winter in Hokkaido” and its 24 photos will be removed 
 
 /**
  * A Radix alert dialog is always modal (focus trap, scroll lock), so the stage starts with a static
- * picture of the open dialog, drawn with the same classes. The trigger opens the real one in the stage.
+ * picture of the open dialog, drawn with the same classes. The trigger opens the real one in the stage,
+ * growing it out of the button (and shrinking it back on close).
  */
 export default function AlertDialogDemo() {
   const [stage, setStage] = useStage();

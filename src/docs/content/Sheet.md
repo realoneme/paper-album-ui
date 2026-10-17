@@ -18,3 +18,17 @@ A panel that slides from an edge, showing three page edges on its leading side.
   </SheetContent>
 </Sheet>
 ```
+
+## Motion
+
+- The sheet slides in from its `side`, runs 8px past its resting place and springs back (`--ease-spring`, about 440ms); it slides straight out on close (`--dur-base`, `--ease-in-paper`) and the backdrop fades with it. Radix keeps it mounted until the exit keyframe ends. Reduced motion: a fade only.
+
+```tsx
+<Sheet>
+  <SheetTrigger asChild><Button variant="secondary">Filters</Button></SheetTrigger>
+  {/* Slides down from the top edge with a slight overshoot. */}
+  <SheetContent side="top">
+    <SheetHeader><SheetTitle>Filters</SheetTitle></SheetHeader>
+  </SheetContent>
+</Sheet>
+```

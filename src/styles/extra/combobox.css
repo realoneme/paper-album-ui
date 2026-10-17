@@ -1,12 +1,17 @@
 .pa-combobox { display: flex; flex-direction: column; gap: var(--space-2); width: 100%; }
-.pa-combobox .pa-igroup:focus-within { outline: 2px solid var(--ring); outline-offset: 2px; }
+.pa-combobox .pa-igroup:focus-within { outline: none; }
 .pa-combobox .pa-igroup input { min-height: 44px; outline: none; }
 .pa-combobox .pa-igroup input::placeholder { color: var(--muted-foreground); }
 .pa-combobox-content { width: var(--radix-popover-trigger-width); max-height: min(320px, var(--radix-popover-content-available-height)); overflow-y: auto; z-index: 50; outline: none; }
-.pa-combobox-content .pa-mi { user-select: none; }
+.pa-combobox-content { --pa-slide-origin: var(--radix-popover-content-transform-origin); }
+/* cmdk wraps the options in a sizer div; give it the same 2px gap as other menus. */
+.pa-combobox-content [cmdk-list-sizer] { display: flex; flex-direction: column; gap: 2px; }
+/* One source of truth: cmdk marks the option under the pointer or the arrow keys [data-selected="true"]. The chosen
+   value only shows its check ([data-checked]); :hover never paints, so nothing competes with the moving highlight. */
+.pa-combobox-content .pa-mi { position: relative; user-select: none; transition: none; }
+.pa-combobox-content .pa-mi::after { content: ""; position: absolute; inset: -1px 0; }
+.pa-combobox-content .pa-mi:hover { background: transparent; }
 .pa-combobox-content .pa-mi[data-selected="true"] { background: var(--accent); color: var(--accent-foreground); outline: 2px solid var(--ring-paper); outline-offset: -2px; }
-.pa-combobox-content .pa-mi.on { outline: none; }
-.pa-combobox-content .pa-mi.on[data-selected="true"] { outline: 2px solid var(--ring-paper); outline-offset: -2px; }
 .pa-combobox-content .pa-mi[data-disabled="true"] { background: transparent; color: var(--muted-foreground); cursor: default; outline: none; }
 .pa-combobox-content .pa-mi .pa-combobox-check { flex: none; }
 .pa-combobox-content .pa-mi .pa-combobox-check.off { visibility: hidden; }

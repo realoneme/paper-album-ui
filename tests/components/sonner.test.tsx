@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Toaster, ToastPreview, toast } from '@/components/ui/sonner';
+import { Toaster, ToastPreview, toast, toasterPositions } from '@/components/ui/sonner';
+import SonnerDemo from '@/docs/demos/Sonner.demo';
 
 afterEach(() => {
   act(() => {
@@ -51,5 +52,45 @@ describe('Sonner', () => {
     expect(alert).toHaveClass('pa-toast', 'error');
     expect(alert).toHaveTextContent('Failed');
     expect(alert.querySelector('.pa-toast-icon')).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('defaults to bottom right', async () => {
+    render(<Toaster />);
+    act(() => {
+      toast('Saved');
+    });
+    const list = (await screen.findByText('Saved')).closest('[data-sonner-toaster]');
+    expect(list).toHaveAttribute('data-y-position', 'bottom');
+    expect(list).toHaveAttribute('data-x-position', 'right');
+    expect(list).toHaveClass('pa-toaster');
+  });
+
+  it.each(toasterPositions)('places the stack at %s', async (position) => {
+    render(<Toaster position={position} />);
+    act(() => {
+      toast.info(`At ${position}`);
+    });
+    const list = (await screen.findByText(`At ${position}`)).closest('[data-sonner-toaster]');
+    const [y, x] = position.split('-');
+    expect(list).toHaveAttribute('data-y-position', y);
+    expect(list).toHaveAttribute('data-x-position', x);
+  });
+
+  it('demo picker moves where the real toasts appear', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<SonnerDemo />);
+    // The live Toaster is portalled to the page, outside the demo stage.
+    const picker = screen.getByRole('combobox', { name: 'Toast position' });
+    expect(picker).toHaveValue('bottom-right');
+    await user.selectOptions(picker, 'top-left');
+    await user.click(screen.getByRole('button', { name: 'Show info' }));
+    const list = (await screen.findByText('Prints ship on Monday')).closest('[data-sonner-toaster]');
+    expect(list).toHaveAttribute('data-y-position', 'top');
+    expect(list).toHaveAttribute('data-x-position', 'left');
+    expect(container.contains(list)).toBe(false);
+    await user.selectOptions(picker, 'bottom-center');
+    const moved = screen.getByText('Prints ship on Monday').closest('[data-sonner-toaster]');
+    expect(moved).toHaveAttribute('data-y-position', 'bottom');
+    expect(moved).toHaveAttribute('data-x-position', 'center');
   });
 });

@@ -31,14 +31,34 @@ export const toastIcons: Record<ToastTone, React.ReactNode> = {
   info: <Info className="pa-i" aria-hidden />,
 };
 
-export type ToasterProps = SonnerProps;
+/** Where the stack sits on screen. */
+export type ToasterPosition = NonNullable<SonnerProps['position']>;
 
-/** Mount once near the root; call `toast.success(...)`, `toast.error(...)` etc. anywhere. */
-export const Toaster = React.forwardRef<HTMLElement, ToasterProps>(({ toastOptions, icons, className, ...props }, ref) => (
+/** All six positions, in reading order (top row, then bottom row). */
+export const toasterPositions: readonly ToasterPosition[] = [
+  'top-left',
+  'top-center',
+  'top-right',
+  'bottom-left',
+  'bottom-center',
+  'bottom-right',
+] as const;
+
+export interface ToasterProps extends SonnerProps {
+  /** Corner or edge the toasts stack from. Defaults to `bottom-right`, away from primary actions. */
+  position?: ToasterPosition;
+}
+
+/**
+ * Mount once near the root (it is `position: fixed`); call `toast.success(...)`, `toast.error(...)` etc.
+ * anywhere. `position` picks one of six spots; `duration` (ms, default 4000) applies to every toast.
+ */
+export const Toaster = React.forwardRef<HTMLElement, ToasterProps>(
+  ({ toastOptions, icons, className, position = 'bottom-right', ...props }, ref) => (
     <Sonner
       ref={ref}
       className={cn('pa-toaster', className)}
-      position="bottom-right"
+      position={position}
       gap={14}
       icons={{
         ...toastIcons,
@@ -53,7 +73,8 @@ export const Toaster = React.forwardRef<HTMLElement, ToasterProps>(({ toastOptio
       }}
       {...props}
     />
-));
+  ),
+);
 Toaster.displayName = 'Toaster';
 
 export interface ToastPreviewProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {

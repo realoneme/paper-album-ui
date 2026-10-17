@@ -1,3 +1,21 @@
 /* Menubar: keyboard highlight on a top-level trigger matches its hover. */
 .pa-menubar-trigger[data-highlighted]:not([data-state="open"]), .pa-menubar-trigger:hover:not([data-state="open"]) { background: var(--accent); color: var(--accent-foreground); }
-.pa-menubar { max-width: 100%; flex-wrap: wrap; }
+.pa-menubar { position: relative; isolation: isolate; max-width: 100%; flex-wrap: wrap; }
+
+/*
+ * The paper slip: one pressed-in strip that slides to the open menu's trigger (transform + size) and follows hover
+ * and the arrow keys. Hidden while no menu is open; it appears in place without travelling (data-instant).
+ * The open trigger itself stays transparent so the slip is the only pressed shape.
+ */
+.pa-menubar .pa-menubar-trigger { position: relative; }
+.pa-menubar .pa-menubar-trigger[aria-expanded="true"] { background: transparent; box-shadow: none; }
+.pa-menubar-slip {
+  position: absolute; left: 0; top: 0; z-index: -1; width: 0; height: 0;
+  border-radius: 5px; background: var(--muted); box-shadow: var(--shadow-sunken);
+  pointer-events: none; opacity: 0;
+  transition: transform var(--dur-base) var(--ease-paper), width var(--dur-base) var(--ease-paper), height var(--dur-base) var(--ease-paper), opacity var(--dur-fast) var(--ease-paper);
+}
+.pa-menubar-slip[data-state="open"] { opacity: 1; }
+.pa-menubar-slip[data-instant] { transition: none; }
+@media (prefers-reduced-motion: reduce) { .pa-menubar-slip { transition: none; } }
+.pa-menu[data-menubar-switching][data-state="closed"] { animation: none; }

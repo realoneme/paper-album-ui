@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import PopoverDemo from '@/docs/demos/Popover.demo';
@@ -15,6 +15,8 @@ function Example() {
     </Popover>
   );
 }
+
+afterEach(() => vi.restoreAllMocks());
 
 describe('Popover', () => {
   it('toggles from the trigger and exposes dialog semantics', async () => {
@@ -50,5 +52,34 @@ describe('Popover', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Share album' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('keeps closed content mounted with data-state="closed" while the exit animation runs', async () => {
+    const real = window.getComputedStyle.bind(window);
+    vi.spyOn(window, 'getComputedStyle').mockImplementation((el: Element, pseudo?: string | null) => {
+      const style = real(el, pseudo);
+      return new Proxy(style, {
+        get(target, prop) {
+          if (prop === 'animationName' && el instanceof HTMLElement && el.classList.contains('pa-popover')) {
+            return el.dataset.state === 'closed' ? 'pa-popover-out' : 'pa-popover-in';
+          }
+          const value: unknown = Reflect.get(target, prop, target);
+          return typeof value === 'function' ? value.bind(target) : value;
+        },
+      });
+    });
+    render(<Example />);
+    await userEvent.click(screen.getByRole('button', { name: 'Share album' }));
+    const pop = screen.getByRole('dialog');
+    expect(pop).toHaveAttribute('data-state', 'open');
+    expect(pop).toHaveAttribute('data-side', 'bottom');
+    await userEvent.keyboard('{Escape}');
+    expect(pop).toHaveAttribute('data-state', 'closed');
+    const end = new Event('animationend');
+    Object.defineProperty(end, 'animationName', { value: 'pa-popover-out' });
+    act(() => {
+      pop.dispatchEvent(end);
+    });
+    expect(pop).not.toBeInTheDocument();
   });
 });

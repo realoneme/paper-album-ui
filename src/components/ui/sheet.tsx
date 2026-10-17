@@ -18,7 +18,7 @@ export type SheetPortalContainer = React.ComponentPropsWithoutRef<typeof SheetPr
 export type SheetOverlayProps = React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>;
 
 export const SheetOverlay = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Overlay>, SheetOverlayProps>(
-  ({ className, ...props }, ref) => <SheetPrimitive.Overlay ref={ref} className={cn('pa-backdrop', className)} {...props} />,
+  ({ className, ...props }, ref) => <SheetPrimitive.Overlay ref={ref} className={cn('pa-backdrop pa-fade', className)} {...props} />,
 );
 SheetOverlay.displayName = 'SheetOverlay';
 
@@ -39,7 +39,7 @@ export interface SheetContentProps
   closeLabel?: string;
 }
 
-/** The sheet itself; `side` picks the edge (right by default). Needs a SheetTitle. */
+/** The sheet itself; `side` picks the edge (right by default). Slides in from that edge with a slight overshoot and back out on close. Needs a SheetTitle. */
 export const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Content>, SheetContentProps>(
   ({ className, children, side, container, showCloseButton = true, closeLabel = 'Close', ...props }, ref) => (
     <SheetPortal container={container}>

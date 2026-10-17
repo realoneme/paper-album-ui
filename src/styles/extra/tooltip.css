@@ -3,3 +3,19 @@
 .pa-tooltip[data-side="bottom"]::after { bottom: auto; top: -5px; }
 .pa-tooltip[data-side="left"]::after { left: auto; right: -5px; bottom: auto; top: 50%; margin: -5px 0 0; }
 .pa-tooltip[data-side="right"]::after { left: -5px; bottom: auto; top: 50%; margin: -5px 0 0; }
+
+/* Motion: a fast pop (110ms) from the trigger side, scaling and sliding 4px; out in 80ms. */
+.pa-tooltip[data-side] { --tip-from: translateY(4px); transform-origin: var(--radix-tooltip-content-transform-origin); }
+.pa-tooltip[data-side="bottom"] { --tip-from: translateY(-4px); }
+.pa-tooltip[data-side="left"] { --tip-from: translateX(4px); }
+.pa-tooltip[data-side="right"] { --tip-from: translateX(-4px); }
+.pa-tooltip[data-state="delayed-open"], .pa-tooltip[data-state="instant-open"] { animation: pa-tip-in 110ms var(--ease-paper) both; }
+.pa-tooltip[data-state="closed"] { animation: pa-tip-out var(--dur-instant) var(--ease-in-paper) both; }
+@keyframes pa-tip-in { from { opacity: 0; transform: var(--tip-from) scale(0.92); } to { opacity: 1; transform: none; } }
+@keyframes pa-tip-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: var(--tip-from) scale(0.96); } }
+@media (prefers-reduced-motion: reduce) {
+  .pa-tooltip[data-state="delayed-open"], .pa-tooltip[data-state="instant-open"] { animation: pa-tip-fade-in var(--dur-instant) ease both !important; }
+  .pa-tooltip[data-state="closed"] { animation: pa-tip-fade-out var(--dur-instant) ease both !important; }
+}
+@keyframes pa-tip-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pa-tip-fade-out { from { opacity: 1; } to { opacity: 0; } }

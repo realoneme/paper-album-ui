@@ -1,3 +1,4 @@
+import '@/styles/extra/slide-down.css';
 import '@/styles/extra/combobox.css';
 import * as React from 'react';
 import { Popover as PopoverPrimitive } from 'radix-ui';
@@ -132,7 +133,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           </PopoverPrimitive.Anchor>
           <PopoverPrimitive.Portal>
             <PopoverPrimitive.Content
-              className="pa-pop pa-menu pa-combobox-content"
+              className="pa-pop pa-menu pa-combobox-content pa-slide"
               align="start"
               sideOffset={8}
               onOpenAutoFocus={(e) => e.preventDefault()}
@@ -152,7 +153,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                       keywords={[option.label, option.description ?? '', ...(option.keywords ?? [])]}
                       disabled={option.disabled}
                       onSelect={() => choose(option)}
-                      className={cn('pa-mi', isOn && 'on')}
+                      className="pa-mi"
                       data-checked={isOn || undefined}
                     >
                       {option.label}

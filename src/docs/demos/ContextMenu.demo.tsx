@@ -15,7 +15,8 @@ const ACTIONS = ['Set as cover', 'Move to…', 'Copy link'];
 
 /**
  * Radix opens a context menu only at the pointer of a real right-click, so the stage starts with a
- * static picture of the open menu (same classes). Right-click or long-press the area for the real one.
+ * static picture of the open menu (same classes; it highlights on hover like the real one, nothing is pinned).
+ * Right-click or long-press the area for the real one.
  */
 export default function ContextMenuDemo() {
   const [stage, setStage] = useStage();
@@ -28,7 +29,7 @@ export default function ContextMenuDemo() {
           {preview ? (
             <div className="pa-pop pa-menu" aria-hidden="true" data-testid="context-preview" style={{ width: 200, marginLeft: 40 }}>
               <div className="pa-mi">Set as cover</div>
-              <div className="pa-mi on">Move to…</div>
+              <div className="pa-mi">Move to…</div>
               <div className="pa-mi">Copy link</div>
               <hr className="pa-sep" />
               <div className="pa-mi danger">Remove</div>

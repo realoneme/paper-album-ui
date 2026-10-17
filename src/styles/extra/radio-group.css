@@ -1,2 +1,26 @@
 .pa-radio-group { gap: 10px; }
+.pa-radio {
+  transition:
+    background-color var(--dur-base) var(--ease-paper),
+    box-shadow var(--dur-base) var(--ease-paper);
+}
 .pa-radio[disabled] { opacity: var(--opacity-disabled); cursor: default; }
+
+/* The fill is a mounted Radix Indicator (replaces the stylesheet's ::after dot). */
+.pa-radio .dot::after { content: none; }
+.pa-radio .pa-radio-fill {
+  display: block; width: 12px; height: 12px; border-radius: 50%; background: var(--primary);
+  opacity: 0; transform: scale(0);
+  transition:
+    transform var(--dur-fast) var(--ease-in-paper),
+    opacity var(--dur-fast) var(--ease-in-paper);
+}
+.pa-radio .pa-radio-fill[data-state="checked"] {
+  opacity: 1; transform: scale(1);
+  transition:
+    transform var(--dur-base) var(--ease-spring),
+    opacity var(--dur-instant) var(--ease-paper);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pa-radio, .pa-radio .pa-radio-fill, .pa-radio .pa-radio-fill[data-state="checked"] { transition: none; }
+}

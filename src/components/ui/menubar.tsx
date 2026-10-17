@@ -1,3 +1,4 @@
+import '@/styles/extra/slide-down.css';
 import '@/styles/extra/dropdown-menu.css';
 import '@/styles/extra/menubar.css';
 import * as React from 'react';
@@ -8,14 +9,81 @@ import { cn } from '@/lib/cn';
 export const MenubarMenu = MenubarPrimitive.Menu;
 export const MenubarGroup = MenubarPrimitive.Group;
 export const MenubarPortal = MenubarPrimitive.Portal;
-export const MenubarSub = MenubarPrimitive.Sub;
 export const MenubarRadioGroup = MenubarPrimitive.RadioGroup;
 
 export type MenubarProps = React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Root>;
 
-/** A desktop-style menu bar for editor screens. Arrow keys move between menus. Give it an aria-label. */
+/** The open menu's value ('' when none), so a menu closing because another one opened can skip its exit motion. */
+const MenubarValueContext = React.createContext('');
+
+/**
+ * A desktop-style menu bar for editor screens. Arrow keys move between menus. Give it an aria-label.
+ * A paper slip slides under the open menu's trigger and follows hover and arrow keys between menus.
+ */
 export const Menubar = React.forwardRef<React.ElementRef<typeof MenubarPrimitive.Root>, MenubarProps>(
-  ({ className, ...props }, ref) => <MenubarPrimitive.Root ref={ref} className={cn('pa-menubar', className)} {...props} />,
+  ({ className, children, value: valueProp, defaultValue = '', onValueChange, ...props }, ref) => {
+    const [inner, setInner] = React.useState(defaultValue);
+    const value = valueProp ?? inner;
+    const handleValueChange = React.useCallback(
+      (next: string) => {
+        if (valueProp === undefined) setInner(next);
+        onValueChange?.(next);
+      },
+      [valueProp, onValueChange],
+    );
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
+    const slipRef = React.useRef<HTMLSpanElement>(null);
+    const setRefs = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        rootRef.current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
+      },
+      [ref],
+    );
+    // Whether the slip is showing; it jumps (no transition) when it first appears.
+    const shown = React.useRef(false);
+
+    React.useLayoutEffect(() => {
+      const root = rootRef.current;
+      const slip = slipRef.current;
+      if (!root || !slip) return;
+      const place = () => {
+        const trigger = value ? root.querySelector<HTMLElement>('.pa-menubar-trigger[data-state="open"]') : null;
+        if (!trigger) {
+          slip.dataset.state = 'closed';
+          shown.current = false;
+          return;
+        }
+        const box = root.getBoundingClientRect();
+        const t = trigger.getBoundingClientRect();
+        slip.toggleAttribute('data-instant', !shown.current);
+        slip.style.width = `${t.width}px`;
+        slip.style.height = `${t.height}px`;
+        slip.style.transform = `translate(${t.left - box.left - root.clientLeft}px, ${t.top - box.top - root.clientTop}px)`;
+        slip.dataset.state = 'open';
+        shown.current = true;
+      };
+      place();
+      // Triggers can wrap onto a new row when the bar narrows.
+      const observer = new ResizeObserver(place);
+      observer.observe(root);
+      return () => observer.disconnect();
+    }, [value]);
+
+    return (
+      <MenubarPrimitive.Root
+        ref={setRefs}
+        className={cn('pa-menubar', className)}
+        value={value}
+        onValueChange={handleValueChange}
+        {...props}
+      >
+        <span ref={slipRef} className="pa-menubar-slip" data-state="closed" aria-hidden="true" />
+        <MenubarValueContext.Provider value={value}>{children}</MenubarValueContext.Provider>
+      </MenubarPrimitive.Root>
+    );
+  },
 );
 Menubar.displayName = 'Menubar';
 
@@ -43,14 +111,18 @@ export const MenubarContent = React.forwardRef<React.ElementRef<typeof MenubarPr
   ({ className, container, align = 'start', sideOffset = 8, alignOffset = -4, onOpenAutoFocus, ...props }, ref) => {
     // Radix supports this handler on every menu content but only types it for sub-menus.
     const focusProps: object = { onOpenAutoFocus };
+    // Switching menus (hover or arrows) swaps the sheets at once: a sheet still sliding out would see focus enter
+    // the new one as an outside interaction and close the whole bar. Closing the bar plays the slide-up.
+    const switching = React.useContext(MenubarValueContext) !== '';
     return (
       <MenubarPrimitive.Portal container={container}>
         <MenubarPrimitive.Content
           ref={ref}
+          data-menubar-switching={switching ? '' : undefined}
           align={align}
           sideOffset={sideOffset}
           alignOffset={alignOffset}
-          className={cn('pa-pop pa-menu', className)}
+          className={cn('pa-pop pa-menu pa-slide', className)}
           {...focusProps}
           {...props}
         />
@@ -141,20 +213,59 @@ export function MenubarShortcut({ className, ...props }: MenubarShortcutProps) {
 }
 MenubarShortcut.displayName = 'MenubarShortcut';
 
+export type MenubarSubProps = React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Sub>;
+
+const SubOpenContext = React.createContext<{ open: () => void } | null>(null);
+
+/** A submenu. Controlled (`open` + `onOpenChange`) or not (`defaultOpen`); its trigger opens it on hover without delay. */
+export function MenubarSub({ open: openProp, defaultOpen = false, onOpenChange, ...props }: MenubarSubProps) {
+  const [inner, setInner] = React.useState(defaultOpen);
+  const open = openProp ?? inner;
+  const setOpen = React.useCallback(
+    (next: boolean) => {
+      if (openProp === undefined) setInner(next);
+      onOpenChange?.(next);
+    },
+    [openProp, onOpenChange],
+  );
+  const sub = React.useMemo(() => ({ open: () => !open && setOpen(true) }), [open, setOpen]);
+  return (
+    <SubOpenContext.Provider value={sub}>
+      <MenubarPrimitive.Sub open={open} onOpenChange={setOpen} {...props} />
+    </SubOpenContext.Provider>
+  );
+}
+MenubarSub.displayName = 'MenubarSub';
+
 export interface MenubarSubTriggerProps extends React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubTrigger> {
   inset?: boolean;
 }
 
-/** Opens a submenu (hover, click or the right arrow key). */
+/** Opens a submenu: at once on hover (Radix alone waits 100ms), or on click or the right arrow key. */
 export const MenubarSubTrigger = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.SubTrigger>,
   MenubarSubTriggerProps
->(({ className, inset, children, ...props }, ref) => (
-  <MenubarPrimitive.SubTrigger ref={ref} className={cn('pa-mi', inset && 'inset', className)} {...props}>
-    {children}
-    <span className="end"><ChevronRight className="pa-i sm" aria-hidden /></span>
-  </MenubarPrimitive.SubTrigger>
-));
+>(({ className, inset, children, onPointerMove, ...props }, ref) => {
+  const sub = React.useContext(SubOpenContext);
+  return (
+    <MenubarPrimitive.SubTrigger
+      ref={ref}
+      className={cn('pa-mi', inset && 'inset', className)}
+      onPointerMove={(event) => {
+        onPointerMove?.(event);
+        if (event.pointerType !== 'mouse' || props.disabled || !sub) return;
+        // Radix handles the move after us and cancels it while the pointer heads for an open submenu.
+        queueMicrotask(() => {
+          if (!event.defaultPrevented) sub.open();
+        });
+      }}
+      {...props}
+    >
+      {children}
+      <span className="end"><ChevronRight className="pa-i sm" aria-hidden /></span>
+    </MenubarPrimitive.SubTrigger>
+  );
+});
 MenubarSubTrigger.displayName = 'MenubarSubTrigger';
 
 export interface MenubarSubContentProps extends React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubContent> {
@@ -167,7 +278,7 @@ export const MenubarSubContent = React.forwardRef<
   MenubarSubContentProps
 >(({ className, container, sideOffset = 6, ...props }, ref) => (
   <MenubarPrimitive.Portal container={container}>
-    <MenubarPrimitive.SubContent ref={ref} sideOffset={sideOffset} className={cn('pa-pop pa-menu', className)} {...props} />
+    <MenubarPrimitive.SubContent ref={ref} sideOffset={sideOffset} className={cn('pa-pop pa-menu pa-slide', className)} {...props} />
   </MenubarPrimitive.Portal>
 ));
 MenubarSubContent.displayName = 'MenubarSubContent';

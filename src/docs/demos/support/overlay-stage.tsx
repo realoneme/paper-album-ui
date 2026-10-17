@@ -29,6 +29,23 @@ export function useDemoOpen(initial = true) {
 }
 
 /**
+ * The same for a Menubar that starts with one menu open: `value` is the open menu ('' for none), and focus only
+ * moves into a menu once the reader has opened one. Highlight is left entirely to Radix (no item starts pinned).
+ */
+export function useDemoValue(initial: string) {
+  const [value, setValue] = React.useState(initial);
+  const userOpened = React.useRef(false);
+  const onValueChange = React.useCallback((next: string) => {
+    if (next) userOpened.current = true;
+    setValue(next);
+  }, []);
+  const onOpenAutoFocus = React.useCallback((event: Event) => {
+    if (!userOpened.current) event.preventDefault();
+  }, []);
+  return { value, onValueChange, onOpenAutoFocus };
+}
+
+/**
  * Dismiss guards for non-modal demo overlays: clicks and focus elsewhere on the docs page do not close
  * them (inside the stage they behave normally), and Escape only closes the overlay when focus is inside
  * its own stage.

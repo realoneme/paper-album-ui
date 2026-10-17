@@ -43,4 +43,17 @@ describe('Tooltip', () => {
     await userEvent.hover(screen.getByRole('button', { name: 'Favorite' }));
     expect(await screen.findByRole('tooltip')).toHaveTextContent('Add to favorites');
   });
+
+  it('opens immediately on hover by default (no delay)', async () => {
+    render(
+      <Tooltip>
+        <TooltipTrigger aria-label="Share">S</TooltipTrigger>
+        <TooltipContent>Copy share link</TooltipContent>
+      </Tooltip>,
+    );
+    await userEvent.hover(screen.getByRole('button', { name: 'Share' }));
+    // Radix's own default is 700ms; ours is 0, so it is there within a tick.
+    expect(await screen.findByRole('tooltip', {}, { timeout: 50 })).toHaveTextContent('Copy share link');
+    expect(document.querySelector('.pa-tooltip')).toHaveAttribute('data-state', 'delayed-open');
+  });
 });

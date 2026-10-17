@@ -1,5 +1,37 @@
-/* Radix Checkbox: one indicator, two glyphs; show the dash only when indeterminate. */
-.pa-check .pa-check-indicator { display: inline-flex; }
-.pa-check[data-state="indeterminate"] .pa-check-tick,
-.pa-check:not([data-state="indeterminate"]) .pa-check-dash { display: none; }
+/* Radix Checkbox: one always-mounted indicator, two stacked glyphs drawn with stroke dashes. */
+.pa-check .box {
+  transition:
+    background-color var(--dur-fast) var(--ease-paper),
+    box-shadow var(--dur-fast) var(--ease-paper);
+}
+.pa-check .box[data-pop="a"] { animation: pa-check-pop-a var(--dur-base) var(--ease-spring); }
+.pa-check .box[data-pop="b"] { animation: pa-check-pop-b var(--dur-base) var(--ease-spring); }
+@keyframes pa-check-pop-a { 0% { transform: scale(1); } 40% { transform: scale(0.86); } 100% { transform: scale(1); } }
+@keyframes pa-check-pop-b { 0% { transform: scale(1); } 40% { transform: scale(0.86); } 100% { transform: scale(1); } }
+
+.pa-check .pa-check-indicator { display: inline-grid; place-items: center; }
+.pa-check .pa-check-indicator > svg { grid-area: 1 / 1; }
+
+/* Hidden glyph: fully dashed away, then made invisible once the undraw has finished. */
+.pa-check .box .pa-check-indicator svg.pa-i { opacity: 0; transition: opacity 0s linear var(--dur-base); }
+.pa-check .box .pa-check-indicator svg.pa-i path {
+  transition: stroke-dashoffset var(--dur-fast) var(--ease-in-paper);
+}
+.pa-check .pa-check-tick path { stroke-dasharray: 24; stroke-dashoffset: 24; }
+.pa-check .pa-check-dash path { stroke-dasharray: 16; stroke-dashoffset: 16; }
+
+/* Shown glyph: visible at once, drawn in after the fill starts. */
+.pa-check[data-state="checked"] .box .pa-check-indicator svg.pa-check-tick,
+.pa-check[data-state="indeterminate"] .box .pa-check-indicator svg.pa-check-dash { opacity: 1; transition: none; }
+.pa-check[data-state="checked"] .box .pa-check-indicator svg.pa-check-tick path,
+.pa-check[data-state="indeterminate"] .box .pa-check-indicator svg.pa-check-dash path {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--dur-base) var(--ease-paper) var(--dur-instant);
+}
+
 .pa-check[disabled] { opacity: var(--opacity-disabled); cursor: default; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-check .box, .pa-check .box .pa-check-indicator svg.pa-i, .pa-check .box .pa-check-indicator svg.pa-i path { transition: none !important; }
+  .pa-check .box[data-pop] { animation: none; }
+}

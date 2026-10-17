@@ -1,5 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
+import { endSlide, mockSlideAnimations, readCss } from './support/slide-motion';
 import userEvent from '@testing-library/user-event';
 import { DatePicker, DateRangePicker, formatDate, formatDateRange } from '@/components/ui/date-picker';
 import DatePickerDemo from '@/docs/demos/DatePicker.demo';
@@ -66,5 +67,30 @@ describe('DatePicker', () => {
     render(<DatePickerDemo />);
     await user.click(screen.getByRole('button', { name: /October 27th, 2026/ }));
     expect(screen.getByText('7 nights')).toBeInTheDocument();
+  });
+});
+
+describe('DatePicker motion', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it.each([
+    ['DatePicker', DatePicker, 'Choose a date'],
+    ['DateRangePicker', DateRangePicker, 'Choose dates'],
+  ] as const)('%s slides its popover up on close: data-state="closed" until the animation ends', async (_, Picker, dialog) => {
+    mockSlideAnimations();
+    const user = userEvent.setup();
+    render(<Picker aria-label="When" defaultMonth={oct} today={today} />);
+    await user.click(screen.getByRole('button', { name: 'When' }));
+    const pop = screen.getByRole('dialog', { name: dialog });
+    expect(pop).toHaveClass('pa-date-pop', 'pa-slide');
+    expect(pop).toHaveAttribute('data-state', 'open');
+    await user.keyboard('{Escape}');
+    expect(pop).toHaveAttribute('data-state', 'closed');
+    act(() => endSlide(pop));
+    expect(pop).not.toBeInTheDocument();
+  });
+
+  it('unfolds from the trigger using the Radix popover origin', () => {
+    expect(readCss('date-picker')).toContain('--pa-slide-origin: var(--radix-popover-content-transform-origin)');
   });
 });

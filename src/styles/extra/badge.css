@@ -1,0 +1,5 @@
+/* Badge sizes: default 28px pill; sm 22px; xs 18px slim pill for dense rows and counts. */
+.pa-badge.pa-badge-sm { height: 22px; gap: var(--space-1); padding: 0 var(--space-2); font-size: 12px; line-height: 1; }
+.pa-badge.pa-badge-sm svg.pa-i { width: 12px; height: 12px; stroke-width: 2; }
+.pa-badge.pa-badge-xs { height: 18px; gap: 3px; padding: 0 6px; font-size: 11px; line-height: 1; letter-spacing: 0.01em; }
+.pa-badge.pa-badge-xs svg.pa-i { width: 10px; height: 10px; stroke-width: 2.2; }

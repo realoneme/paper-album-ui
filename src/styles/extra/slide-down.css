@@ -1,0 +1,37 @@
+/*
+ * Slide-down motion for every dropdown surface (Dropdown Menu, Context Menu, Menubar and their submenus, Select,
+ * Combobox, Date Picker). The sheet unfolds from its trigger: it starts 6px back toward the trigger, slightly
+ * folded (scale .96 on the opening axis) and clipped at its far edge, then settles. Radix sets data-side, the
+ * transform-origin variable each component maps to --pa-slide-origin, and data-state="closed" on close; Radix
+ * Presence keeps the sheet mounted until the exit animation ends.
+ */
+.pa-slide {
+  --pa-slide-x: 0px;
+  --pa-slide-y: -6px;
+  --pa-slide-scale: 1, .96;
+  /* The clip keeps 72px of bleed so the paper shadow is never cut. */
+  --pa-slide-clip: inset(-72px -72px 100% -72px);
+  transform-origin: var(--pa-slide-origin, var(--radix-popper-transform-origin, top center));
+}
+.pa-slide[data-side="top"] { --pa-slide-y: 6px; --pa-slide-clip: inset(100% -72px -72px -72px); }
+.pa-slide[data-side="right"] { --pa-slide-x: -6px; --pa-slide-y: 0px; --pa-slide-scale: .96, 1; --pa-slide-clip: inset(-72px 100% -72px -72px); }
+.pa-slide[data-side="left"] { --pa-slide-x: 6px; --pa-slide-y: 0px; --pa-slide-scale: .96, 1; --pa-slide-clip: inset(-72px -72px -72px 100%); }
+.pa-slide[data-state="open"] { animation: pa-slide-in var(--dur-base) var(--ease-paper); }
+.pa-slide[data-state="closed"] { animation: pa-slide-out var(--dur-fast) var(--ease-in-paper) forwards; pointer-events: none; }
+
+@keyframes pa-slide-in {
+  from { opacity: 0; transform: translate(var(--pa-slide-x), var(--pa-slide-y)) scale(var(--pa-slide-scale)); clip-path: var(--pa-slide-clip); }
+  to { opacity: 1; transform: none; clip-path: inset(-72px); }
+}
+@keyframes pa-slide-out {
+  from { opacity: 1; transform: none; clip-path: inset(-72px); }
+  to { opacity: 0; transform: translate(var(--pa-slide-x), var(--pa-slide-y)) scale(var(--pa-slide-scale)); clip-path: var(--pa-slide-clip); }
+}
+@keyframes pa-slide-fade-in { from { opacity: 0; } }
+@keyframes pa-slide-fade-out { to { opacity: 0; } }
+
+/* Reduced motion: no travel, only a fade. */
+@media (prefers-reduced-motion: reduce) {
+  .pa-slide[data-state="open"] { animation-name: pa-slide-fade-in; }
+  .pa-slide[data-state="closed"] { animation-name: pa-slide-fade-out; }
+}

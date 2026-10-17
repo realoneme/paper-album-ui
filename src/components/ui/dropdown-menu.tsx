@@ -1,3 +1,4 @@
+import '@/styles/extra/slide-down.css';
 import '@/styles/extra/dropdown-menu.css';
 import * as React from 'react';
 import { DropdownMenu as DropdownMenuPrimitive } from 'radix-ui';
@@ -9,7 +10,6 @@ export const DropdownMenu = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 export const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 export const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
-export const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 export const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
 export type DropdownMenuProps = React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root>;
@@ -35,7 +35,7 @@ export const DropdownMenuContent = React.forwardRef<React.ElementRef<typeof Drop
         <DropdownMenuPrimitive.Content
           ref={ref}
           sideOffset={sideOffset}
-          className={cn('pa-pop pa-menu', className)}
+          className={cn('pa-pop pa-menu pa-slide', className)}
           {...focusProps}
           {...props}
         />
@@ -126,20 +126,59 @@ export function DropdownMenuShortcut({ className, ...props }: DropdownMenuShortc
 }
 DropdownMenuShortcut.displayName = 'DropdownMenuShortcut';
 
+export type DropdownMenuSubProps = React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Sub>;
+
+const SubOpenContext = React.createContext<{ open: () => void } | null>(null);
+
+/** A submenu. Controlled (`open` + `onOpenChange`) or not (`defaultOpen`); its trigger opens it on hover without delay. */
+export function DropdownMenuSub({ open: openProp, defaultOpen = false, onOpenChange, ...props }: DropdownMenuSubProps) {
+  const [inner, setInner] = React.useState(defaultOpen);
+  const open = openProp ?? inner;
+  const setOpen = React.useCallback(
+    (next: boolean) => {
+      if (openProp === undefined) setInner(next);
+      onOpenChange?.(next);
+    },
+    [openProp, onOpenChange],
+  );
+  const sub = React.useMemo(() => ({ open: () => !open && setOpen(true) }), [open, setOpen]);
+  return (
+    <SubOpenContext.Provider value={sub}>
+      <DropdownMenuPrimitive.Sub open={open} onOpenChange={setOpen} {...props} />
+    </SubOpenContext.Provider>
+  );
+}
+DropdownMenuSub.displayName = 'DropdownMenuSub';
+
 export interface DropdownMenuSubTriggerProps extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> {
   inset?: boolean;
 }
 
-/** Opens a submenu (hover, click or the right arrow key). */
+/** Opens a submenu: at once on hover (Radix alone waits 100ms), or on click or the right arrow key. */
 export const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
   DropdownMenuSubTriggerProps
->(({ className, inset, children, ...props }, ref) => (
-  <DropdownMenuPrimitive.SubTrigger ref={ref} className={cn('pa-mi', inset && 'inset', className)} {...props}>
-    {children}
-    <span className="end"><ChevronRight className="pa-i sm" aria-hidden /></span>
-  </DropdownMenuPrimitive.SubTrigger>
-));
+>(({ className, inset, children, onPointerMove, ...props }, ref) => {
+  const sub = React.useContext(SubOpenContext);
+  return (
+    <DropdownMenuPrimitive.SubTrigger
+      ref={ref}
+      className={cn('pa-mi', inset && 'inset', className)}
+      onPointerMove={(event) => {
+        onPointerMove?.(event);
+        if (event.pointerType !== 'mouse' || props.disabled || !sub) return;
+        // Radix handles the move after us and cancels it while the pointer heads for an open submenu.
+        queueMicrotask(() => {
+          if (!event.defaultPrevented) sub.open();
+        });
+      }}
+      {...props}
+    >
+      {children}
+      <span className="end"><ChevronRight className="pa-i sm" aria-hidden /></span>
+    </DropdownMenuPrimitive.SubTrigger>
+  );
+});
 DropdownMenuSubTrigger.displayName = 'DropdownMenuSubTrigger';
 
 export interface DropdownMenuSubContentProps extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent> {
@@ -152,7 +191,7 @@ export const DropdownMenuSubContent = React.forwardRef<
   DropdownMenuSubContentProps
 >(({ className, container, sideOffset = 6, ...props }, ref) => (
   <DropdownMenuPrimitive.Portal container={container}>
-    <DropdownMenuPrimitive.SubContent ref={ref} sideOffset={sideOffset} className={cn('pa-pop pa-menu', className)} {...props} />
+    <DropdownMenuPrimitive.SubContent ref={ref} sideOffset={sideOffset} className={cn('pa-pop pa-menu pa-slide', className)} {...props} />
   </DropdownMenuPrimitive.Portal>
 ));
 DropdownMenuSubContent.displayName = 'DropdownMenuSubContent';

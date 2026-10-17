@@ -1,1 +1,20 @@
+/* Toggle motion: pressing sinks the key 2px into the paper (quick, settling ease); releasing
+   lifts it back with a slight spring. The transition on each state rule drives the move INTO it. */
+.pa-toggle {
+  transform: translateY(0);
+  transition:
+    background-color var(--dur-base) var(--ease-paper),
+    box-shadow var(--dur-base) var(--ease-paper),
+    transform var(--dur-base) var(--ease-spring);
+}
+.pa-toggle[aria-pressed="true"] {
+  transform: translateY(2px);
+  transition:
+    background-color var(--dur-fast) var(--ease-paper),
+    box-shadow var(--dur-fast) var(--ease-paper),
+    transform var(--dur-fast) var(--ease-paper);
+}
 .pa-toggle[disabled] { opacity: var(--opacity-disabled); cursor: default; }
+@media (prefers-reduced-motion: reduce) {
+  .pa-toggle, .pa-toggle[aria-pressed="true"] { transition: none; }
+}

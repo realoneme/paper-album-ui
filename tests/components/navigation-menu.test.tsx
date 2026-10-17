@@ -74,4 +74,11 @@ describe('NavigationMenu', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Prints' }));
     expect(screen.getByRole('link', { name: 'Framed editions' })).toBeInTheDocument();
   });
+
+  it('opens a panel on hover without a delay by default', async () => {
+    render(<Example />);
+    await userEvent.hover(screen.getByRole('button', { name: 'Albums' }));
+    expect(await screen.findByRole('link', { name: 'All albums' }, { timeout: 50 })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'All albums' }).closest('.pa-navmenu-content')).toHaveAttribute('data-state', 'open');
+  });
 });

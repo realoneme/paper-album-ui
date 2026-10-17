@@ -69,4 +69,13 @@ describe('Sheet', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Photo details' }));
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
+
+  it('animates with its side and a fading backdrop', async () => {
+    render(<Example side="left" />);
+    await userEvent.click(screen.getByRole('button', { name: 'Details' }));
+    const sheet = screen.getByRole('dialog');
+    expect(sheet).toHaveAttribute('data-state', 'open');
+    expect(sheet).toHaveAttribute('data-side', 'left');
+    expect(document.querySelector('.pa-backdrop')).toHaveClass('pa-fade');
+  });
 });

@@ -1,3 +1,4 @@
+import '@/styles/extra/slide-down.css';
 import '@/styles/extra/date-picker.css';
 import * as React from 'react';
 import { Popover as PopoverPrimitive } from 'radix-ui';
@@ -73,7 +74,7 @@ const PickerShell = React.forwardRef<HTMLButtonElement, PickerShellProps>(
         </PopoverPrimitive.Trigger>
         <PopoverPrimitive.Portal>
           <PopoverPrimitive.Content
-            className="pa-date-pop"
+            className="pa-date-pop pa-slide"
             side={side}
             align={align}
             sideOffset={sideOffset}

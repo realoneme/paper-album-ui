@@ -7,3 +7,37 @@
 .pa-dialog-desc { margin: 0; }
 .pa-dialog:focus { outline: none; }
 .pa-dialog:focus-visible { outline: 2px solid var(--ring-paper); outline-offset: 2px; }
+
+/* Motion. The backdrop (pa-fade) fades in and out with its sheet. */
+.pa-fade[data-state="open"] { animation: pa-dlg-fade-in var(--dur-base) var(--ease-paper) both; }
+.pa-fade[data-state="closed"] { animation: pa-dlg-fade-out var(--dur-base) var(--ease-in-paper) both; pointer-events: none; }
+
+/* Dialog and Alert Dialog (pa-grow) grow out of their trigger: useGrowFromTrigger writes the FLIP start
+   transform (--from-*) from the trigger rect and sets data-from="trigger". Without a trigger the defaults
+   below make it a scale and fade from centre. Closing runs the same transform in reverse. */
+.pa-grow { --from-x: 0px; --from-y: 0px; --from-sx: 0.92; --from-sy: 0.92; --from-o: 0; --from-radius: var(--radius-lg); }
+.pa-grow[data-from="trigger"] { --from-o: 1; }
+.pa-grow[data-state="open"] { animation: pa-dlg-grow-in var(--dur-slow) var(--ease-paper) both; }
+.pa-grow[data-state="closed"] { animation: pa-dlg-grow-out var(--dur-base) var(--ease-in-paper) both; pointer-events: none; }
+/* The title and body settle in just after the box has grown, and leave first on close. */
+.pa-grow[data-state="open"] > * { animation: pa-dlg-content-in var(--dur-base) var(--ease-paper) calc(var(--dur-slow) * 0.45) both; }
+.pa-grow[data-state="closed"] > * { animation: pa-dlg-fade-out var(--dur-instant) var(--ease-in-paper) both; }
+
+@keyframes pa-dlg-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pa-dlg-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes pa-dlg-content-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes pa-dlg-grow-in {
+  from { transform: translate(-50%, -50%) translate(var(--from-x), var(--from-y)) scale(var(--from-sx), var(--from-sy)); border-radius: var(--from-radius); opacity: var(--from-o); }
+  to { transform: translate(-50%, -50%) translate(0px, 0px) scale(1, 1); border-radius: var(--radius-lg); opacity: 1; }
+}
+@keyframes pa-dlg-grow-out {
+  from { transform: translate(-50%, -50%) translate(0px, 0px) scale(1, 1); border-radius: var(--radius-lg); opacity: 1; }
+  to { transform: translate(-50%, -50%) translate(var(--from-x), var(--from-y)) scale(var(--from-sx), var(--from-sy)); border-radius: var(--from-radius); opacity: var(--from-o); }
+}
+
+/* Reduced motion: fade only (these outrank the global 1ms override on purpose). */
+@media (prefers-reduced-motion: reduce) {
+  .pa-fade[data-state="open"], .pa-grow[data-state="open"] { animation: pa-dlg-fade-in var(--dur-fast) ease both !important; }
+  .pa-fade[data-state="closed"], .pa-grow[data-state="closed"] { animation: pa-dlg-fade-out var(--dur-fast) ease both !important; }
+  .pa-grow[data-state] > * { animation: none !important; }
+}

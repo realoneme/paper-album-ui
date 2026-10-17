@@ -5,3 +5,19 @@
 .pa-arrow-up[data-align="end"]::before { left: auto; right: 28px; }
 .pa-arrow-up[data-side="top"]::before { top: auto; bottom: -7px; }
 .pa-arrow-up[data-side="left"]::before, .pa-arrow-up[data-side="right"]::before { display: none; }
+
+/* Motion: grows from the trigger side (Radix transform origin), fading and sliding 6px off the trigger. */
+.pa-popover { --pop-from: translateY(-6px); transform-origin: var(--radix-popover-content-transform-origin); }
+.pa-popover[data-side="top"] { --pop-from: translateY(6px); }
+.pa-popover[data-side="left"] { --pop-from: translateX(6px); }
+.pa-popover[data-side="right"] { --pop-from: translateX(-6px); }
+.pa-popover[data-state="open"] { animation: pa-popover-in var(--dur-base) var(--ease-paper) both; }
+.pa-popover[data-state="closed"] { animation: pa-popover-out var(--dur-fast) var(--ease-in-paper) both; pointer-events: none; }
+@keyframes pa-popover-in { from { opacity: 0; transform: var(--pop-from) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes pa-popover-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: var(--pop-from) scale(0.96); } }
+@media (prefers-reduced-motion: reduce) {
+  .pa-popover[data-state="open"] { animation: pa-popover-fade-in var(--dur-fast) ease both !important; }
+  .pa-popover[data-state="closed"] { animation: pa-popover-fade-out var(--dur-fast) ease both !important; }
+}
+@keyframes pa-popover-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pa-popover-fade-out { from { opacity: 1; } to { opacity: 0; } }

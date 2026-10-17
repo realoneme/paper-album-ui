@@ -14,7 +14,10 @@ import { FakePage, stayOpen, useDemoOpen, useStage } from './support/overlay-sta
 
 export const meta: DemoMeta = { name: 'Dialog', group: 'Overlays', height: 500 };
 
-/** Shown open and non-modal inside its own stage, so the docs page stays scrollable and usable. */
+/**
+ * Shown open and non-modal inside its own stage, so the docs page stays scrollable and usable.
+ * Close it, then press the trigger: the sheet grows out of the button and shrinks back into it.
+ */
 export default function DialogDemo() {
   const [stage, setStage] = useStage();
   const { open, onOpenChange, onOpenAutoFocus } = useDemoOpen();
@@ -28,7 +31,7 @@ export default function DialogDemo() {
         </div>
         <div ref={setStage} className="pa-stage">
           <FakePage />
-          {open && <div className="pa-backdrop" aria-hidden="true" />}
+          <div className="pa-backdrop pa-fade" data-state={open ? 'open' : 'closed'} aria-hidden="true" />
           <DialogContent container={stage} onOpenAutoFocus={onOpenAutoFocus} {...stayOpen(stage)}>
             <DialogHeader>
               <DialogTitle>Edit album</DialogTitle>

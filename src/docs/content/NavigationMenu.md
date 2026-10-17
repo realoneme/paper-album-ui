@@ -20,3 +20,15 @@ The site's main navigation; an item can open a wide panel of album covers and li
   </NavigationMenuList>
 </NavigationMenu>
 ```
+
+## Timing and motion
+
+- Hover opens a panel immediately: `NavigationMenu` defaults to `delayDuration={0}` and `skipDelayDuration={0}`. A click that lands within a second of the hover keeps the panel open instead of toggling it shut.
+- Panels fade in with a 4px drop in 140ms and fade out in 80ms. Reduced motion: a fade only.
+
+```tsx
+{/* Restore a hover delay if a page needs one. */}
+<NavigationMenu aria-label="Site" delayDuration={150}>
+  <NavigationMenuList>…</NavigationMenuList>
+</NavigationMenu>
+```

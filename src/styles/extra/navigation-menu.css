@@ -7,4 +7,13 @@
 .pa-navmenu-trigger svg { transition: transform 160ms ease; }
 .pa-navmenu-trigger[data-state="open"] svg { transform: rotate(180deg); }
 .pa-navmenu-content { position: absolute; top: calc(100% + 12px); left: 0; z-index: 50; width: min(760px, 100%); padding: 18px; }
-@media (prefers-reduced-motion: reduce) { .pa-navmenu-trigger svg { transition: none; } }
+/* Motion: panels open at once (delayDuration 0) with a 140ms fade and 4px drop, and fade out in 80ms. */
+.pa-navmenu-content[data-state="open"] { animation: pa-navmenu-in var(--dur-fast) var(--ease-paper) both; }
+.pa-navmenu-content[data-state="closed"] { animation: pa-navmenu-out var(--dur-instant) var(--ease-in-paper) both; pointer-events: none; }
+@keyframes pa-navmenu-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+@keyframes pa-navmenu-out { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .pa-navmenu-trigger svg { transition: none; }
+  .pa-navmenu-content[data-state="open"] { animation: pa-navmenu-fade-in var(--dur-instant) ease both !important; }
+}
+@keyframes pa-navmenu-fade-in { from { opacity: 0; } to { opacity: 1; } }

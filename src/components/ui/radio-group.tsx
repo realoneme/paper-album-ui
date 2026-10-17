@@ -15,13 +15,18 @@ RadioGroup.displayName = 'RadioGroup';
 
 export type RadioGroupItemProps = React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>;
 
-/** One slip; the chosen slip is raised. Children are the title and meta line. */
+/**
+ * One slip; the chosen slip is raised. Children are the title and meta line. The dot stays
+ * mounted (Radix Indicator with forceMount) and springs in or tucks away on `data-state`.
+ */
 export const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
   RadioGroupItemProps
 >(({ className, children, ...props }, ref) => (
   <RadioGroupPrimitive.Item ref={ref} className={cn('pa-radio', className)} {...props}>
-    <span className="dot" aria-hidden="true" />
+    <span className="dot" aria-hidden="true">
+      <RadioGroupPrimitive.Indicator forceMount className="pa-radio-fill" />
+    </span>
     {children}
   </RadioGroupPrimitive.Item>
 ));

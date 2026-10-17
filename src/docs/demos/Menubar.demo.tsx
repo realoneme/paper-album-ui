@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Menubar,
   MenubarContent,
@@ -11,7 +10,7 @@ import {
   MenubarTrigger,
 } from '@/components/ui/menubar';
 import type { DemoMeta } from '../types';
-import { stayOpen, useStage } from './support/overlay-stage';
+import { stayOpen, useDemoValue, useStage } from './support/overlay-stage';
 
 export const meta: DemoMeta = { name: 'Menubar', group: 'Menus', height: 320 };
 
@@ -21,22 +20,14 @@ const OTHER_MENUS: Record<string, string[]> = {
   album: ['Rename album', 'Reorder photos', 'Album settings'],
 };
 
-/** The File menu (and its Export submenu) start open; clicks elsewhere on the page leave it open. */
+/**
+ * The File menu (and its Export submenu) start open; clicks elsewhere on the page leave it open. Hover or the
+ * arrow keys move the paper slip between menus.
+ */
 export default function MenubarDemo() {
   const [stage, setStage] = useStage();
-  const [value, setValue] = React.useState('file');
-  const userOpened = React.useRef(false);
-  const onValueChange = (next: string) => {
-    if (next) userOpened.current = true;
-    setValue(next);
-  };
-  const contentProps = {
-    container: stage,
-    onOpenAutoFocus: (event: Event) => {
-      if (!userOpened.current) event.preventDefault();
-    },
-    ...stayOpen(stage),
-  };
+  const { value, onValueChange, onOpenAutoFocus } = useDemoValue('file');
+  const contentProps = { container: stage, onOpenAutoFocus, ...stayOpen(stage) };
   return (
     <div ref={setStage} style={{ position: 'relative', minHeight: 300 }}>
       <Menubar aria-label="Editor" value={value} onValueChange={onValueChange}>

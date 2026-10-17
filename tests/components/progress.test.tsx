@@ -15,6 +15,21 @@ describe('Progress', () => {
     expect(bar.querySelector('span')).toHaveStyle({ width: '64%' });
   });
 
+  it('sweeps a glow over the fill below 100 and drops it when done', () => {
+    const { rerender } = render(<Progress aria-label="Upload" value={40} />);
+    const bar = screen.getByRole('progressbar');
+    const fill = bar.querySelector('.pa-progress-fill');
+    expect(fill).toHaveStyle({ width: '40%' });
+    expect(fill?.querySelector('.pa-progress-glow')).not.toBeNull();
+    rerender(<Progress aria-label="Upload" value={88} />);
+    expect(bar).toHaveAttribute('aria-valuenow', '88');
+    expect(bar.querySelector('.pa-progress-fill')).toHaveStyle({ width: '88%' });
+    rerender(<Progress aria-label="Upload" value={100} />);
+    expect(bar).toHaveClass('done');
+    expect(bar.querySelector('.pa-progress-fill')).toHaveStyle({ width: '100%' });
+    expect(bar.querySelector('.pa-progress-glow')).toBeNull();
+  });
+
   it('marks completion with .done and scales by max', () => {
     const { rerender } = render(<Progress aria-label="Export" value={100} />);
     expect(screen.getByRole('progressbar')).toHaveClass('done');
@@ -28,6 +43,18 @@ describe('Progress', () => {
     const bar = screen.getByRole('progressbar');
     expect(bar).not.toHaveAttribute('aria-valuenow');
     expect(bar).toHaveAttribute('data-state', 'indeterminate');
+    expect(bar).toHaveClass('indeterminate');
+    expect(bar).not.toHaveClass('done');
+    const fill = bar.querySelector<HTMLElement>('.pa-progress-fill');
+    expect(fill?.style.width).toBe('');
+    expect(fill?.querySelector('.pa-progress-glow')).not.toBeNull();
+  });
+
+  it('treats a null value as indeterminate', () => {
+    render(<Progress aria-label="Preparing" value={null} />);
+    const bar = screen.getByRole('progressbar');
+    expect(bar).not.toHaveAttribute('aria-valuenow');
+    expect(bar).toHaveClass('indeterminate');
   });
 
   it('demo labels each upload and keeps uploading', () => {
@@ -39,6 +66,9 @@ describe('Progress', () => {
       expect(running).toHaveAttribute('aria-valuenow', '64');
       act(() => { vi.advanceTimersByTime(600); });
       expect(running).toHaveAttribute('aria-valuenow', '68');
+      const exporting = screen.getByRole('progressbar', { name: 'Album export' });
+      expect(exporting).not.toHaveAttribute('aria-valuenow');
+      expect(exporting).toHaveAttribute('data-state', 'indeterminate');
     } finally {
       vi.useRealTimers();
     }

@@ -52,4 +52,19 @@ describe('RadioGroup', () => {
     await userEvent.click(square);
     expect(square).toHaveAttribute('aria-checked', 'false');
   });
+
+  it('keeps every dot mounted and flips its data-state', async () => {
+    render(<Sizes />);
+    const a3 = screen.getByRole('radio', { name: 'A3' });
+    const a4 = screen.getByRole('radio', { name: 'A4' });
+    const a3Fill = a3.querySelector('.pa-radio-fill');
+    const a4Fill = a4.querySelector('.pa-radio-fill');
+    expect(a3Fill).toHaveAttribute('data-state', 'checked');
+    expect(a4Fill).toHaveAttribute('data-state', 'unchecked');
+    await userEvent.click(a4);
+    expect(a4.querySelector('.pa-radio-fill')).toBe(a4Fill);
+    expect(a3.querySelector('.pa-radio-fill')).toBe(a3Fill);
+    expect(a4Fill).toHaveAttribute('data-state', 'checked');
+    expect(a3Fill).toHaveAttribute('data-state', 'unchecked');
+  });
 });

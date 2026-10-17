@@ -1,5 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { endSlide, mockSlideAnimations, readCss } from './support/slide-motion';
 import userEvent from '@testing-library/user-event';
 import {
   Select,
@@ -72,5 +73,36 @@ describe('Select', () => {
     expect(await screen.findByRole('listbox')).toBeInTheDocument();
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+});
+
+describe('Select highlight and motion', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('moves data-highlighted to the option under the pointer', async () => {
+    const user = userEvent.setup();
+    render(<Genre />);
+    await user.click(screen.getByRole('combobox', { name: 'Genre' }));
+    const listbox = await screen.findByRole('listbox');
+    const landscape = within(listbox).getByRole('option', { name: 'Landscape' });
+    const street = within(listbox).getByRole('option', { name: 'Street' });
+    fireEvent.pointerMove(street, { pointerType: 'mouse' });
+    expect(street).toHaveAttribute('data-highlighted');
+    expect(landscape).not.toHaveAttribute('data-highlighted');
+    // The chosen option is not tinted like the highlight.
+    expect(readCss('select')).not.toMatch(/\[data-state="checked"\][^{]*\{[^}]*background/);
+  });
+
+  it('slides the sheet up on close: data-state="closed" until the animation ends', async () => {
+    mockSlideAnimations();
+    const user = userEvent.setup();
+    render(<Genre />);
+    await user.click(screen.getByRole('combobox', { name: 'Genre' }));
+    const sheet = (await screen.findByRole('listbox')).closest('.pa-pop') as HTMLElement;
+    expect(sheet).toHaveClass('pa-slide');
+    await user.keyboard('{Escape}');
+    expect(sheet).toHaveAttribute('data-state', 'closed');
+    act(() => endSlide(sheet));
+    expect(sheet).not.toBeInTheDocument();
   });
 });

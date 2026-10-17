@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { readCss } from './support/slide-motion';
 import userEvent from '@testing-library/user-event';
 import {
   Command,
@@ -84,5 +85,40 @@ describe('Command', () => {
     expect(screen.getByRole('combobox', { name: 'Command menu' })).toBeInTheDocument();
     expect(screen.getAllByRole('option')).toHaveLength(4);
     expect(document.body.textContent).not.toMatch(/[⌘⇧]/);
+  });
+});
+
+/** Selectors of every rule in a stylesheet, with pseudo-classes such as :hover dropped (jsdom cannot match them). */
+function ruleSelectors(css: string) {
+  return css
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .split('}')
+    .map((chunk) => chunk.split('{')[0].trim())
+    .filter((sel) => sel && !sel.startsWith('@'))
+    .flatMap((sel) => sel.split(','))
+    .map((sel) => sel.replace(/:hover|:focus-visible|::after/g, '').trim());
+}
+
+describe('Command highlight', () => {
+  it('moves data-selected to the item under the pointer', () => {
+    render(<Example />);
+    const winter = screen.getByRole('option', { name: 'Winter in Hokkaido' });
+    const lisbon = screen.getByRole('option', { name: 'Lisbon Mornings' });
+    expect(winter).toHaveAttribute('data-selected', 'true');
+    fireEvent.pointerMove(lisbon);
+    expect(lisbon).toHaveAttribute('data-selected', 'true');
+    expect(winter).toHaveAttribute('data-selected', 'false');
+    expect(document.querySelectorAll('[data-selected="true"]')).toHaveLength(1);
+  });
+
+  it('no disabled-item rule matches an enabled cmdk item (cmdk writes data-disabled="false")', () => {
+    render(<Example />);
+    const item = screen.getByRole('option', { name: 'Lisbon Mornings' });
+    expect(item).toHaveAttribute('data-disabled', 'false');
+    for (const name of ['dropdown-menu', 'command', 'combobox', 'select']) {
+      const offenders = ruleSelectors(readCss(name)).filter((sel) => sel.includes('data-disabled') && item.matches(sel));
+      expect(offenders, name).toEqual([]);
+    }
+    expect(readCss('command')).toMatch(/\.pa-cmd-list \.pa-mi:hover \{ background: transparent; \}/);
   });
 });

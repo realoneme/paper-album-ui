@@ -13,7 +13,7 @@ import { FakePage, stayOpen, useDemoOpen, useStage } from './support/overlay-sta
 
 export const meta: DemoMeta = { name: 'Sheet', group: 'Overlays', height: 560 };
 
-/** Shown open and non-modal inside its own stage. */
+/** Shown open and non-modal inside its own stage. Close and reopen it to see it slide in from the edge. */
 export default function SheetDemo() {
   const [stage, setStage] = useStage();
   const { open, onOpenChange, onOpenAutoFocus } = useDemoOpen();
@@ -27,7 +27,7 @@ export default function SheetDemo() {
         </div>
         <div ref={setStage} className="pa-stage" style={{ height: 480 }}>
           <FakePage />
-          {open && <div className="pa-backdrop" aria-hidden="true" />}
+          <div className="pa-backdrop pa-fade" data-state={open ? 'open' : 'closed'} aria-hidden="true" />
           <SheetContent container={stage} onOpenAutoFocus={onOpenAutoFocus} {...stayOpen(stage)}>
             <SheetHeader>
               <SheetTitle>Photo details</SheetTitle>

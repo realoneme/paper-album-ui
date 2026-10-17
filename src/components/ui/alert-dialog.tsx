@@ -5,6 +5,7 @@ import { AlertDialog as AlertDialogPrimitive } from 'radix-ui';
 import type { VariantProps } from 'class-variance-authority';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
+import { useGrowFromTrigger } from '@/components/ui/dialog';
 
 /** A confirmation that interrupts. Always modal: focus is trapped and outside clicks do nothing. */
 export const AlertDialog = AlertDialogPrimitive.Root;
@@ -18,7 +19,7 @@ export type AlertDialogPortalContainer = React.ComponentPropsWithoutRef<typeof A
 export type AlertDialogOverlayProps = React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Overlay>;
 
 export const AlertDialogOverlay = React.forwardRef<React.ElementRef<typeof AlertDialogPrimitive.Overlay>, AlertDialogOverlayProps>(
-  ({ className, ...props }, ref) => <AlertDialogPrimitive.Overlay ref={ref} className={cn('pa-backdrop', className)} {...props} />,
+  ({ className, ...props }, ref) => <AlertDialogPrimitive.Overlay ref={ref} className={cn('pa-backdrop pa-fade', className)} {...props} />,
 );
 AlertDialogOverlay.displayName = 'AlertDialogOverlay';
 
@@ -27,14 +28,24 @@ export interface AlertDialogContentProps extends React.ComponentPropsWithoutRef<
   container?: AlertDialogPortalContainer;
 }
 
-/** The alert sheet (role="alertdialog"). Needs an AlertDialogTitle and AlertDialogDescription. */
+/**
+ * The alert sheet (role="alertdialog"). Needs an AlertDialogTitle and AlertDialogDescription.
+ * Grows out of its trigger on open and shrinks back into it on close, like DialogContent.
+ */
 export const AlertDialogContent = React.forwardRef<React.ElementRef<typeof AlertDialogPrimitive.Content>, AlertDialogContentProps>(
-  ({ className, container, ...props }, ref) => (
-    <AlertDialogPortal container={container}>
-      <AlertDialogOverlay className={cn(!container && 'pa-fixed')} />
-      <AlertDialogPrimitive.Content ref={ref} className={cn('pa-pop pa-dialog', !container && 'pa-fixed', className)} {...props} />
-    </AlertDialogPortal>
-  ),
+  ({ className, container, ...props }, ref) => {
+    const growRef = useGrowFromTrigger(ref);
+    return (
+      <AlertDialogPortal container={container}>
+        <AlertDialogOverlay className={cn(!container && 'pa-fixed')} />
+        <AlertDialogPrimitive.Content
+          ref={growRef}
+          className={cn('pa-pop pa-dialog pa-grow', !container && 'pa-fixed', className)}
+          {...props}
+        />
+      </AlertDialogPortal>
+    );
+  },
 );
 AlertDialogContent.displayName = 'AlertDialogContent';
 

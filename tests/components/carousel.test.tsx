@@ -5,7 +5,9 @@ import {
   Carousel,
   CarouselContent,
   CarouselControls,
+  CarouselCounter,
   CarouselDots,
+  CarouselIndicator,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
@@ -111,5 +113,62 @@ describe('Carousel', () => {
     await expect.poll(() => next.hasAttribute('disabled')).toBe(true);
     await user.click(prev);
     await expect.poll(() => screen.getByRole('group', { name: '2 of 3' }).getAttribute('aria-current')).toBe('true');
+  });
+
+  it('counts the current slide and the total, updating on Next', async () => {
+    render(
+      <Carousel aria-label="Counted">
+        <CarouselContent>
+          {['A', 'B', 'C'].map((c) => (
+            <CarouselItem key={c} style={{ margin: '0 20px 0 0' }}>{c}</CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselNext />
+        <CarouselCounter data-testid="counter" />
+      </Carousel>,
+    );
+    const counter = screen.getByTestId('counter');
+    expect(counter).toHaveClass('pa-carousel-counter');
+    expect(counter).toHaveAttribute('aria-live', 'polite');
+    const value = () => counter.querySelector('.pa-carousel-counter-value')?.textContent;
+    await expect.poll(value).toBe('1 / 3');
+    expect(counter).toHaveTextContent('Slide 1 of 3');
+    const next = screen.getByRole('button', { name: 'Next slide' });
+    await expect.poll(() => next.hasAttribute('disabled')).toBe(false);
+    await userEvent.click(next);
+    await expect.poll(value).toBe('2 / 3');
+    expect(counter).toHaveTextContent('Slide 2 of 3');
+  });
+
+  function Strip({ n, variant }: { n: number; variant?: 'auto' | 'dots' | 'counter' }) {
+    return (
+      <Carousel aria-label={`${n} slides`}>
+        <CarouselContent>
+          {Array.from({ length: n }, (_, i) => (
+            <CarouselItem key={i} style={{ margin: '0 20px 0 0' }}>{`Slide ${i + 1}`}</CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselIndicator variant={variant} count={n} data-testid="indicator" />
+      </Carousel>
+    );
+  }
+
+  it('indicator shows dots up to 7 slides', async () => {
+    render(<Strip n={7} />);
+    await expect.poll(() => screen.queryAllByRole('button', { name: /Go to slide/ }).length).toBe(7);
+    expect(screen.getByTestId('indicator')).toHaveAttribute('data-indicator', 'dots');
+  });
+
+  it('indicator switches to the counter beyond 7 slides', async () => {
+    render(<Strip n={12} />);
+    const indicator = screen.getByTestId('indicator');
+    expect(indicator).toHaveAttribute('data-indicator', 'counter');
+    expect(screen.queryAllByRole('button', { name: /Go to slide/ })).toHaveLength(0);
+    await expect.poll(() => indicator.querySelector('.pa-carousel-counter-value')?.textContent).toBe('1 / 12');
+  });
+
+  it('indicator variant can be forced', () => {
+    render(<Strip n={3} variant="counter" />);
+    expect(screen.getByTestId('indicator')).toHaveClass('pa-carousel-counter');
   });
 });

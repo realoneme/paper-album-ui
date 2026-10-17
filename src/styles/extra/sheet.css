@@ -8,3 +8,24 @@
 .pa-sheet-header { display: flex; flex-direction: column; gap: 4px; padding-right: var(--space-8); }
 .pa-sheet-header > * { margin: 0; }
 .pa-sheet-footer { display: flex; flex-direction: column; gap: var(--space-3); margin-top: auto; padding-top: var(--space-4); }
+
+/* Motion: slides in from its edge, runs a few px past its resting place and springs back (--ease-spring);
+   slides straight out on close. The backdrop fades with it (pa-fade in dialog.css). */
+.pa-sheet { --sheet-from: translateX(100%); --sheet-over: translateX(-8px); }
+.pa-sheet.pa-sheet-left { --sheet-from: translateX(-100%); --sheet-over: translateX(8px); }
+.pa-sheet.pa-sheet-top { --sheet-from: translateY(-100%); --sheet-over: translateY(8px); }
+.pa-sheet.pa-sheet-bottom { --sheet-from: translateY(100%); --sheet-over: translateY(-8px); }
+.pa-sheet[data-state="open"] { animation: pa-sheet-in calc(var(--dur-slow) + var(--dur-instant)) var(--ease-paper) both; }
+.pa-sheet[data-state="closed"] { animation: pa-sheet-out var(--dur-base) var(--ease-in-paper) both; pointer-events: none; }
+@keyframes pa-sheet-in {
+  0% { transform: var(--sheet-from); }
+  70% { transform: var(--sheet-over); animation-timing-function: var(--ease-spring); }
+  100% { transform: none; }
+}
+@keyframes pa-sheet-out { from { transform: none; } to { transform: var(--sheet-from); } }
+@media (prefers-reduced-motion: reduce) {
+  .pa-sheet[data-state="open"] { animation: pa-sheet-fade-in var(--dur-fast) ease both !important; }
+  .pa-sheet[data-state="closed"] { animation: pa-sheet-fade-out var(--dur-fast) ease both !important; }
+}
+@keyframes pa-sheet-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pa-sheet-fade-out { from { opacity: 1; } to { opacity: 0; } }

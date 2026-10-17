@@ -9,6 +9,8 @@ export interface DemoMeta {
   group: DemoGroup;
   /** Minimum height of the demo stage in px (overlays shown open need room). */
   height?: number;
+  /** Sorts the demo within its group instead of `name` (e.g. keep Native Select beside Select). */
+  sortKey?: string;
 }
 
 export interface DemoModule {

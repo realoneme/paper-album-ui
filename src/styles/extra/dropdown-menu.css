@@ -1,12 +1,29 @@
 /* Radix menu states (Dropdown Menu, Context Menu, Menubar) mapped onto the pa-menu / pa-mi look. */
-.pa-menu[role="menu"] { z-index: 50; }
+.pa-menu[role="menu"] {
+  z-index: 50;
+  --pa-slide-origin: var(--radix-dropdown-menu-content-transform-origin, var(--radix-context-menu-content-transform-origin, var(--radix-menubar-content-transform-origin, var(--radix-popper-transform-origin))));
+}
 .pa-menu[role="menu"]:focus { outline: none; }
 .pa-menu .pa-mi { user-select: none; }
-.pa-menu .pa-mi:focus-visible { outline-offset: -2px; }
-.pa-mi[data-highlighted], .pa-mi[data-state="open"][aria-haspopup="menu"] { background: var(--accent); color: var(--accent-foreground); }
-.pa-mi.danger[data-highlighted] { color: var(--destructive); }
-.pa-mi[data-disabled] { color: var(--muted-foreground); cursor: default; }
-.pa-mi[data-disabled]:hover { background: transparent; color: var(--muted-foreground); }
+/* The highlighted item is the focus indicator inside menus (data-highlighted follows keyboard and pointer). */
+.pa-menu .pa-mi:focus, .pa-menu .pa-mi:focus-visible { outline: none; }
+
+/*
+ * One source of truth for the highlight: Radix moves [data-highlighted] (it focuses the item under the pointer
+ * or the arrow keys). :hover never paints a Radix item, so a hovered item and the highlighted one can't disagree,
+ * and nothing animates the swap. Each item's hit area reaches 1px into the 2px gap so the highlight passes straight
+ * from one item to the next instead of dropping out between them.
+ */
+.pa-menu [role^="menuitem"].pa-mi { position: relative; transition: none; }
+.pa-menu [role^="menuitem"].pa-mi::after { content: ""; position: absolute; inset: -1px 0; }
+.pa-menu [role^="menuitem"].pa-mi:hover { background: transparent; }
+.pa-menu [role^="menuitem"].pa-mi[data-highlighted],
+.pa-menu [role^="menuitem"].pa-mi[data-state="open"][aria-haspopup="menu"] { background: var(--accent); color: var(--accent-foreground); }
+.pa-menu [role^="menuitem"].pa-mi.danger[data-highlighted] { color: var(--destructive); }
+/* Scoped to Radix menu items: cmdk (Command, Combobox) writes data-disabled="false" on every enabled item, so a bare
+   .pa-mi[data-disabled] rule used to mute every cmdk item and blank the one under the pointer. */
+.pa-menu [role^="menuitem"].pa-mi[data-disabled] { color: var(--muted-foreground); cursor: default; }
+
 .pa-mi.inset, .pa-grp.inset { padding-left: 38px; }
 .pa-mi-ind { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; flex: none; }
 .pa-mi-dot { width: 8px; height: 8px; border-radius: var(--radius-full); background: currentColor; }

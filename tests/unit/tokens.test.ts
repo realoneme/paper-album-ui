@@ -43,7 +43,7 @@ describe('tokens.json', () => {
       'secondary', 'secondary-foreground', 'muted', 'muted-foreground', 'accent', 'accent-foreground', 'destructive', 'border', 'input', 'ring',
       'chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5', 'sidebar', 'sidebar-foreground', 'sidebar-primary', 'sidebar-primary-foreground',
       'sidebar-accent', 'sidebar-accent-foreground', 'sidebar-border', 'sidebar-ring',
-      'info', 'info-soft', 'on-info', 'success', 'success-soft', 'on-success', 'warning', 'warning-soft', 'on-warning', 'destructive-soft', 'destructive-foreground'];
+      'info', 'info-soft', 'on-info', 'success', 'success-soft', 'on-success', 'warning', 'warning-soft', 'warning-text', 'on-warning', 'destructive-soft', 'destructive-foreground'];
     expect(required.filter((n) => !names.has(n))).toEqual([]);
   });
 
@@ -61,10 +61,14 @@ const PAIRS: [string, string, number][] = [
   ['primary-foreground', 'primary', 4.5], ['secondary-foreground', 'secondary', 4.5], ['accent-foreground', 'accent', 4.5],
   ['on-wood', 'wood', 4.5], ['on-seal', 'seal', 4.5], ['print-ink', 'print', 4.5], ['destructive-foreground', 'destructive', 4.5],
   ['sidebar-foreground', 'sidebar', 4.5], ['sidebar-primary-foreground', 'sidebar-primary', 4.5], ['sidebar-accent-foreground', 'sidebar-accent', 4.5],
-  ...(['info', 'success', 'warning', 'destructive'] as const).flatMap((s): [string, string, number][] => [
-    [s, 'card', 4.5], [s, 'muted', 4.5], [s, `${s}-soft`, 4.5], ['card-foreground', `${s}-soft`, 4.5],
-    [s === 'destructive' ? 'destructive-foreground' : `on-${s}`, s, 4.5],
-  ]),
+  ...(['info', 'success', 'warning', 'destructive'] as const).flatMap((s): [string, string, number][] => {
+    // Warning is a bright orange for marks; its text colour is the separate deep warning-text.
+    const text = s === 'warning' ? 'warning-text' : s;
+    return [
+      [text, 'card', 4.5], [text, 'muted', 4.5], [text, `${s}-soft`, 4.5], ['card-foreground', `${s}-soft`, 4.5],
+      [s === 'destructive' ? 'destructive-foreground' : `on-${s}`, s, 4.5],
+    ];
+  }),
   ['ring', 'background', 3], ['ring-paper', 'card', 3], ['ring-paper', 'muted', 3], ['primary', 'card', 3],
 ];
 

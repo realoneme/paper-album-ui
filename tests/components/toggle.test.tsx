@@ -32,4 +32,14 @@ describe('Toggle', () => {
     await userEvent.click(btn);
     expect(btn).toHaveAttribute('aria-pressed', 'true');
   });
+
+  it('forwards the ref and reflects data-state for the press animation', async () => {
+    const ref = { current: null as HTMLButtonElement | null };
+    render(<Toggle ref={ref}>Captions</Toggle>);
+    const btn = screen.getByRole('button', { name: 'Captions' });
+    expect(ref.current).toBe(btn);
+    expect(btn).toHaveAttribute('data-state', 'off');
+    await userEvent.click(btn);
+    expect(btn).toHaveAttribute('data-state', 'on');
+  });
 });

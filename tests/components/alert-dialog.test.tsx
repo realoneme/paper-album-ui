@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
@@ -31,6 +31,11 @@ function Example({ onDelete = () => {} }: { onDelete?: () => void }) {
     </AlertDialog>
   );
 }
+
+const rect = (left: number, top: number, width: number, height: number) =>
+  ({ left, top, width, height, right: left + width, bottom: top + height, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
+
+afterEach(() => vi.restoreAllMocks());
 
 describe('AlertDialog', () => {
   it('opens as an alertdialog with title, description and merged classes', async () => {
@@ -75,5 +80,23 @@ describe('AlertDialog', () => {
     expect(screen.queryByTestId('alert-preview')).not.toBeInTheDocument();
     const dialog = screen.getByRole('alertdialog', { name: 'Delete this album?' });
     expect(dialog.closest('.pa-stage')).not.toBeNull();
+  });
+
+  it('grows out of its trigger: FLIP custom properties come from the trigger rect', async () => {
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      if (this.getAttribute('role') === 'alertdialog') return rect(200, 100, 440, 240);
+      if (this.tagName === 'BUTTON' && this.textContent === 'Delete album') return rect(40, 400, 120, 44);
+      return rect(0, 0, 0, 0);
+    });
+    render(<Example />);
+    await userEvent.click(screen.getByRole('button', { name: 'Delete album' }));
+    const dialog = screen.getByRole('alertdialog');
+    expect(dialog).toHaveClass('pa-grow');
+    expect(dialog).toHaveAttribute('data-from', 'trigger');
+    expect(dialog.style.getPropertyValue('--from-x')).toBe('-320px');
+    expect(dialog.style.getPropertyValue('--from-y')).toBe('202px');
+    expect(dialog.style.getPropertyValue('--from-sx')).toBe('0.273');
+    expect(dialog.style.getPropertyValue('--from-sy')).toBe('0.183');
+    expect(document.querySelector('.pa-backdrop')).toHaveClass('pa-fade');
   });
 });

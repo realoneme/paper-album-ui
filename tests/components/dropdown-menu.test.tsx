@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   DropdownMenu,
@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import DropdownMenuDemo from '@/docs/demos/DropdownMenu.demo';
+import { endSlide, mockSlideAnimations, readCss, slideCss } from './support/slide-motion';
 
 function Example({ onProfile = () => {} }: { onProfile?: () => void }) {
   return (
@@ -100,5 +101,67 @@ describe('DropdownMenu', () => {
     expect(screen.getByRole('menuitemcheckbox', { name: 'Allow downloads' })).toHaveAttribute('aria-checked', 'true');
     await userEvent.click(screen.getByRole('button', { name: /Studio Name/ }));
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+});
+
+describe('DropdownMenu highlight and motion', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('moves data-highlighted to the item under the pointer, one item at a time', async () => {
+    render(<Example />);
+    await userEvent.click(screen.getByRole('button', { name: 'Account' }));
+    const profile = screen.getByRole('menuitem', { name: 'Profile' });
+    const watermark = screen.getByRole('menuitemcheckbox', { name: 'Show watermark' });
+    fireEvent.pointerMove(profile, { pointerType: 'mouse' });
+    expect(profile).toHaveAttribute('data-highlighted');
+    fireEvent.pointerMove(watermark, { pointerType: 'mouse' });
+    expect(watermark).toHaveAttribute('data-highlighted');
+    expect(profile).not.toHaveAttribute('data-highlighted');
+    expect(document.querySelectorAll('[data-highlighted]')).toHaveLength(1);
+    // A disabled item never takes the highlight; the pointer on it clears the old one.
+    fireEvent.pointerMove(screen.getByRole('menuitem', { name: 'Billing' }), { pointerType: 'mouse' });
+    expect(document.querySelectorAll('[data-highlighted]')).toHaveLength(0);
+  });
+
+  it('paints the highlight from [data-highlighted] only, never from :hover', () => {
+    const css = readCss('dropdown-menu');
+    expect(css).toMatch(/\[role\^="menuitem"\]\.pa-mi:hover \{ background: transparent; \}/);
+    expect(css).toMatch(/\[role\^="menuitem"\]\.pa-mi\[data-highlighted\],[^{]*\{ background: var\(--accent\)/);
+    // The disabled look is scoped to Radix items, so cmdk's data-disabled="false" never matches it.
+    expect(css).not.toMatch(/^\.pa-mi\[data-disabled\]/m);
+  });
+
+  it('opens a submenu as soon as the pointer rests on its trigger', async () => {
+    render(<Example />);
+    await userEvent.click(screen.getByRole('button', { name: 'Account' }));
+    const sub = screen.getByRole('menuitem', { name: 'Export as' });
+    await act(async () => {
+      fireEvent.pointerMove(sub, { pointerType: 'mouse' });
+      await Promise.resolve();
+    });
+    // Radix alone would wait 100ms; this runs well inside that.
+    expect(sub).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('menuitem', { name: 'JPEG' })).toBeInTheDocument();
+  });
+
+  it('slides the sheet up on close: data-state="closed" until the animation ends', async () => {
+    mockSlideAnimations();
+    render(<Example />);
+    await userEvent.click(screen.getByRole('button', { name: 'Account' }));
+    const menu = screen.getByRole('menu');
+    expect(menu).toHaveClass('pa-slide');
+    expect(menu).toHaveAttribute('data-state', 'open');
+    await userEvent.keyboard('{Escape}');
+    expect(menu).toBeInTheDocument();
+    expect(menu).toHaveAttribute('data-state', 'closed');
+    act(() => endSlide(menu));
+    expect(menu).not.toBeInTheDocument();
+  });
+
+  it('slide-down motion follows data-side and falls back to a fade for reduced motion', () => {
+    expect(slideCss).toMatch(/\.pa-slide\[data-side="top"\]/);
+    expect(slideCss).toMatch(/\.pa-slide\[data-state="closed"\] \{ animation: pa-slide-out/);
+    expect(slideCss).toMatch(/prefers-reduced-motion: reduce[\s\S]*pa-slide-fade-in/);
+    expect(readCss('dropdown-menu')).toContain('--radix-dropdown-menu-content-transform-origin');
   });
 });
