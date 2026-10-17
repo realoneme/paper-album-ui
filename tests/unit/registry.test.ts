@@ -10,7 +10,7 @@ export const SHADCN = [
   'Skeleton', 'Slider', 'Sonner', 'Spinner', 'Switch', 'Table', 'Tabs', 'Textarea', 'Toggle', 'ToggleGroup',
   'Tooltip', 'Typography',
 ];
-const ALL = [...SHADCN, 'PhotoHolder'];
+const ALL = [...SHADCN, 'PhotoHolder', 'HelpTip'];
 const kebab = (n: string) => n.replace(/OTP$/, 'Otp').replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
 
 describe('component inventory', () => {

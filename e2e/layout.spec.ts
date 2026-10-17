@@ -85,3 +85,36 @@ test('Pagination keeps the numbered layout when there is room', async ({ page })
   await expect(page.locator('.pa-pg-summary')).toBeHidden();
   await expect(page.getByRole('link', { name: '12', exact: true })).toBeVisible();
 });
+
+test.describe('HelpTip on a phone', () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+
+  test('a tap on the "?" shows the help, a second tap hides it', async ({ page }) => {
+    await page.goto('/?demo=Field&theme=parchment');
+    const key = page.getByRole('button', { name: 'About album titles' });
+    await expect(key).toHaveAttribute('aria-expanded', 'false');
+    await key.tap();
+    const bubble = page.getByRole('dialog', { name: 'About album titles' });
+    await expect(bubble).toBeVisible();
+    await expect(bubble).toContainText('cover pocket');
+    const box = await bubble.boundingBox();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(390);
+    await key.tap();
+    await expect(bubble).toBeHidden();
+  });
+});
+
+test('HelpTip on desktop opens on hover and stays open once clicked', async ({ page }) => {
+  await page.goto('/?demo=Field&theme=parchment');
+  const key = page.getByRole('button', { name: 'About album titles' });
+  await key.hover();
+  const bubble = page.getByRole('dialog', { name: 'About album titles' });
+  await expect(bubble).toBeVisible();
+  await key.click();
+  await page.mouse.move(5, 5);
+  await page.waitForTimeout(300);
+  await expect(bubble).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(bubble).toBeHidden();
+});

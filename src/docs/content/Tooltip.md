@@ -3,6 +3,7 @@
 A short deep-wood label for icon-only buttons. One short phrase, no punctuation.
 
 - React: `Tooltip` (includes its own provider), `TooltipTrigger`, `TooltipContent` (`container`, `side`, `sideOffset`), `TooltipProvider` (shared `delayDuration`) from `@/components/ui/tooltip`, built on Radix Tooltip: opens on hover and focus, closes on Escape, linked with `aria-describedby`. The icon button still needs its own `aria-label`.
+- Tooltip names an icon button; phones cannot hover, so never put information there that the reader needs. To explain a setting use Help Tip, which also opens on a tap.
 
 ```tsx
 <Tooltip>

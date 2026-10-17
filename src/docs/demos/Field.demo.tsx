@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { HelpTip } from '@/components/ui/help-tip';
 import { Input } from '@/components/ui/input';
 import type { DemoMeta } from '../types';
 
@@ -14,7 +15,12 @@ export default function FieldDemo() {
   return (
     <div className="pa-panel pa-stack" style={{ maxWidth: 380 }}>
       <Field>
-        <FieldLabel>Album title</FieldLabel>
+        <span className="pa-row" style={{ gap: 6 }}>
+          <FieldLabel>Album title</FieldLabel>
+          <HelpTip label="About album titles">
+            <p>The title appears on the cover pocket and in the share link. Keep it under 40 characters.</p>
+          </HelpTip>
+        </span>
         <Input value={title} onChange={(e) => setTitle(e.target.value)} />
         <FieldDescription>Shown on the cover pocket.</FieldDescription>
       </Field>
