@@ -108,7 +108,7 @@ export interface MenubarContentProps extends React.ComponentPropsWithoutRef<type
 
 /** The menu sheet. */
 export const MenubarContent = React.forwardRef<React.ElementRef<typeof MenubarPrimitive.Content>, MenubarContentProps>(
-  ({ className, container, align = 'start', sideOffset = 8, alignOffset = -4, onOpenAutoFocus, ...props }, ref) => {
+  ({ className, container, align = 'start', sideOffset = 16, alignOffset = -4, onOpenAutoFocus, ...props }, ref) => {
     // Radix supports this handler on every menu content but only types it for sub-menus.
     const focusProps: object = { onOpenAutoFocus };
     // Switching menus (hover or arrows) swaps the sheets at once: a sheet still sliding out would see focus enter

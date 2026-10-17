@@ -63,17 +63,29 @@ describe('Drawer', () => {
     await waitFor(() => expect(trigger).toHaveAttribute('aria-expanded', 'false'));
   });
 
-  it('demo shows a static preview, opens the real drawer in its stage, and the size choice updates the price', async () => {
+  it('moves focus into the sheet when it opens, so Escape and Tab work from the keyboard', async () => {
+    render(<Example />);
+    await userEvent.click(screen.getByRole('button', { name: 'Order a print' }));
+    const drawer = await screen.findByRole('dialog', { name: 'Order a print' });
+    await waitFor(() => expect(drawer.contains(document.activeElement)).toBe(true));
+  });
+
+  it('demo starts with a working in-page preview that shares the size choice with the real drawer', async () => {
     render(<DrawerDemo />);
-    // The preview is hidden from assistive tech and nothing on the page is modal yet.
-    expect(screen.getByTestId('drawer-preview')).toHaveAttribute('aria-hidden', 'true');
+    // The preview is ordinary page content: nothing is modal yet and its controls work.
+    const preview = screen.getByRole('region', { name: 'Order a print, preview' });
+    expect(preview).not.toHaveAttribute('aria-hidden');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add to cart · $95' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('radio', { name: 'Square · $80' }));
+    expect(screen.getByRole('button', { name: 'Add to cart · $80' })).toBeInTheDocument();
+
     await userEvent.click(screen.getByRole('button', { name: 'Order a print' }));
     const drawer = await screen.findByRole('dialog', { name: 'Order a print' });
     expect(screen.queryByTestId('drawer-preview')).not.toBeInTheDocument();
     expect(drawer.closest('.pa-stage')).not.toBeNull();
     expect(drawer).toHaveAttribute('data-vaul-custom-container', 'true');
-    expect(screen.getByRole('button', { name: 'Add to cart · $95' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Square · $80' })).toHaveAttribute('aria-checked', 'true');
     await userEvent.click(screen.getByRole('radio', { name: 'A4 · $60' }));
     expect(screen.getByRole('button', { name: 'Add to cart · $60' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));

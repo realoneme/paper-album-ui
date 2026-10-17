@@ -7,8 +7,10 @@ import { cn } from '@/lib/cn';
 export type DrawerProps = React.ComponentProps<typeof DrawerPrimitive.Root>;
 
 /** A bottom sheet with a grab handle, for phones and quick choices. Drag down or press Escape to close. */
-export function Drawer(props: DrawerProps) {
-  return <DrawerPrimitive.Root {...props} />;
+export function Drawer({ autoFocus = true, ...props }: DrawerProps) {
+  // vaul leaves focus on the trigger by default, outside the modal sheet: Escape then does nothing and keyboard
+  // users are stuck behind the locked page. Move focus into the sheet, as Radix Dialog does.
+  return <DrawerPrimitive.Root autoFocus={autoFocus} {...props} />;
 }
 Drawer.displayName = 'Drawer';
 

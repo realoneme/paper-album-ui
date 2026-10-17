@@ -43,6 +43,8 @@ for (const name of NAMES) {
   test(`${name} has no serious accessibility violations`, async ({ page }) => {
     await page.goto(`/?demo=${name}&theme=parchment`);
     await expect(page.locator('.demo-stage')).toBeVisible();
+    // Check the settled UI: mid-animation (a dialog growing out of its button) text is still partly transparent.
+    await page.evaluate(() => Promise.all(document.getAnimations().filter((a) => a.effect?.getComputedTiming().iterations !== Infinity).map((a) => a.finished.catch(() => undefined))));
     // @axe-core/playwright is typed against its own playwright-core copy; the runtime Page is compatible.
     let axe = new AxeBuilder({ page: page as unknown as ConstructorParameters<typeof AxeBuilder>[0]['page'] })
       .include('.demo-stage')
