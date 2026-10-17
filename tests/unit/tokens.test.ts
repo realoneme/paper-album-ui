@@ -50,7 +50,7 @@ describe('tokens.json', () => {
   it('defines the type scale', () => {
     for (const k of ['display', 'sans', 'hand', 'mono']) expect(tokens.type.families).toHaveProperty(k);
     const styles = tokens.type.groups.flatMap((g) => g.styles.map((s) => s.name));
-    for (const s of ['display-xl', 'display', 'h1', 'h2', 'h3', 'h4', 'lead', 'large', 'body', 'small', 'caption', 'label', 'code', 'blockquote']) expect(styles).toContain(s);
+    for (const s of ['display-xl', 'display', 'h1', 'h2', 'h3', 'h4', 'lead', 'large', 'body', 'small', 'caption', 'label', 'micro', 'code', 'blockquote']) expect(styles).toContain(s);
   });
 });
 
