@@ -171,16 +171,18 @@ svg.pa-i.sm { width: 16px; height: 16px; }
 .pa-alert-title { font-weight: 600; font-size: 15px; }
 .pa-alert-desc { margin-top: 4px; font-size: 14px; line-height: 1.5; color: var(--muted-foreground); }
 .pa-alert.info, .pa-alert.success, .pa-alert.warning, .pa-alert.destructive { align-items: flex-start; background: var(--card); box-shadow: var(--shadow-raised-1); }
-.pa-alert.warning, .pa-alert.destructive, .pa-toast.warning, .pa-toast.error { position: relative; }
-.pa-alert.warning::after, .pa-alert.destructive::after, .pa-toast.warning::after, .pa-toast.error::after { content: ""; position: absolute; top: -5px; right: 22px; width: 14px; height: 30px; background: linear-gradient(90deg, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.12)), var(--tone); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%); }
-.pa-alert.warning::before, .pa-alert.destructive::before, .pa-toast.warning::before, .pa-toast.error::before { content: ""; position: absolute; top: -5px; right: 36px; width: 4px; height: 5px; background: var(--primary-edge); clip-path: polygon(100% 0, 100% 100%, 0 100%); opacity: 0.5; }
-.pa-toast.warning::after, .pa-toast.error::after { height: 21px; right: 18px; }
-.pa-toast.warning::before, .pa-toast.error::before { right: 32px; }
+/* The ribbon hangs from the toast's icon disc, not the toast itself: Sonner owns the toast's own ::before/::after
+   (hover gap, swipe and exit areas) and its position. The disc is not positioned, so these resolve to the toast. */
+.pa-alert.warning, .pa-alert.destructive, .pa-toast.warning:not([data-sonner-toast]), .pa-toast.error:not([data-sonner-toast]) { position: relative; }
+.pa-alert.warning::after, .pa-alert.destructive::after, .pa-toast.warning .pa-toast-icon::after, .pa-toast.error .pa-toast-icon::after { content: ""; position: absolute; top: -5px; right: 22px; width: 14px; height: 30px; background: linear-gradient(90deg, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.12)), var(--tone); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%); }
+.pa-alert.warning::before, .pa-alert.destructive::before, .pa-toast.warning .pa-toast-icon::before, .pa-toast.error .pa-toast-icon::before { content: ""; position: absolute; top: -5px; right: 36px; width: 4px; height: 5px; background: var(--primary-edge); clip-path: polygon(100% 0, 100% 100%, 0 100%); opacity: 0.5; }
+.pa-toast.warning .pa-toast-icon::after, .pa-toast.error .pa-toast-icon::after { height: 21px; right: 18px; }
+.pa-toast.warning .pa-toast-icon::before, .pa-toast.error .pa-toast-icon::before { right: 32px; }
 .pa-toast.warning { --tone: var(--warning); }
 .pa-toast.error { --tone: var(--destructive); }
 .pa-alert.info { --tone: var(--info); --on-tone: var(--on-info); }
 .pa-alert.success { --tone: var(--success); --on-tone: var(--on-success); }
-.pa-alert.warning { --tone: var(--warning); --on-tone: var(--on-warning); }
+.pa-alert.warning { --tone: var(--warning); --on-tone: var(--on-warning-icon); }
 .pa-alert.destructive { --tone: var(--destructive); --on-tone: var(--destructive-foreground); }
 .pa-alert-icon { width: 32px; height: 32px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--tone, var(--wood)); color: var(--on-tone, var(--on-wood)); }
 .pa-item { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-3); border-radius: var(--radius-md); background: var(--card); color: var(--card-foreground); box-shadow: inset 0 0 0 1px var(--muted), 0 2px 0 var(--muted); }
@@ -237,7 +239,7 @@ svg.pa-i.sm { width: 16px; height: 16px; }
 .pa-toast { display: flex; align-items: center; gap: var(--space-4); min-height: 72px; padding: 14px var(--space-4); }
 .pa-toast-icon { width: 34px; height: 34px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--success); color: var(--on-success); }
 .pa-toast.error .pa-toast-icon { background: var(--destructive); color: var(--destructive-foreground); }
-.pa-toast.warning .pa-toast-icon { background: var(--warning); color: var(--on-warning); }
+.pa-toast.warning .pa-toast-icon { background: var(--warning); color: var(--on-warning-icon); }
 .pa-toast.info .pa-toast-icon { background: var(--info); color: var(--on-info); }
 
 /* Tabs, Breadcrumb, Pagination, Accordion */

@@ -43,7 +43,7 @@ describe('tokens.json', () => {
       'secondary', 'secondary-foreground', 'muted', 'muted-foreground', 'accent', 'accent-foreground', 'destructive', 'border', 'input', 'ring',
       'chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5', 'sidebar', 'sidebar-foreground', 'sidebar-primary', 'sidebar-primary-foreground',
       'sidebar-accent', 'sidebar-accent-foreground', 'sidebar-border', 'sidebar-ring',
-      'info', 'info-soft', 'on-info', 'success', 'success-soft', 'on-success', 'warning', 'warning-soft', 'warning-text', 'on-warning', 'destructive-soft', 'destructive-foreground'];
+      'info', 'info-soft', 'on-info', 'success', 'success-soft', 'on-success', 'warning', 'warning-soft', 'warning-text', 'on-warning', 'on-warning-icon', 'destructive-soft', 'destructive-foreground'];
     expect(required.filter((n) => !names.has(n))).toEqual([]);
   });
 
@@ -69,6 +69,7 @@ const PAIRS: [string, string, number][] = [
       [s === 'destructive' ? 'destructive-foreground' : `on-${s}`, s, 4.5],
     ];
   }),
+  ['on-warning-icon', 'warning', 3],
   ['ring', 'background', 3], ['ring-paper', 'card', 3], ['ring-paper', 'muted', 3], ['primary', 'card', 3],
 ];
 
