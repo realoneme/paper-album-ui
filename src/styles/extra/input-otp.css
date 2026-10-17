@@ -2,4 +2,11 @@
 .pa-otp-caret { width: 2px; height: 24px; background: currentColor; animation: pa-otp-blink 1s steps(1, end) infinite; }
 @keyframes pa-otp-blink { 50% { opacity: 0; } }
 .pa-otp.is-disabled { opacity: var(--opacity-disabled); }
+
+/* Fits its container: slots start at 46×56 and shrink together with the gaps (down to 22px wide, same
+   proportions) so six slots and the separator never run past a phone's edge. */
+.pa-otp { max-width: 100%; min-width: 0; gap: clamp(4px, 2vw, var(--space-3)); }
+.pa-otp-group { flex: 0 1 auto; min-width: 0; gap: clamp(3px, 1.5vw, var(--space-2)); }
+.pa-otp-slot { flex: 0 1 auto; min-width: 22px; width: 46px; height: auto; aspect-ratio: 46 / 56; font-size: clamp(16px, 6vw, 24px); }
+.pa-otp-sep { flex: none; }
 @media (prefers-reduced-motion: reduce) { .pa-otp-caret { animation: none; } }

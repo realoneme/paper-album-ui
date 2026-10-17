@@ -1,7 +1,9 @@
+import '@/styles/extra/hscroll.css';
 import '@/styles/extra/tabs.css';
 import * as React from 'react';
 import { Tabs as TabsPrimitive } from 'radix-ui';
 import { cn } from '@/lib/cn';
+import { useScrollEdges } from '@/lib/use-scroll-edges';
 
 export type TabsProps = React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>;
 
@@ -13,9 +15,15 @@ Tabs.displayName = 'Tabs';
 
 export type TabsListProps = React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>;
 
-/** The deep-wood rule the tabs stand on (`role="tablist"`). Give it an `aria-label`. */
+/**
+ * The deep-wood rule the tabs stand on (`role="tablist"`). Give it an `aria-label`. When the tabs do not fit
+ * (a phone) the row scrolls sideways, the side with more tabs fades out, and the selected tab scrolls into view.
+ */
 export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.List>, TabsListProps>(
-  ({ className, ...props }, ref) => <TabsPrimitive.List ref={ref} className={cn('pa-tabs', className)} {...props} />,
+  ({ className, ...props }, ref) => {
+    const scrollRef = useScrollEdges(ref, '[role="tab"][data-state="active"]');
+    return <TabsPrimitive.List ref={scrollRef} className={cn('pa-tabs pa-hscroll', className)} {...props} />;
+  },
 );
 TabsList.displayName = 'TabsList';
 

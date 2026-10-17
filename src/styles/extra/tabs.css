@@ -1,5 +1,8 @@
 /* Tabs — panel spacing under the deep rule; Radix sets aria-selected on triggers, which paper-album.css already styles. */
 .pa-tab:disabled { cursor: not-allowed; opacity: .55; }
+/* Room around the row (taken back with negative margins) so the sideways scroll does not clip the selected
+   card's shadow; the deep rule is drawn as a background inset by the same 8px, so it keeps its length. */
+.pa-tabs.pa-hscroll { padding: 16px var(--space-4) 0; margin: -8px calc(-1 * var(--space-2)) 0; box-shadow: none; background: linear-gradient(var(--primary), var(--primary)) center bottom / calc(100% - 2 * var(--space-2)) 3px no-repeat; }
 .pa-tabs[data-orientation="vertical"] { flex-direction: column; align-items: stretch; }
 .pa-tabs-content { padding: var(--space-4) var(--space-2) 0; }
 .pa-tabs-content:focus-visible { outline-offset: 4px; }

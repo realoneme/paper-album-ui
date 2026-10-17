@@ -3,8 +3,21 @@ import * as React from 'react';
 import { ToggleGroup as ToggleGroupPrimitive } from 'radix-ui';
 import { cn } from '@/lib/cn';
 
-export type ToggleGroupProps = React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>;
-type SingleProps = Extract<ToggleGroupProps, { type: 'single' }>;
+export type ToggleGroupProps = React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root> & {
+  /**
+   * Items per row. Without it the strip is one line as wide as its items. With it the items sit in an even
+   * grid of equal cells, `columns` to a row, so a narrow container never leaves a ragged last row.
+   */
+  columns?: number;
+};
+type SingleProps = Extract<React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive.Root>, { type: 'single' }>;
+
+/** The grid attributes for `columns`, merged into the root's own style. */
+function columnProps(columns: number | undefined, style: React.CSSProperties | undefined) {
+  if (!columns) return { style };
+  const n = Math.max(1, Math.floor(columns));
+  return { 'data-columns': n, style: { ...style, '--pa-tgroup-columns': n } as React.CSSProperties };
+}
 
 interface ThumbRect { x: number; y: number; width: number; height: number }
 
@@ -111,13 +124,15 @@ SingleToggleGroup.displayName = 'SingleToggleGroup';
 /**
  * A segmented strip of toggles. `type="single"` renders a radiogroup (items get `aria-checked`)
  * with one paper thumb that slides to the chosen item; `type="multiple"` a toolbar (items get
- * `aria-pressed`) where each item rises on its own. Give it an `aria-label`.
+ * `aria-pressed`) where each item rises on its own. `columns` lays the items out `n` to a row in equal cells.
+ * Give it an `aria-label`.
  */
 export const ToggleGroup = React.forwardRef<React.ElementRef<typeof ToggleGroupPrimitive.Root>, ToggleGroupProps>(
-  (props, ref) => {
-    if (props.type === 'single') return <SingleToggleGroup ref={ref} {...props} />;
+  ({ columns, ...props }, ref) => {
+    const layout = columnProps(columns, props.style);
+    if (props.type === 'single') return <SingleToggleGroup ref={ref} {...props} {...layout} />;
     const { className, ...rest } = props;
-    return <ToggleGroupPrimitive.Root ref={ref} className={cn('pa-tgroup', className)} {...rest} />;
+    return <ToggleGroupPrimitive.Root ref={ref} className={cn('pa-tgroup', className)} {...rest} {...layout} />;
   },
 );
 ToggleGroup.displayName = 'ToggleGroup';

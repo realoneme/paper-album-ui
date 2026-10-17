@@ -62,7 +62,7 @@ test('documentation site renders every component and switches theme', async ({ p
   await page.goto('/');
   await expect(page).toHaveTitle('Paper Album UI');
   await expect(page.locator('article.comp')).toHaveCount(NAMES.length);
-  await page.getByRole('button', { name: 'Walnut' }).click();
+  await page.getByRole('radio', { name: 'Walnut' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'walnut');
   expect(errors).toEqual([]);
 });

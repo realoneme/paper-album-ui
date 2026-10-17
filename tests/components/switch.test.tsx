@@ -44,3 +44,18 @@ describe('Switch', () => {
     expect(sw).toHaveAttribute('aria-checked', 'false');
   });
 });
+
+describe('Switch sizes', () => {
+  it('adds the size class for sm and lg, none for default', () => {
+    render(
+      <>
+        <Switch aria-label="Small" size="sm" />
+        <Switch aria-label="Default" />
+        <Switch aria-label="Large" size="lg" />
+      </>,
+    );
+    expect(screen.getByRole('switch', { name: 'Small' })).toHaveClass('pa-switch', 'sm');
+    expect(screen.getByRole('switch', { name: 'Default' }).className).toBe('pa-switch');
+    expect(screen.getByRole('switch', { name: 'Large' })).toHaveClass('pa-switch', 'lg');
+  });
+});

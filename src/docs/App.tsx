@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { marked } from 'marked';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { THEMES, type Theme } from '@/tokens/resolve';
 import { Cover } from './Cover';
 import { ColorTable, Shadows, SpacingAndRadius, TypeScale } from './Foundations';
@@ -28,11 +29,11 @@ function Markdown({ source, className }: { source: string; className?: string })
 
 function ThemeSwitch({ theme, onChange }: { theme: Theme; onChange: (t: Theme) => void }) {
   return (
-    <div className="themes" role="group" aria-label="Theme">
+    <ToggleGroup type="single" aria-label="Theme" columns={THEMES.length} className="themes" value={theme} onValueChange={(v) => isTheme(v) && onChange(v)}>
       {THEMES.map((t) => (
-        <button key={t.id} type="button" aria-pressed={theme === t.id} onClick={() => onChange(t.id)}>{t.name}</button>
+        <ToggleGroupItem key={t.id} value={t.id}>{t.name}</ToggleGroupItem>
       ))}
-    </div>
+    </ToggleGroup>
   );
 }
 

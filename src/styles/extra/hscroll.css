@@ -1,0 +1,20 @@
+/*
+ * A strip that scrolls sideways when it does not fit (Tabs, Navigation Menu on a phone): one line, no visible
+ * scrollbar, and the edge with more to see fades out (useScrollEdges sets data-scroll-start / data-scroll-end).
+ */
+.pa-hscroll { overflow-x: auto; overflow-y: hidden; flex-wrap: nowrap; max-width: 100%; scrollbar-width: none; overscroll-behavior-x: contain; }
+.pa-hscroll::-webkit-scrollbar { display: none; }
+.pa-hscroll > * { flex: none; white-space: nowrap; }
+.pa-hscroll[data-scroll-end] { mask-image: linear-gradient(to right, black calc(100% - 40px), transparent); }
+.pa-hscroll[data-scroll-start] { mask-image: linear-gradient(to left, black calc(100% - 40px), transparent); }
+.pa-hscroll[data-scroll-start][data-scroll-end] { mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent); }
+
+/*
+ * .pa-hscroll-overlay: for strips with something hanging below them (Navigation Menu's panel) a mask would hide
+ * it too, so the edges fade with sticky overlays in the strip's own colour (--pa-hscroll-bg) instead.
+ */
+.pa-hscroll.pa-hscroll-overlay { mask-image: none; }
+.pa-hscroll-overlay::before, .pa-hscroll-overlay::after { content: ""; position: sticky; z-index: 2; flex: none; width: 40px; align-self: stretch; pointer-events: none; opacity: 0; transition: opacity var(--dur-fast) var(--ease-paper); }
+.pa-hscroll-overlay::before { left: 0; order: -1; margin-right: -40px; background: linear-gradient(to right, var(--pa-hscroll-bg), transparent); }
+.pa-hscroll-overlay::after { right: 0; order: 9999; margin-left: -40px; background: linear-gradient(to left, var(--pa-hscroll-bg), transparent); }
+.pa-hscroll-overlay[data-scroll-start]::before, .pa-hscroll-overlay[data-scroll-end]::after { opacity: 1; }

@@ -63,9 +63,9 @@ export type PaginationPreviousProps = Omit<PaginationLinkProps, 'isActive'>;
 
 export const PaginationPrevious = React.forwardRef<HTMLAnchorElement, PaginationPreviousProps>(
   ({ children = 'Previous', 'aria-label': ariaLabel = 'Go to previous page', ...props }, ref) => (
-    <PaginationLink ref={ref} aria-label={ariaLabel} {...props}>
+    <PaginationLink ref={ref} aria-label={ariaLabel} {...props} className={cn('pa-pg-edge', props.className)}>
       <ChevronLeft className="pa-i sm" aria-hidden />
-      {children}
+      <span className="pa-pg-label">{children}</span>
     </PaginationLink>
   ),
 );
@@ -75,8 +75,8 @@ export type PaginationNextProps = Omit<PaginationLinkProps, 'isActive'>;
 
 export const PaginationNext = React.forwardRef<HTMLAnchorElement, PaginationNextProps>(
   ({ children = 'Next', 'aria-label': ariaLabel = 'Go to next page', ...props }, ref) => (
-    <PaginationLink ref={ref} aria-label={ariaLabel} {...props}>
-      {children}
+    <PaginationLink ref={ref} aria-label={ariaLabel} {...props} className={cn('pa-pg-edge', props.className)}>
+      <span className="pa-pg-label">{children}</span>
       <ChevronRight className="pa-i sm" aria-hidden />
     </PaginationLink>
   ),
@@ -94,3 +94,28 @@ export const PaginationEllipsis = React.forwardRef<HTMLSpanElement, PaginationEl
   ),
 );
 PaginationEllipsis.displayName = 'PaginationEllipsis';
+
+export interface PaginationSummaryProps extends Omit<React.ComponentPropsWithoutRef<'li'>, 'children'> {
+  /** The current page (1-based). */
+  page: number;
+  /** The number of pages. */
+  total: number;
+}
+
+/**
+ * "2 / 12" between Previous and Next, read as "Page 2 of 12". It shows only in the compact layout: when the
+ * pagination is narrower than 480px (a phone, a narrow column) the numbered links give way to it and Previous
+ * and Next shrink to their arrows. Place it as its own item inside `PaginationContent`.
+ */
+export const PaginationSummary = React.forwardRef<HTMLLIElement, PaginationSummaryProps>(
+  ({ className, page, total, ...props }, ref) => (
+    <li ref={ref} className={cn('pa-pg-summary', className)} {...props}>
+      <span className="pa-sr">Page </span>
+      <b>{page}</b>
+      <span aria-hidden="true"> / </span>
+      <span className="pa-sr"> of </span>
+      {total}
+    </li>
+  ),
+);
+PaginationSummary.displayName = 'PaginationSummary';

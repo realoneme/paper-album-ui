@@ -47,3 +47,24 @@ test.describe('panels fold open and shut', () => {
     expect(inBetween(second), `heights: ${second.join(',')}`).toBeGreaterThan(2);
   });
 });
+
+test('Collapsible: only the chevron turns; the leading label icon stays put', async ({ page }) => {
+  await page.goto('/?demo=Collapsible&theme=parchment');
+  const trigger = page.locator('.pa-acc-trigger').first();
+  const transforms = () =>
+    trigger.evaluate((el) => ({
+      label: getComputedStyle(el.querySelector('.pa-collapsible-label svg')!).transform,
+      chevron: getComputedStyle(el.querySelector(':scope > svg')!).transform,
+      running: Array.from(el.querySelectorAll('.pa-collapsible-label svg')).flatMap((s) => s.getAnimations()).length,
+    }));
+  for (let i = 0; i < 2; i++) {
+    await trigger.click();
+    const during = await transforms();
+    expect(during.running).toBe(0);
+    expect(during.label).toBe('none');
+    await page.waitForTimeout(300);
+    const after = await transforms();
+    expect(after.label).toBe('none');
+    expect(after.chevron).toBe((await trigger.getAttribute('aria-expanded')) === 'true' ? 'matrix(-1, 0, 0, -1, 0, 0)' : 'none');
+  }
+});

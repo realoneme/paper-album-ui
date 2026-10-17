@@ -2,3 +2,24 @@
 .pa-pg-list { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .pa-pg-list > li { display: inline-flex; }
 .pa-pg a[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+.pa-pg .pa-pg-label { display: inline; min-width: 0; height: auto; padding: 0; }
+.pa-pg-list > .pa-pg-summary { display: none; }
+.pa-pg .pa-pg-summary span { display: inline; min-width: 0; height: auto; padding: 0; font: inherit; }
+.pa-pg .pa-pg-summary .pa-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+/*
+ * Compact layout, chosen by the pagination's own width (a phone or a narrow column), not the viewport:
+ * Previous and Next shrink to their arrows and the numbered links give way to "2 / 12" (PaginationSummary).
+ * Without a summary the current page tile stays between the arrows.
+ */
+.pa-pg { container: pa-pg / inline-size; }
+@container pa-pg (max-width: 479px) {
+  .pa-pg-list { flex-wrap: nowrap; justify-content: center; gap: var(--space-2); }
+  .pa-pg-list > li:not(:has(.pa-pg-edge, [aria-current="page"])):not(.pa-pg-summary) { display: none; }
+  .pa-pg-list:has(> .pa-pg-summary) > li:has([aria-current="page"]) { display: none; }
+  .pa-pg .pa-pg-edge { padding: 0; width: 44px; box-shadow: var(--shadow-key); background: var(--card); }
+  .pa-pg .pa-pg-edge .pa-pg-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .pa-pg-list > .pa-pg-summary { display: inline-flex; align-items: center; min-width: 88px; height: 36px; padding: 0 var(--space-3); justify-content: center; border-radius: var(--radius-full); background: var(--muted); box-shadow: var(--shadow-sunken); font: 500 14px var(--font-sans); font-variant-numeric: tabular-nums; color: var(--card-foreground); }
+  .pa-pg-summary b { font-weight: 700; }
+  .pa-pg-summary span[aria-hidden] { color: var(--muted-foreground); padding: 0 3px; }
+}

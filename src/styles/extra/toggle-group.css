@@ -2,6 +2,10 @@
 .pa-tgroup button { position: relative; z-index: 1; }
 .pa-tgroup button[disabled] { opacity: var(--opacity-disabled); cursor: default; }
 
+/* columns={n}: an even grid of equal cells, n to a row; labels centre and may wrap inside their cell. */
+.pa-tgroup[data-columns] { display: grid; grid-template-columns: repeat(var(--pa-tgroup-columns), minmax(0, 1fr)); }
+.pa-tgroup[data-columns] button { justify-content: center; min-width: 0; padding: 0 var(--space-2); text-align: center; }
+
 /* type="single": one paper thumb slides under the chosen item; the item itself stays flat. */
 .pa-tgroup-thumb {
   position: absolute; top: 0; left: 0; z-index: 0; pointer-events: none;

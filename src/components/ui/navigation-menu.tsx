@@ -1,8 +1,10 @@
+import '@/styles/extra/hscroll.css';
 import '@/styles/extra/navigation-menu.css';
 import * as React from 'react';
 import { NavigationMenu as NavigationMenuPrimitive } from 'radix-ui';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { useScrollEdges } from '@/lib/use-scroll-edges';
 
 export type NavigationMenuProps = React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root>;
 
@@ -26,11 +28,12 @@ NavigationMenu.displayName = 'NavigationMenu';
 
 export type NavigationMenuListProps = React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.List>;
 
-/** The paper strip of top-level items. */
+/** The paper strip of top-level items. On a narrow screen it scrolls sideways; the side with more items fades out. */
 export const NavigationMenuList = React.forwardRef<React.ElementRef<typeof NavigationMenuPrimitive.List>, NavigationMenuListProps>(
-  ({ className, ...props }, ref) => (
-    <NavigationMenuPrimitive.List ref={ref} className={cn('pa-navmenu-list', className)} {...props} />
-  ),
+  ({ className, ...props }, ref) => {
+    const scrollRef = useScrollEdges(ref, '[data-state="open"], [data-active]');
+    return <NavigationMenuPrimitive.List ref={scrollRef} className={cn('pa-navmenu-list pa-hscroll pa-hscroll-overlay', className)} {...props} />;
+  },
 );
 NavigationMenuList.displayName = 'NavigationMenuList';
 

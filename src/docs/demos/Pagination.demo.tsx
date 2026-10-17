@@ -7,6 +7,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationSummary,
 } from '@/components/ui/pagination';
 import type { DemoMeta } from '../types';
 
@@ -45,6 +46,7 @@ export default function PaginationDemo() {
             </PaginationItem>
           ),
         )}
+        <PaginationSummary page={page} total={TOTAL} />
         <PaginationItem><PaginationNext href="#p" onClick={go(page + 1)} disabled={page === TOTAL} /></PaginationItem>
       </PaginationContent>
     </Pagination>

@@ -3,11 +3,12 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import type { DemoMeta } from '../types';
 
-export const meta: DemoMeta = { name: 'Switch', group: 'Forms', height: 90 };
+export const meta: DemoMeta = { name: 'Switch', group: 'Forms', height: 140 };
 
 export default function SwitchDemo() {
   const [captions, setCaptions] = useState(true);
   return (
+    <div className="pa-col" style={{ gap: 20 }}>
     <div className="pa-row" style={{ gap: 24 }}>
       <span className="pa-row">
         <Switch id="switch-demo-captions" checked={captions} onCheckedChange={setCaptions} />
@@ -17,6 +18,15 @@ export default function SwitchDemo() {
         <Switch id="switch-demo-downloads" />
         <Label htmlFor="switch-demo-downloads">Allow downloads</Label>
       </span>
+    </div>
+    <div className="pa-row" style={{ gap: 24 }}>
+      {(['sm', 'default', 'lg'] as const).map((size) => (
+        <span key={size} className="pa-row">
+          <Switch id={`switch-demo-${size}`} size={size} defaultChecked />
+          <Label htmlFor={`switch-demo-${size}`}>{size}</Label>
+        </span>
+      ))}
+    </div>
     </div>
   );
 }

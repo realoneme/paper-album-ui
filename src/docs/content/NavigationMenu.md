@@ -4,6 +4,7 @@ The site's main navigation; an item can open a wide panel of album covers and li
 
 - Consumer provides: top-level links, optional panel content (up to three covers + a link column).
 - React: `NavigationMenu` (`aria-label`, `value`/`defaultValue`), `NavigationMenuList`, `NavigationMenuItem`, `NavigationMenuTrigger`, `NavigationMenuContent` (the panel, in `pa-pop`, under the strip), `NavigationMenuLink` (`topLevel` for strip links, `active` for the current page) from `@/components/ui/navigation-menu`, built on Radix Navigation Menu (hover, click, Enter, Escape).
+- Narrow screens: the strip stays on one line and scrolls sideways; the side with more items fades out (an overlay in the strip's colour, so the panel below is never masked).
 
 ```tsx
 <NavigationMenu aria-label="Site">

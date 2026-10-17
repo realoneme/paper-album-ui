@@ -1,7 +1,7 @@
 /* Navigation Menu: the pa-navmenu strip as a Radix list, with an inline panel under it. */
 .pa-navmenu-root { position: relative; max-width: 100%; }
 .pa-navmenu-root > div { max-width: 100%; }
-.pa-navmenu-list { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 6px; list-style: none; border-radius: var(--radius-lg); background: var(--card); box-shadow: var(--shadow-raised-1); }
+.pa-navmenu-list { --pa-hscroll-bg: var(--card); display: inline-flex; vertical-align: top; flex-wrap: nowrap; gap: 4px; margin: 0; padding: 6px; list-style: none; border-radius: var(--radius-lg); background: var(--card); box-shadow: var(--shadow-raised-1); }
 .pa-navmenu-trigger, .pa-navmenu-link { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 var(--space-4); border: 0; border-radius: var(--radius-md); background: transparent; font: 500 15px var(--font-sans); text-decoration: none; color: var(--card-foreground); cursor: pointer; }
 .pa-navmenu-trigger:hover, .pa-navmenu-trigger[data-state="open"], .pa-navmenu-link:hover, .pa-navmenu-link[data-active] { background: var(--muted); }
 .pa-navmenu-trigger svg { transition: transform 160ms ease; }

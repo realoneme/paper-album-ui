@@ -81,13 +81,30 @@ describe('Menubar', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 
-  it('demo starts with File and its Export submenu open, without taking focus', async () => {
+  it('demo starts with File and, on a wide screen, its Export submenu open, without taking focus', async () => {
+    const wide = vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => ({ matches: true, media: query, onchange: null, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent: () => false }));
     render(<MenubarDemo />);
+    wide.mockRestore();
     const file = screen.getByRole('menu', { name: 'File' });
     expect(file).not.toContainElement(document.activeElement as HTMLElement);
     expect(screen.getByRole('menuitem', { name: 'TIFF · print' })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('menuitem', { name: 'File' }));
     expect(screen.queryByRole('menu', { name: 'File' })).not.toBeInTheDocument();
+  });
+
+  it('demo opens only the File menu on a narrow screen', () => {
+    render(<MenubarDemo />);
+    expect(screen.getByRole('menu', { name: 'File' })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'TIFF · print' })).not.toBeInTheDocument();
+  });
+
+  it('demo opens the Export submenu only on load: reopening File shows just the menu', async () => {
+    render(<MenubarDemo />);
+    await userEvent.click(screen.getByRole('menuitem', { name: 'File' }));
+    expect(screen.queryByRole('menu', { name: 'File' })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('menuitem', { name: 'File' }));
+    expect(await screen.findByRole('menu', { name: 'File' })).toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: 'TIFF · print' })).not.toBeInTheDocument();
   });
 });
 

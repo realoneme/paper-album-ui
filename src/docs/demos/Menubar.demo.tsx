@@ -9,6 +9,7 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from '@/components/ui/menubar';
+import { useState } from 'react';
 import type { DemoMeta } from '../types';
 import { stayOpen, useDemoValue, useStage } from './support/overlay-stage';
 
@@ -20,13 +21,22 @@ const OTHER_MENUS: Record<string, string[]> = {
   album: ['Rename album', 'Reorder photos', 'Album settings'],
 };
 
+/** Wide enough to show the Export submenu beside the File menu without covering it. */
+const showsSubmenuOnLoad = () => typeof window === 'undefined' || !window.matchMedia || window.matchMedia('(min-width: 640px)').matches;
+
 /**
- * The File menu (and its Export submenu) start open; clicks elsewhere on the page leave it open. Hover or the
- * arrow keys move the paper slip between menus.
+ * The File menu starts open, and on a wide screen its Export submenu too (only on load: once File closes or
+ * another menu opens, reopening File shows just the menu). Clicks elsewhere on the page leave it open. Hover or
+ * the arrow keys move the paper slip between menus.
  */
 export default function MenubarDemo() {
   const [stage, setStage] = useStage();
-  const { value, onValueChange, onOpenAutoFocus } = useDemoValue('file');
+  const { value, onValueChange: setValue, onOpenAutoFocus } = useDemoValue('file');
+  const [exportOpen, setExportOpen] = useState(showsSubmenuOnLoad);
+  const onValueChange = (next: string) => {
+    if (next !== 'file') setExportOpen(false);
+    setValue(next);
+  };
   const contentProps = { container: stage, onOpenAutoFocus, ...stayOpen(stage) };
   return (
     <div ref={setStage} style={{ position: 'relative', minHeight: 300 }}>
@@ -36,7 +46,7 @@ export default function MenubarDemo() {
           <MenubarContent {...contentProps} style={{ width: 250 }}>
             <MenubarItem>New album</MenubarItem>
             <MenubarItem>Import photos…</MenubarItem>
-            <MenubarSub defaultOpen>
+            <MenubarSub open={value === 'file' && exportOpen} onOpenChange={setExportOpen}>
               <MenubarSubTrigger>Export as</MenubarSubTrigger>
               <MenubarSubContent container={stage} style={{ width: 190 }}>
                 <MenubarItem>JPEG · web</MenubarItem>

@@ -7,6 +7,7 @@ A segmented strip of toggles; the chosen segment rises out of the groove.
 - Motion (`multiple`): each pressed item animates its own fill and shadow; there is no shared thumb.
 - With `prefers-reduced-motion` the thumb jumps instead of sliding.
 - Do: 2–5 short options. Don't: use for more than five; use Select instead.
+- `columns={n}`: items sit in an even grid of equal cells, n to a row, so a narrow container never leaves a ragged last row (the docs theme switch uses `columns={3}`).
 
 ```tsx
 <ToggleGroup type="single" aria-label="Gallery layout" value={layout} onValueChange={(v) => v && setLayout(v)}>

@@ -145,3 +145,28 @@ describe('ToggleGroup', () => {
     });
   });
 });
+
+describe('ToggleGroup columns', () => {
+  it('lays items out n to a row on an even grid', () => {
+    render(
+      <ToggleGroup type="single" aria-label="Theme" columns={3} defaultValue="a" style={{ marginTop: 4 }}>
+        <ToggleGroupItem value="a">A</ToggleGroupItem>
+        <ToggleGroupItem value="b">B</ToggleGroupItem>
+        <ToggleGroupItem value="c">C</ToggleGroupItem>
+      </ToggleGroup>,
+    );
+    const group = screen.getByRole('radiogroup', { name: 'Theme' });
+    expect(group).toHaveAttribute('data-columns', '3');
+    expect(group.style.getPropertyValue('--pa-tgroup-columns')).toBe('3');
+    expect(group.style.marginTop).toBe('4px');
+  });
+
+  it('keeps the one-line strip when columns is not set', () => {
+    render(
+      <ToggleGroup type="multiple" aria-label="Format">
+        <ToggleGroupItem value="b">B</ToggleGroupItem>
+      </ToggleGroup>,
+    );
+    expect(screen.getByRole('toolbar', { name: 'Format' })).not.toHaveAttribute('data-columns');
+  });
+});

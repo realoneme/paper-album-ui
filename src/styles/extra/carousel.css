@@ -4,8 +4,10 @@
 .pa-carousel .slide { min-width: 0; }
 .pa-carousel .slide :is(.pa-photo, img) { transition: opacity 240ms ease; }
 .pa-carousel .slide:last-child { margin-right: 0; }
-.pa-carousel-controls { display: flex; align-items: center; justify-content: center; gap: var(--space-3); }
-.pa-carousel-controls .pa-dots { flex: 0 1 auto; flex-wrap: wrap; }
+/* One row: prev, dots, next, counter. The dots never wrap or shrink; when the row is too narrow (phones) the
+   counter drops to its own centred line instead. For long sets use the counter rather than many dots. */
+.pa-carousel-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-2) var(--space-3); }
+.pa-carousel-controls .pa-dots { flex: none; flex-wrap: nowrap; }
 @media (prefers-reduced-motion: reduce) { .pa-carousel .slide { transition: none; } }
 /* Counter: "3 / 12" in a small groove; tabular numbers so the pill keeps its width while paging. */
 .pa-carousel-counter { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; min-width: 76px; padding: 0 var(--space-3); border-radius: var(--radius-full); background: var(--muted); box-shadow: var(--shadow-sunken); color: var(--card-foreground); font: 500 13px var(--font-sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
