@@ -1,8 +1,12 @@
 /* Menubar: keyboard highlight on a top-level trigger matches its hover. */
 .pa-menubar-trigger[data-highlighted]:not([data-state="open"]), .pa-menubar-trigger:hover:not([data-state="open"]) { background: var(--accent); color: var(--accent-foreground); }
+/* No focus ring on the triggers: it overlapped the pressed-in slip. Keyboard focus is shown the way menu items show
+   it: the fill (no menu open) or the slip (a menu open). */
+.pa-menubar-trigger:focus-visible { outline: none; }
+.pa-menubar-trigger:focus-visible:not([data-state="open"]) { background: var(--accent); color: var(--accent-foreground); }
 /* While a menu is open the slip is the only pressed shape: a hovered trigger is about to take the slip, so it gets
    no hover fill of its own (that fill would flash for a frame before the slip arrives). */
-.pa-menubar:has(> .pa-menubar-slip[data-state="open"]) .pa-menubar-trigger:is(:hover, [data-highlighted]) { background: transparent; color: inherit; }
+.pa-menubar:has(> .pa-menubar-slip[data-state="open"]) .pa-menubar-trigger:is(:hover, [data-highlighted], :focus-visible) { background: transparent; color: inherit; }
 .pa-menubar { position: relative; isolation: isolate; max-width: 100%; flex-wrap: wrap; }
 
 /*

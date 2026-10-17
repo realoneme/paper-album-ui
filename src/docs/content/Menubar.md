@@ -4,6 +4,7 @@ A desktop-style menu bar for editor screens, with submenus.
 
 - React: `Menubar` (`aria-label`, `value`/`defaultValue`), `MenubarMenu`, `MenubarTrigger`, `MenubarContent` (`container`), and the same item parts as Dropdown Menu (`MenubarItem`, `MenubarCheckboxItem`, `MenubarRadioItem`, `MenubarLabel`, `MenubarSeparator`, `MenubarSub` + `MenubarSubTrigger` + `MenubarSubContent`, `MenubarShortcut`) from `@/components/ui/menubar`, built on Radix Menubar (left/right arrows move between menus).
 - A paper slip (`.pa-menubar-slip`, aria-hidden) slides under the open menu's trigger (`transform` and size, `--dur-base`, `--ease-paper`) and follows when the reader moves between menus by hover or the arrow keys. It is hidden while no menu is open and appears in place, without travelling; with reduced motion it jumps. `Menubar` works controlled (`value` + `onValueChange`, `''` for none) or uncontrolled.
+- Focus: triggers draw no focus ring (it would sit on top of the pressed-in slip). The keyboard-focused trigger shows the highlight fill while no menu is open, and the slip marks it while one is.
 - Highlight: one source of truth, Radix's `[data-highlighted]`, which follows the pointer item by item and the arrow keys. `:hover` never paints a menu item and no item is pinned, so they cannot disagree; each item's hit area bridges the 2px gap so the highlight never drops out between items.
 
 ## Timing and motion

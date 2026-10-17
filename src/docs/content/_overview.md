@@ -90,7 +90,7 @@ Paper settles, springs back or tucks away. Use the motion variables defined at t
 
 - Controls show focus with a solid 2px `ring` outline and a 2px offset; on paper surfaces use `ring-paper`. Both reach 3:1 on the surfaces they land on in every theme.
 - Inputs (grooves) show focus without an outline: the paper lightens to `card`, the groove deepens and a warm `glow` halo lifts it (`--focus-groove`, `--focus-halo`). An invalid input keeps its `destructive` inset while focused.
-- Inside menus the highlighted item is the focus indicator; items get no outline.
+- Inside menus the highlighted item is the focus indicator; items get no outline. Menubar triggers likewise: the fill (no menu open) or the slip (a menu open) shows focus, never an outline.
 - Body text pairs are checked at 4.5:1 in all three themes: `foreground` and `ground-muted` on `background`; `card-foreground` and `muted-foreground` on `card`, `popover` and `muted`; `primary-foreground` on `primary`; `on-wood` on `wood`; `on-seal` on `seal`; `destructive-foreground` on `destructive`; `success`, `warning-text`, `info` and `destructive` as text on `card`, `muted` and their own `-soft`; `on-success`, `on-warning`, `on-info` on their solid fills. The bright `warning` orange is about 2.5:1 against paper, so it always comes with ink on it and an icon or word beside it. `on-warning-icon` (white) on `warning` is checked at 3:1, the bar for icons.
 - `border`, `glow`, `tape` are decorative and below 3:1 by design.
 - Use real buttons, links and inputs; icon-only buttons carry `aria-label`.

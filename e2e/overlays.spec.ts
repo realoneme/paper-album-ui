@@ -86,3 +86,32 @@ test.describe('moving between menu titles swaps in place', () => {
     expect(await page.evaluate(runningAnimations('.pa-navmenu-content[data-state="open"]'))).toEqual([]);
   });
 });
+
+test('Menubar triggers never draw a focus ring over the slip; keyboard focus shows as the fill', async ({ page }) => {
+  await page.goto('/?demo=Menubar&theme=parchment');
+  const triggers = page.locator('.pa-menubar-trigger');
+  const outlines = () => triggers.evaluateAll((els) => els.map((e) => getComputedStyle(e).outlineStyle));
+  // Close the demo's open menu from the keyboard, so the browser is in keyboard (focus-visible) mode.
+  await page.getByRole('menuitem', { name: 'File', exact: true }).focus();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[role="menu"][data-side="bottom"]')).toHaveCount(0);
+  const file = page.getByRole('menuitem', { name: 'File', exact: true });
+  await file.focus();
+  expect(await file.evaluate((e) => e.matches(':focus-visible'))).toBe(true);
+  expect(await file.evaluate((e) => getComputedStyle(e).outlineStyle)).toBe('none');
+  expect(await file.evaluate((e) => getComputedStyle(e).backgroundColor)).not.toBe('rgba(0, 0, 0, 0)');
+
+  // Open with the keyboard, move with arrows and the pointer: no outlines anywhere.
+  await page.keyboard.press('Enter');
+  await expect(page.locator('[role="menu"][data-side="bottom"]')).toBeVisible();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('menuitem', { name: 'Edit', exact: true })).toHaveAttribute('data-state', 'open');
+  expect(await outlines()).toEqual(['none', 'none', 'none', 'none']);
+  // A real pointer glides across the bar from the open trigger to Album.
+  const from = await page.getByRole('menuitem', { name: 'Edit', exact: true }).boundingBox();
+  const to = await page.getByRole('menuitem', { name: 'Album', exact: true }).boundingBox();
+  await page.mouse.move(from!.x + from!.width / 2, from!.y + from!.height / 2);
+  await page.mouse.move(to!.x + to!.width / 2, to!.y + to!.height / 2, { steps: 10 });
+  await expect(page.getByRole('menuitem', { name: 'Album', exact: true })).toHaveAttribute('data-state', 'open');
+  expect(await outlines()).toEqual(['none', 'none', 'none', 'none']);
+});
