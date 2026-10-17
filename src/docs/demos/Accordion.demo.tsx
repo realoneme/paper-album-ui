@@ -6,7 +6,7 @@ export const meta: DemoMeta = { name: 'Accordion', group: 'Layout & navigation',
 export default function AccordionDemo() {
   return (
     <div className="pa-panel" style={{ maxWidth: 560 }}>
-      <Accordion type="single" collapsible defaultValue="delivery">
+      <Accordion defaultValue={['delivery']}>
         <AccordionItem value="delivery">
           <AccordionTrigger>How soon will I see my photos?</AccordionTrigger>
           <AccordionContent>A preview gallery arrives within 3 days; the full edited album within 2 weeks.</AccordionContent>

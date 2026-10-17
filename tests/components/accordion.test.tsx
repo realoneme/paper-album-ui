@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import AccordionDemo from '@/docs/demos/Accordion.demo';
 
 function Demo({ type = 'single' }: { type?: 'single' | 'multiple' }) {
   const items = (
@@ -51,6 +52,26 @@ describe('Accordion', () => {
     expect(screen.getByText('Yes.')).toBeInTheDocument();
     await userEvent.click(second);
     expect(second).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('opens each panel on its own by default: opening one never closes another', async () => {
+    render(
+      <Accordion defaultValue={['a']}>
+        <AccordionItem value="a"><AccordionTrigger>How soon?</AccordionTrigger><AccordionContent>Within 3 days.</AccordionContent></AccordionItem>
+        <AccordionItem value="b"><AccordionTrigger>Printed albums?</AccordionTrigger><AccordionContent>Yes.</AccordionContent></AccordionItem>
+      </Accordion>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Printed albums?' }));
+    expect(screen.getByRole('button', { name: 'How soon?' })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('button', { name: 'Printed albums?' })).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  it('demo keeps the first answer open when another opens', async () => {
+    render(<AccordionDemo />);
+    const first = screen.getByRole('button', { name: 'How soon will I see my photos?' });
+    expect(first).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.click(screen.getByRole('button', { name: 'Can I order printed albums?' }));
+    expect(first).toHaveAttribute('aria-expanded', 'true');
   });
 
   it('allows several open in multiple mode', async () => {

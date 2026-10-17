@@ -26,13 +26,14 @@ const inBetween = (hs: number[]) => {
 };
 
 test.describe('panels fold open and shut', () => {
-  test('Accordion unfolds a panel to its height and folds the other away, without animating on load', async ({ page }) => {
+  test('Accordion unfolds a panel to its height and folds it away again, leaving the others open, without animating on load', async ({ page }) => {
     await page.goto('/?demo=Accordion&theme=parchment');
     expect(await page.evaluate(() => Array.from(document.querySelectorAll('.pa-acc-content')).flatMap((e) => e.getAnimations()).length)).toBe(0);
     const second = page.locator('.pa-acc-trigger').nth(1);
     await expect(second).toHaveAttribute('aria-expanded', 'false');
     const opening = await heightsDuring(page, '.pa-acc-content', 1, () => second.click());
     expect(inBetween(opening), `heights while opening: ${opening.join(',')}`).toBeGreaterThan(2);
+    await expect(page.locator('.pa-acc-trigger').first()).toHaveAttribute('aria-expanded', 'true');
     const closing = await heightsDuring(page, '.pa-acc-content', 1, () => second.click());
     expect(inBetween(closing), `heights while closing: ${closing.join(',')}`).toBeGreaterThan(2);
   });

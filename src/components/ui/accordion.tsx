@@ -4,11 +4,21 @@ import { Accordion as AccordionPrimitive } from 'radix-ui';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
-export type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Root>;
+type MultipleProps = Omit<AccordionPrimitive.AccordionMultipleProps, 'type'> & { type?: 'multiple' };
+export type AccordionProps = AccordionPrimitive.AccordionSingleProps | MultipleProps;
 
-/** Stacked questions. `type="single"` (with `collapsible`) opens one at a time; `type="multiple"` allows several. */
+/**
+ * Stacked questions. By default each panel opens and closes on its own (`type="multiple"`): opening one never
+ * folds another away. Pass `type="single"` (with `collapsible`) for one-at-a-time.
+ */
 export const Accordion = React.forwardRef<React.ElementRef<typeof AccordionPrimitive.Root>, AccordionProps>(
-  ({ className, ...props }, ref) => <AccordionPrimitive.Root ref={ref} className={cn('pa-acc', className)} {...props} />,
+  ({ className, ...props }, ref) => (
+    <AccordionPrimitive.Root
+      ref={ref}
+      className={cn('pa-acc', className)}
+      {...(props.type === 'single' ? props : { ...props, type: 'multiple' as const })}
+    />
+  ),
 );
 Accordion.displayName = 'Accordion';
 
