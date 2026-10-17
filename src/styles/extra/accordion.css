@@ -1,4 +1,17 @@
 /* Accordion — Radix wraps the trigger in an h3 and the panel in a region. */
 .pa-acc-header { margin: 0; }
 .pa-acc-content { overflow: hidden; }
+
+/*
+ * Fold: the panel unfolds to its measured height (Radix's --radix-*-content-height) while the sunken well settles
+ * in with a 4px drop, and folds away a little faster. Shared by Accordion and Collapsible. Radix skips the motion
+ * for panels that are open on first render. Reduced motion: the global override makes it instant.
+ */
+.pa-acc-content { --pa-fold-height: var(--radix-accordion-content-height); }
+.pa-acc-content[data-state="open"], .pa-collapsible-content[data-state="open"] { animation: pa-fold-open var(--dur-base) var(--ease-paper); }
+.pa-acc-content[data-state="closed"], .pa-collapsible-content[data-state="closed"] { animation: pa-fold-close var(--dur-fast) var(--ease-in-paper); }
+.pa-acc-content[data-state="open"] > .pa-acc-panel, .pa-collapsible-content[data-state="open"] > * { animation: pa-fold-settle var(--dur-base) var(--ease-paper); }
+@keyframes pa-fold-open { from { height: 0; } to { height: var(--pa-fold-height); } }
+@keyframes pa-fold-close { from { height: var(--pa-fold-height); } to { height: 0; } }
+@keyframes pa-fold-settle { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 .pa-acc-trigger:disabled { cursor: not-allowed; opacity: .55; }

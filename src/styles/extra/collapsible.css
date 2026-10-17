@@ -2,3 +2,5 @@
 .pa-collapsible > .pa-acc-trigger { padding: 0 var(--space-4); }
 .pa-collapsible-label { display: inline-flex; align-items: center; gap: 10px; }
 .pa-collapsible .body[hidden] { display: none; }
+/* Folds open and shut like an Accordion panel (keyframes in accordion.css). */
+.pa-collapsible-content { overflow: hidden; --pa-fold-height: var(--radix-collapsible-content-height); }
