@@ -12,7 +12,7 @@ Every shadcn/ui CSS variable has a token of the same name, so a shadcn `globals.
 | `--muted` / `--muted-foreground` | `muted` / `muted-foreground` | Pressed-in paper, secondary text on paper |
 | `--accent` / `--accent-foreground` | `accent` / `accent-foreground` | Hover fill |
 | `--destructive` | `destructive` (+ `destructive-foreground`, `destructive-soft`) | Error, delete |
-| (none) | `success` · `warning` · `info` (+ `-soft`, `on-`) | The other three semantic states |
+| (none) | `success` · `warning` · `info` (+ `-soft`, `on-`; `warning-text` for warning as text) | The other three semantic states |
 | `--border` / `--input` / `--ring` | `border` / `input` / `ring` (+ `ring-paper`) | Page edge, groove, focus |
 | `--chart-1` … `--chart-5` | `chart-1` … `chart-5` | Wood, mid wood, light wood, slate, seal |
 | `--sidebar-*` (8) | `sidebar-*` (8) | Sidebar paper |

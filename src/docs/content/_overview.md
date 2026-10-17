@@ -24,7 +24,7 @@ Switch themes by setting `data-theme` on the root. Never hard-code a hex in a co
 - Paper: `card` for raised sheets, `popover` for the top sheet, `muted` for anything pressed in (inputs, tracks, wells, hover rows). Text on paper is `card-foreground`; secondary text on paper is `muted-foreground`.
 - One `primary` action per view (deep wood, `primary-foreground` text, `shadow-press`). Secondary actions are paper keys: `secondary` + `shadow-key`.
 - `accent` is shadcn's hover fill (same as `muted`). The brand's red highlight is `seal`: the bookmark ribbon, a featured badge, the booking button. Use it once per view.
-- Four semantic colours, each with a `-soft` ground and an `on-` colour: `info` (slate blue), `success` (moss), `warning` (amber), `destructive` (sealing-wax red). Alerts and toasts stay on paper (`card`) and carry the tone only in a round icon disc; warning and destructive also hang a bookmark ribbon in the tone from the top-right edge (the album's own bookmark), never a coloured side bar; badges use the `-soft` ground with the strong colour as text.
+- Four semantic colours, each with a `-soft` ground and an `on-` colour: `info` (slate blue), `success` (moss), `warning` (orange), `destructive` (sealing-wax red). Warning is split: `warning` is a bright orange for marks (icon discs, ribbons, solid badges) with dark `on-warning` ink on it, and `warning-text` is the deep burnt orange used whenever warning is text. Alerts and toasts stay on paper (`card`) and carry the tone only in a round icon disc; warning and destructive also hang a bookmark ribbon in the tone from the top-right edge (the album's own bookmark), never a coloured side bar; badges use the `-soft` ground with the strong colour as text (`warning-text` for warning). Badges come in `default` (28px), `sm` (22px) and `xs` (18px).
 - A status never relies on colour alone: success and destructive sit at similar lightness, so every status also carries an icon (check, triangle, info, cross) or a word ("Paid", "Failed").
 - `destructive` is for delete and failure only.
 - `wood` fills chips that are on, slider and progress fills and photo corners; text on it is `on-wood` (dark in parchment, light in oak and walnut).
@@ -67,15 +67,31 @@ Sheets and drawers add three 2px page edges on the side they slide from. Diorama
 
 ## Motion
 
-- Press: buttons sink 2px on `:active`; hover lifts 1–2px.
-- Pocket: on hover the print slides up 28–34px out of its pocket (0.55s, cubic-bezier(.2,.8,.2,1)).
-- Pop-up: popovers and dialogs may hinge up from their bottom edge.
-- Respect `prefers-reduced-motion`: drop transforms and parallax, keep state changes instant.
+Paper settles, springs back or tucks away. Use the motion variables defined at the top of `paper-album.css`, never ad-hoc timings:
+
+| Variable | Value | Use |
+| --- | --- | --- |
+| `--ease-paper` | cubic-bezier(.2, .8, .2, 1) | Things arriving and settling: popovers, sliding thumbs, progress |
+| `--ease-spring` | cubic-bezier(.34, 1.56, .64, 1) | A little overshoot: a released toggle, a radio dot, a sheet landing |
+| `--ease-in-paper` | cubic-bezier(.4, 0, 1, 1) | Things leaving: closing menus, a dot scaling out |
+| `--dur-instant` / `--dur-fast` / `--dur-base` / `--dur-slow` | 80 / 140 / 220 / 360ms | Hover feedback / exits / most enters / larger moves |
+
+- Press: keys sink 2px and spring back. Toggles move between raised and pressed-in paper.
+- Selection slides: Toggle Group and Menubar move one paper slip to the chosen item instead of swapping fills.
+- Checks draw: the checkbox tick draws in and undraws; the radio dot springs in and scales out.
+- Dropdowns (Select, Combobox, Date Picker, menus) slide down from their trigger and back up on close; they slide up when they open above.
+- Modals grow out of the button that opened them and shrink back into it on close; sheets slide in with a small overshoot; popovers and tooltips pop from the side they open on.
+- Hover content opens with no delay: tooltips, hover cards and navigation panels appear the moment the pointer arrives. The hover card is a tall card that drops from the pointer and swings on its thread before it settles.
+- Living feedback: progress fills smoothly with a light sweeping across the filled part; the spinner is a gooey comet circling.
+- Pocket: on hover the print slides up 28–34px out of its pocket.
+- Respect `prefers-reduced-motion`: animations collapse to an instant state change (modals and popovers fade only).
 
 ## Focus and accessibility
 
-- Focus is a solid 2px `ring` outline with a 2px offset; on paper surfaces use `ring-paper`. Both reach 3:1 on the surfaces they land on in every theme.
-- Body text pairs are checked at 4.5:1 in all three themes: `foreground` and `ground-muted` on `background`; `card-foreground` and `muted-foreground` on `card`, `popover` and `muted`; `primary-foreground` on `primary`; `on-wood` on `wood`; `on-seal` on `seal`; `destructive-foreground` on `destructive`; `success`, `warning`, `info` and `destructive` as text on `card`, `muted` and their own `-soft`; `on-success`, `on-warning`, `on-info` on their solid fills.
+- Controls show focus with a solid 2px `ring` outline and a 2px offset; on paper surfaces use `ring-paper`. Both reach 3:1 on the surfaces they land on in every theme.
+- Inputs (grooves) show focus without an outline: the paper lightens to `card`, the groove deepens and a warm `glow` halo lifts it (`--focus-groove`, `--focus-halo`). An invalid input keeps its `destructive` inset while focused.
+- Inside menus the highlighted item is the focus indicator; items get no outline.
+- Body text pairs are checked at 4.5:1 in all three themes: `foreground` and `ground-muted` on `background`; `card-foreground` and `muted-foreground` on `card`, `popover` and `muted`; `primary-foreground` on `primary`; `on-wood` on `wood`; `on-seal` on `seal`; `destructive-foreground` on `destructive`; `success`, `warning-text`, `info` and `destructive` as text on `card`, `muted` and their own `-soft`; `on-success`, `on-warning`, `on-info` on their solid fills. The bright `warning` orange is about 2.5:1 against paper, so it always comes with ink on it and an icon or word beside it.
 - `border`, `glow`, `tape` are decorative and below 3:1 by design.
 - Use real buttons, links and inputs; icon-only buttons carry `aria-label`.
 
