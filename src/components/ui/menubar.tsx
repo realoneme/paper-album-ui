@@ -15,6 +15,11 @@ export type MenubarProps = React.ComponentPropsWithoutRef<typeof MenubarPrimitiv
 
 /** The open menu's value ('' when none), so a menu closing because another one opened can skip its exit motion. */
 const MenubarValueContext = React.createContext('');
+/**
+ * The last change of open menu (from → to). A sheet that mounts for a move between menus (from and to both set)
+ * appears in place without its slide-down; only a first open slides.
+ */
+const MenubarSwapContext = React.createContext<React.MutableRefObject<{ from: string; to: string }> | null>(null);
 
 /**
  * A desktop-style menu bar for editor screens. Arrow keys move between menus. Give it an aria-label.
@@ -24,6 +29,8 @@ export const Menubar = React.forwardRef<React.ElementRef<typeof MenubarPrimitive
   ({ className, children, value: valueProp, defaultValue = '', onValueChange, ...props }, ref) => {
     const [inner, setInner] = React.useState(defaultValue);
     const value = valueProp ?? inner;
+    const swap = React.useRef({ from: '', to: value });
+    if (swap.current.to !== value) swap.current = { from: swap.current.to, to: value };
     const handleValueChange = React.useCallback(
       (next: string) => {
         if (valueProp === undefined) setInner(next);
@@ -80,7 +87,9 @@ export const Menubar = React.forwardRef<React.ElementRef<typeof MenubarPrimitive
         {...props}
       >
         <span ref={slipRef} className="pa-menubar-slip" data-state="closed" aria-hidden="true" />
-        <MenubarValueContext.Provider value={value}>{children}</MenubarValueContext.Provider>
+        <MenubarSwapContext.Provider value={swap}>
+          <MenubarValueContext.Provider value={value}>{children}</MenubarValueContext.Provider>
+        </MenubarSwapContext.Provider>
       </MenubarPrimitive.Root>
     );
   },
@@ -114,10 +123,20 @@ export const MenubarContent = React.forwardRef<React.ElementRef<typeof MenubarPr
     // Switching menus (hover or arrows) swaps the sheets at once: a sheet still sliding out would see focus enter
     // the new one as an outside interaction and close the whole bar. Closing the bar plays the slide-up.
     const switching = React.useContext(MenubarValueContext) !== '';
+    const swap = React.useContext(MenubarSwapContext);
+    // Mark the sheet as it mounts (before its first paint, so the slide-down never starts).
+    const setRefs = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        if (node && swap && swap.current.from && swap.current.to) node.setAttribute('data-menubar-swapped-in', '');
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
+      },
+      [ref, swap],
+    );
     return (
       <MenubarPrimitive.Portal container={container}>
         <MenubarPrimitive.Content
-          ref={ref}
+          ref={setRefs}
           data-menubar-switching={switching ? '' : undefined}
           align={align}
           sideOffset={sideOffset}

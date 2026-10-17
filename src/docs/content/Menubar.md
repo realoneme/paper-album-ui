@@ -9,8 +9,8 @@ A desktop-style menu bar for editor screens, with submenus.
 ## Timing and motion
 
 - The sheet opens 12px below the bar (`sideOffset={16}` from the trigger, which sits 4px inside the bar), the same gap Navigation Menu leaves under its panels.
-- Once a menu is open, hovering another trigger switches at once (the old sheet goes without its exit motion); closing the bar slides the sheet up. `MenubarSub` opens on hover without delay.
-- The sheet slides down from its trigger (6px travel, a slight fold and a clip, `--dur-base` with `--ease-paper`, origin from Radix's `--radix-*-content-transform-origin`) and slides back up on close (`data-state="closed"`; Radix keeps it mounted until the animation ends). It slides up instead when it opens above (`data-side="top"`), sideways for submenus. Reduced motion: fade only.
+- Once a menu is open, hovering another trigger switches at once: the old sheet goes without its exit motion and the new one appears in place without its slide-down (`data-menubar-swapped-in`), so only the slip travels. While a menu is open the triggers get no hover fill (it would flash before the slip arrives). Closing the bar slides the sheet up. `MenubarSub` opens on hover without delay.
+- On a first open the sheet slides down from its trigger (6px travel, a slight fold and a clip, `--dur-base` with `--ease-paper`, origin from Radix's `--radix-*-content-transform-origin`) and slides back up on close (`data-state="closed"`; Radix keeps it mounted until the animation ends). It slides up instead when it opens above (`data-side="top"`), sideways for submenus. Reduced motion: fade only.
 
 ```tsx
 <Menubar aria-label="Editor">

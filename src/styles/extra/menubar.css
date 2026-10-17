@@ -1,5 +1,8 @@
 /* Menubar: keyboard highlight on a top-level trigger matches its hover. */
 .pa-menubar-trigger[data-highlighted]:not([data-state="open"]), .pa-menubar-trigger:hover:not([data-state="open"]) { background: var(--accent); color: var(--accent-foreground); }
+/* While a menu is open the slip is the only pressed shape: a hovered trigger is about to take the slip, so it gets
+   no hover fill of its own (that fill would flash for a frame before the slip arrives). */
+.pa-menubar:has(> .pa-menubar-slip[data-state="open"]) .pa-menubar-trigger:is(:hover, [data-highlighted]) { background: transparent; color: inherit; }
 .pa-menubar { position: relative; isolation: isolate; max-width: 100%; flex-wrap: wrap; }
 
 /*
@@ -18,4 +21,7 @@
 .pa-menubar-slip[data-state="open"] { opacity: 1; }
 .pa-menubar-slip[data-instant] { transition: none; }
 @media (prefers-reduced-motion: reduce) { .pa-menubar-slip { transition: none; } }
+/* Moving between menus swaps the sheets in place: the old one goes at once, the new one appears without its
+   slide-down. Only the first open slides down; closing the bar slides up. */
 .pa-menu[data-menubar-switching][data-state="closed"] { animation: none; }
+.pa-menu[data-menubar-swapped-in][data-state="open"] { animation: none; }

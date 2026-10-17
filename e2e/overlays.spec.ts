@@ -49,3 +49,40 @@ test('Menubar opens its menu 12px below the bar, like Navigation Menu', async ({
   expect(navGap).toBe(12);
   expect(barGap).toBe(navGap);
 });
+
+test.describe('moving between menu titles swaps in place', () => {
+  const runningAnimations = (sel: string) =>
+    `Array.from(document.querySelectorAll('${sel}')).flatMap((el) => el.getAnimations()).filter((a) => a.playState === 'running').map((a) => a.animationName ?? 'transition')`;
+
+  test('Menubar: the slip slides, sheets swap without their slide-down, no hover fill flashes', async ({ page }) => {
+    await page.goto('/?demo=Menubar&theme=parchment');
+    await expect(page.locator('[role="menu"][data-side="bottom"]')).toBeVisible();
+    const edit = page.getByRole('menuitem', { name: 'Edit' });
+    await edit.hover();
+    await expect(edit).toHaveAttribute('data-state', 'open');
+    const sheet = page.locator('[role="menu"][data-side="bottom"][data-state="open"]');
+    await expect(sheet).toHaveAttribute('data-menubar-swapped-in', '');
+    expect(await page.evaluate(runningAnimations('[role="menu"][data-side="bottom"]'))).toEqual([]);
+    // The slip is travelling; the hovered trigger shows no fill of its own.
+    expect(await edit.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
+
+    // A first open (after closing the bar) still slides down.
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[role="menu"][data-side="bottom"]')).toHaveCount(0);
+    await page.getByRole('menuitem', { name: 'View' }).click();
+    const first = page.locator('[role="menu"][data-side="bottom"][data-state="open"]');
+    await expect(first).toBeVisible();
+    await expect(first).not.toHaveAttribute('data-menubar-swapped-in', '');
+  });
+
+  test('Navigation Menu: panels swap without the drop and never overlap', async ({ page }) => {
+    await page.goto('/?demo=NavigationMenu&theme=parchment');
+    await expect(page.locator('.pa-navmenu-content[data-state="open"]')).toBeVisible();
+    await page.getByRole('button', { name: 'Prints' }).hover();
+    await expect(page.getByRole('button', { name: 'Prints' })).toHaveAttribute('data-state', 'open');
+    const visible = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('.pa-navmenu-content')).filter((el) => getComputedStyle(el).visibility !== 'hidden').length);
+    expect(visible).toBe(1);
+    expect(await page.evaluate(runningAnimations('.pa-navmenu-content[data-state="open"]'))).toEqual([]);
+  });
+});

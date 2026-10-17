@@ -10,10 +10,14 @@
 /* Motion: panels open at once (delayDuration 0) with a 140ms fade and 4px drop, and fade out in 80ms. */
 .pa-navmenu-content[data-state="open"] { animation: pa-navmenu-in var(--dur-fast) var(--ease-paper) both; }
 .pa-navmenu-content[data-state="closed"] { animation: pa-navmenu-out var(--dur-instant) var(--ease-in-paper) both; pointer-events: none; }
+/* Moving from one trigger to the next (Radix sets data-motion): swap the panels in place. The old panel goes at
+   once and the new one appears without the drop, so two panels of different heights never overlap. */
+.pa-navmenu-content[data-motion^="from-"] { animation: none; }
+.pa-navmenu-content[data-motion^="to-"] { animation: none; visibility: hidden; }
 @keyframes pa-navmenu-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
 @keyframes pa-navmenu-out { from { opacity: 1; } to { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
   .pa-navmenu-trigger svg { transition: none; }
-  .pa-navmenu-content[data-state="open"] { animation: pa-navmenu-fade-in var(--dur-instant) ease both !important; }
+  .pa-navmenu-content[data-state="open"]:not([data-motion^="from-"]) { animation: pa-navmenu-fade-in var(--dur-instant) ease both !important; }
 }
 @keyframes pa-navmenu-fade-in { from { opacity: 0; } to { opacity: 1; } }
