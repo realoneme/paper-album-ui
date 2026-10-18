@@ -8,6 +8,8 @@ import { animate, motion, useMotionValue, useReducedMotion } from "framer-motion
 interface Slide {
     image?: { src: string; srcSet?: string; alt?: string }
     caption: string
+    details: string
+    description: string
 }
 
 interface CarouselProps {
@@ -21,7 +23,9 @@ interface CarouselProps {
     keyText: string
     activeDot: string
     dotColor: string
+    flipToDetails: boolean
     captionFont: CSSProperties
+    detailsFont: CSSProperties
     style?: CSSProperties
 }
 
@@ -51,10 +55,15 @@ export default function Carousel(props: CarouselProps) {
         keyText = "#2a1f16",
         activeDot = "#5a3d26",
         dotColor = "#d2b98f",
+        flipToDetails = true,
         captionFont,
+        detailsFont,
     } = props
     const n = slides.length
     const [index, setIndex] = useState(0)
+    // Which slide is turned over to show its details (-1: none). A drag is not a click.
+    const [flipped, setFlipped] = useState(-1)
+    const dragged = useRef(false)
     const [width, setWidth] = useState(0)
     const viewport = useRef<HTMLDivElement>(null)
     const x = useMotionValue(0)
@@ -81,7 +90,15 @@ export default function Carousel(props: CarouselProps) {
     }, [index, step, reduce, isStatic, x])
 
     function go(i: number) {
-        startTransition(() => setIndex(Math.max(0, Math.min(n - 1, i))))
+        startTransition(() => {
+            setIndex(Math.max(0, Math.min(n - 1, i)))
+            setFlipped(-1)
+        })
+    }
+    function pressSlide(i: number) {
+        if (dragged.current) return
+        if (i !== index) return go(i)
+        if (flipToDetails) startTransition(() => setFlipped(flipped === i ? -1 : i))
     }
     function onKeyDown(e: KeyboardEvent) {
         if (e.key === "ArrowRight") go(index + 1)
@@ -113,7 +130,13 @@ export default function Carousel(props: CarouselProps) {
                     drag={isStatic ? false : "x"}
                     dragConstraints={{ left: -(n - 1) * step, right: 0 }}
                     dragElastic={0.12}
+                    onDragStart={() => {
+                        dragged.current = true
+                    }}
                     onDragEnd={(_, info) => {
+                        window.setTimeout(() => {
+                            dragged.current = false
+                        }, 0)
                         const moved = -info.offset.x / Math.max(1, step)
                         const fast = Math.abs(info.velocity.x) > 400 ? -Math.sign(info.velocity.x) : 0
                         go(Math.round(index + moved + (Math.abs(moved) < 0.5 ? fast : 0)))
@@ -122,27 +145,77 @@ export default function Carousel(props: CarouselProps) {
                 >
                     {slides.map((slide, i) => {
                         const image = slide.image?.src ? slide.image : { src: FALLBACK[i % FALLBACK.length], alt: slide.caption }
+                        const current = i === index
+                        const turned = flipped === i
+                        const face: CSSProperties = {
+                            padding: "12px 12px 40px",
+                            boxSizing: "border-box",
+                            background: printColor,
+                            boxShadow: "0 6px 16px rgba(40, 24, 10, 0.25)",
+                            backfaceVisibility: "hidden",
+                            WebkitBackfaceVisibility: "hidden",
+                        }
                         return (
                             <figure
                                 key={i}
                                 role="group"
                                 aria-roledescription="slide"
                                 aria-label={`${i + 1} of ${n}`}
-                                aria-current={i === index ? "true" : undefined}
+                                aria-current={current ? "true" : undefined}
                                 style={{
                                     flex: `0 0 ${slideWidth}%`,
                                     margin: i === n - 1 ? 0 : "0 2% 0 0",
-                                    padding: "12px 12px 40px",
-                                    boxSizing: "border-box",
                                     position: "relative",
-                                    background: printColor,
-                                    boxShadow: "0 6px 16px rgba(40, 24, 10, 0.25)",
-                                    opacity: i === index ? 1 : 0.55,
+                                    perspective: 1400,
+                                    opacity: current ? 1 : 0.55,
                                     transition: "opacity 240ms ease",
                                 }}
                             >
-                                <img src={image.src} srcSet={image.srcSet} alt={image.alt ?? ""} draggable={false} style={{ display: "block", width: "100%", aspectRatio: "16 / 9", objectFit: "cover", pointerEvents: "none" }} />
-                                <figcaption style={{ position: "absolute", left: 16, bottom: 8, color: inkColor, fontSize: 22, lineHeight: 1.2, ...captionFont }}>{slide.caption}</figcaption>
+                                <motion.div
+                                    role={current && flipToDetails ? "button" : undefined}
+                                    tabIndex={current && flipToDetails ? 0 : -1}
+                                    aria-pressed={current && flipToDetails ? turned : undefined}
+                                    aria-label={current && flipToDetails ? `${turned ? "Show photo" : "Show details for"} ${slide.caption}` : undefined}
+                                    onClick={() => pressSlide(i)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter" || e.key === " ") {
+                                            e.preventDefault()
+                                            pressSlide(i)
+                                        }
+                                    }}
+                                    animate={{ rotateY: turned ? 180 : 0 }}
+                                    transition={reduce || isStatic ? { duration: 0 } : { type: "spring", stiffness: 140, damping: 18 }}
+                                    style={{ position: "relative", transformStyle: "preserve-3d", cursor: current && flipToDetails ? "pointer" : "default" }}
+                                >
+                                    <div aria-hidden={turned} style={face}>
+                                        <img src={image.src} srcSet={image.srcSet} alt={image.alt ?? ""} draggable={false} style={{ display: "block", width: "100%", aspectRatio: "16 / 9", objectFit: "cover", pointerEvents: "none" }} />
+                                        <figcaption style={{ position: "absolute", left: 16, bottom: 8, color: inkColor, fontSize: 22, lineHeight: 1.2, ...captionFont }}>{slide.caption}</figcaption>
+                                    </div>
+                                    {/* the back of the print: its name, how it was made, and a few words about it */}
+                                    <div
+                                        aria-hidden={!turned}
+                                        style={{
+                                            ...face,
+                                            position: "absolute",
+                                            inset: 0,
+                                            padding: "18px 20px",
+                                            transform: "rotateY(180deg)",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: 8,
+                                            overflow: "hidden",
+                                            textAlign: "left",
+                                        }}
+                                    >
+                                        <span style={{ color: inkColor, fontSize: 26, lineHeight: 1.1, ...captionFont }}>{slide.caption}</span>
+                                        {slide.details && (
+                                            <span style={{ color: inkColor, opacity: 0.75, fontSize: 11, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", fontVariantNumeric: "tabular-nums", ...detailsFont }}>
+                                                {slide.details}
+                                            </span>
+                                        )}
+                                        <span style={{ color: inkColor, fontSize: 14, lineHeight: 1.55, ...detailsFont, letterSpacing: "normal", textTransform: "none" }}>{slide.description}</span>
+                                    </div>
+                                </motion.div>
                             </figure>
                         )
                     })}
@@ -187,9 +260,16 @@ addPropertyControls(Carousel, {
             controls: {
                 image: { type: ControlType.ResponsiveImage, title: "Photo" },
                 caption: { type: ControlType.String, title: "Caption", defaultValue: "Otaru, dawn" },
+                details: { type: ControlType.String, title: "Details", defaultValue: "Fujifilm X-T5 · 23mm · f/2 · 1/500s" },
+                description: { type: ControlType.String, title: "Description", displayTextArea: true, defaultValue: "[A sentence or two about this photograph.]" },
             },
         },
-        defaultValue: [{ caption: "Otaru, dawn" }, { caption: "Harbour fog" }, { caption: "Birch line" }, { caption: "Last ferry" }],
+        defaultValue: [
+            { caption: "Otaru, dawn", details: "Fujifilm X-T5 · 23mm · f/2 · 1/500s", description: "First light over the canal, minutes before the boats went out." },
+            { caption: "Harbour fog", details: "Leica Q2 · 28mm · f/5.6 · 1/250s", description: "The fog came in off the sea and swallowed the far pier." },
+            { caption: "Birch line", details: "Fujifilm X-T5 · 56mm · f/1.4 · 1/1000s", description: "A row of birches along the coast road, shot from the car window." },
+            { caption: "Last ferry", details: "Leica Q2 · 28mm · f/2.8 · 1/60s", description: "The last ferry of the night, lights on, half the seats empty." },
+        ],
     },
     slideWidth: { type: ControlType.Number, title: "Slide Width", defaultValue: 70, min: 40, max: 100, unit: "%" },
     indicator: {
@@ -207,6 +287,14 @@ addPropertyControls(Carousel, {
     keyText: { type: ControlType.Color, title: "Arrow", defaultValue: "#2a1f16" },
     activeDot: { type: ControlType.Color, title: "Active Dot", defaultValue: "#5a3d26" },
     dotColor: { type: ControlType.Color, title: "Dot", defaultValue: "#d2b98f" },
+    flipToDetails: { type: ControlType.Boolean, title: "Flip for Details", defaultValue: true, description: "Clicking the current photo turns it over to show its details." },
+    detailsFont: {
+        type: ControlType.Font,
+        title: "Details Font",
+        controls: "extended",
+        defaultFontType: "sans-serif",
+        defaultValue: { fontSize: "14px", variant: "Regular", lineHeight: "1.55em" },
+    },
     captionFont: {
         type: ControlType.Font,
         title: "Caption Font",

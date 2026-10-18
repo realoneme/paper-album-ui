@@ -112,6 +112,9 @@ export default function Tabs(props: TabsProps) {
                     display: "flex",
                     alignItems: "flex-end",
                     gap: 6,
+                    // Fixed height: the selected card grows inside the row, never pushing the panel down.
+                    height: 16 + 51,
+                    boxSizing: "border-box",
                     padding: "16px 16px 0",
                     margin: "-8px -8px 0",
                     overflowX: "auto",
@@ -160,19 +163,30 @@ export default function Tabs(props: TabsProps) {
                     )
                 })}
             </div>
-            {tabs.map((tab, i) => (
-                <div
-                    key={i}
-                    id={`${base}-p${i}`}
-                    role="tabpanel"
-                    aria-labelledby={`${base}-t${i}`}
-                    hidden={i !== index}
-                    tabIndex={0}
-                    style={{ padding: "16px 8px 0", color: contentColor, fontSize: 15, lineHeight: 1.6, ...contentFont }}
-                >
-                    {tab.content}
-                </div>
-            ))}
+            {/* Every panel shares one grid cell, so the area is as tall as the longest panel and never jumps. */}
+            <div style={{ display: "grid" }}>
+                {tabs.map((tab, i) => (
+                    <div
+                        key={i}
+                        id={`${base}-p${i}`}
+                        role="tabpanel"
+                        aria-labelledby={`${base}-t${i}`}
+                        aria-hidden={i !== index}
+                        tabIndex={i === index ? 0 : -1}
+                        style={{
+                            gridArea: "1 / 1",
+                            visibility: i === index ? "visible" : "hidden",
+                            padding: "16px 8px 0",
+                            color: contentColor,
+                            fontSize: 15,
+                            lineHeight: 1.6,
+                            ...contentFont,
+                        }}
+                    >
+                        {tab.content}
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
