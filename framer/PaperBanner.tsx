@@ -135,7 +135,7 @@ function ridge(seed: number, h: number, base: number, amp: number, freq: number)
  */
 export default function PaperBanner(props: PaperBannerProps) {
     const {
-        eyebrow = "Wedding · Family · Portrait photography",
+        eyebrow = "Photography & printed albums",
         name = "[Studio Name]",
         tagline = "Photographs, tucked in by hand.",
         primaryLabel = "Book a session",
@@ -281,6 +281,13 @@ export default function PaperBanner(props: PaperBannerProps) {
                 .${c}-key:hover { transform: translateY(-1px); }
                 .${c}-key:active { transform: translateY(2px); }
                 @media (max-width: 809px) { .${c}-wide { display: none; } .${c}-p0 { left: 6% !important; } .${c}-p2 { left: 52% !important; } .${c}-name { font-size: clamp(40px, 11vw, 60px) !important; } }
+                /* on narrow screens the title covers the top of the sky: the sun and clouds sit in the open sky below the buttons */
+                @media (max-width: 900px) {
+                    .${c}-sun { top: auto !important; bottom: 53% !important; right: 13% !important; }
+                    .${c}-c1 { left: 6% !important; top: auto !important; bottom: 45% !important; }
+                    .${c}-c2 { right: 3% !important; top: auto !important; bottom: 45% !important; }
+                }
+                @media (max-width: 600px) { .${c}-c2 { display: none; } .${c}-sun { bottom: 50% !important; right: 10% !important; } }
                 @media (prefers-reduced-motion: reduce) { .${c}-layer, .${c}-far, .${c}-sky, .${c}-cloud, .${c}-up, .${c}-bob, .${c}-title, .${c}-fly { animation: none !important; } }
             `}</style>
             <svg aria-hidden="true" width="0" height="0" style={{ position: "absolute" }}>
@@ -296,11 +303,11 @@ export default function PaperBanner(props: PaperBannerProps) {
 
             {/* sky */}
             <div aria-hidden="true" className={`${c}-sky`} style={{ position: "absolute", inset: 0 }}>
-                <div style={{ position: "absolute", right: "20%", top: "12%", width: "clamp(80px, 9vw, 140px)", aspectRatio: "1", borderRadius: "50%", background: printColor, boxShadow: `0 0 0 10px rgba(255, 240, 210, 0.3), 0 0 90px 34px ${glowColor}` }} />
-                <svg className={`${c}-cloud`} viewBox="0 0 260 90" style={{ position: "absolute", left: "44%", top: "16%", width: "clamp(150px, 18vw, 260px)", filter: "drop-shadow(0 6px 8px rgba(40, 24, 10, 0.16))" }}>
+                <div className={`${c}-sun`} style={{ position: "absolute", right: "20%", top: "12%", width: "clamp(80px, 9vw, 140px)", aspectRatio: "1", borderRadius: "50%", background: printColor, boxShadow: `0 0 0 10px rgba(255, 240, 210, 0.3), 0 0 90px 34px ${glowColor}` }} />
+                <svg className={`${c}-cloud ${c}-c1`} viewBox="0 0 260 90" style={{ position: "absolute", left: "44%", top: "16%", width: "clamp(150px, 18vw, 260px)", filter: "drop-shadow(0 6px 8px rgba(40, 24, 10, 0.16))" }}>
                     <path d="M18 78 C 4 78 2 58 18 54 C 14 34 40 26 52 40 C 60 16 98 12 108 36 C 120 20 150 22 156 44 C 172 30 204 36 204 56 C 226 52 248 64 240 78 Z" fill={paperColor} />
                 </svg>
-                <svg className={`${c}-cloud`} viewBox="0 0 200 70" style={{ position: "absolute", right: "5%", top: "30%", width: "clamp(110px, 13vw, 200px)", animationDuration: "20s", filter: "drop-shadow(0 6px 8px rgba(40, 24, 10, 0.16))" }}>
+                <svg className={`${c}-cloud ${c}-c2`} viewBox="0 0 200 70" style={{ position: "absolute", right: "5%", top: "30%", width: "clamp(110px, 13vw, 200px)", animationDuration: "20s", filter: "drop-shadow(0 6px 8px rgba(40, 24, 10, 0.16))" }}>
                     <path d="M14 62 C 2 62 2 46 14 44 C 12 28 34 22 44 34 C 52 14 84 12 92 32 C 104 20 128 24 132 42 C 150 36 176 44 172 62 Z" fill={paperColor} />
                 </svg>
             </div>
@@ -359,7 +366,7 @@ export default function PaperBanner(props: PaperBannerProps) {
                 {eyebrow ? <p style={{ margin: "0 0 0 4px", fontSize: 12, fontWeight: 600, letterSpacing: "0.32em", textTransform: "uppercase", color: mutedText }}>{eyebrow}</p> : null}
                 <div style={{ display: "inline-block", maxWidth: "100%", filter: `drop-shadow(0 3px 0 ${midColor}) drop-shadow(0 16px 22px rgba(40, 24, 10, 0.28))` }}>
                     <div style={{ padding: "16px 32px 20px 28px", background: printColor, clipPath: "polygon(0 8%, 4% 0, 22% 5%, 41% 0, 63% 6%, 82% 1%, 100% 7%, 98% 48%, 100% 92%, 81% 100%, 59% 94%, 37% 100%, 17% 95%, 2% 100%, 0 62%)" }}>
-                        <h1 className={`${c}-name`} style={{ margin: 0, fontFamily: SERIF, fontWeight: 500, fontSize: "clamp(52px, 6.4vw, 92px)", lineHeight: 1.02, color: deepColor, textShadow: `0 3px 0 ${edgeColor}`, ...nameFont }}>
+                        <h1 className={`${c}-name`} style={{ margin: 0, fontFamily: SERIF, fontWeight: 500, fontSize: "clamp(52px, 6.4vw, 92px)", lineHeight: 1.02, color: deepColor, textShadow: "0 1px 0 rgba(255, 250, 238, 0.7)", ...nameFont }}>
                             {name}
                         </h1>
                     </div>
@@ -388,7 +395,7 @@ export default function PaperBanner(props: PaperBannerProps) {
 }
 
 addPropertyControls(PaperBanner, {
-    eyebrow: { type: ControlType.String, title: "Eyebrow", defaultValue: "Wedding · Family · Portrait photography" },
+    eyebrow: { type: ControlType.String, title: "Eyebrow", defaultValue: "Photography & printed albums" },
     name: { type: ControlType.String, title: "Name", defaultValue: "[Studio Name]" },
     tagline: { type: ControlType.String, title: "Tagline", defaultValue: "Photographs, tucked in by hand." },
     primaryLabel: { type: ControlType.String, title: "Button", defaultValue: "Book a session" },
