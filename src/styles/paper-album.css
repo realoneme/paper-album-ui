@@ -296,7 +296,11 @@ svg.pa-i.sm { width: 16px; height: 16px; }
 .pa-cal-grid button { aspect-ratio: 1 / 1; border: 0; border-radius: var(--radius-md); background: transparent; color: inherit; font: 500 13px var(--font-sans); cursor: pointer; }
 .pa-cal-grid button:hover { background: var(--accent); }
 .pa-cal-grid .out { color: var(--muted-foreground); font-weight: 400; }
-.pa-cal-grid .today { box-shadow: inset 0 0 0 2px var(--wood); font-weight: 700; }
+.pa-cal-grid button { position: relative; }
+/* Today: a small wood dot under the number (no ring, so it never crowds a selected or in-range day next to it). */
+.pa-cal-grid .today { font-weight: 700; }
+.pa-cal-grid .today::after { content: ""; position: absolute; left: 50%; bottom: 14%; width: 4px; height: 4px; margin-left: -2px; border-radius: var(--radius-full); background: var(--wood); }
+.pa-cal-grid .today.sel::after { background: var(--primary-foreground); }
 .pa-cal-grid .sel { background: var(--primary); color: var(--primary-foreground); box-shadow: 0 2px 0 var(--primary-edge); font-weight: 700; }
 .pa-cal-grid.range { column-gap: 0; }
 .pa-cal-grid .mid { background: var(--muted); border-radius: 0; font-weight: 700; box-shadow: 0 2px 0 var(--border); }

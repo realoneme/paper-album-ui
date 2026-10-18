@@ -1,5 +1,5 @@
 // Paper Album UI · Calendar for Framer
-// A month on a paper card. Today has a wood ring; the chosen day is a deep-wood key that springs in. In range mode
+// A month on a paper card. Today is bold with a small wood dot under the number; the chosen day is a deep-wood key that springs in. In range mode
 // the first click sets the start and the second the end, with the days between pressed into the paper (and a
 // preview while you hover). Arrow keys move by day and week, Page Up / Page Down by month, Enter chooses.
 import { useEffect, useId, useMemo, useRef, useState, startTransition, type CSSProperties, type KeyboardEvent } from "react"
@@ -209,6 +209,7 @@ export default function Calendar(props: CalendarProps) {
                                 transition={{ type: "spring", stiffness: 520, damping: 20 }}
                                 className={off || ends || mid ? undefined : `${cls}-day`}
                                 style={{
+                                    position: "relative",
                                     display: "block",
                                     width: "100%",
                                     aspectRatio: "1 / 1",
@@ -217,7 +218,7 @@ export default function Calendar(props: CalendarProps) {
                                     borderRadius: radius,
                                     backgroundColor: ends ? selectedColor : mid ? rangeColor : "transparent",
                                     color: ends ? selectedText : out ? mutedColor : textColor,
-                                    boxShadow: ends ? `0 2px 0 ${selectedEdge}` : mid ? `0 2px 0 ${edgeColor}` : same(d, today) ? `inset 0 0 0 2px ${todayColor}` : "none",
+                                    boxShadow: ends ? `0 2px 0 ${selectedEdge}` : mid ? `0 2px 0 ${edgeColor}` : "none",
                                     fontFamily: "inherit",
                                     fontSize: 13,
                                     fontWeight: ends || mid || same(d, today) ? 700 : out ? 400 : 500,
@@ -227,6 +228,9 @@ export default function Calendar(props: CalendarProps) {
                                 }}
                             >
                                 {d.getDate()}
+                                {same(d, today) ? (
+                                    <span aria-hidden="true" style={{ position: "absolute", left: "50%", bottom: "14%", width: 4, height: 4, marginLeft: -2, borderRadius: 999, background: ends ? selectedText : todayColor }} />
+                                ) : null}
                             </motion.button>
                         </span>
                     )
