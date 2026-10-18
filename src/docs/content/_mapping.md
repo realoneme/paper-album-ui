@@ -26,7 +26,7 @@ Intentional additions, each with a reason:
 - `print`, `print-ink`, `glow`, `tape`, `backdrop` — photographs and scene dressing.
 - `success`, `warning`, `info` with their `-soft` and `on-` tokens, plus `destructive-soft` — shadcn ships only `destructive`; a portfolio with bookings and payments needs all four states.
 - Shadows `shadow-raised-1/2/3`, `shadow-key`, `shadow-press`, `shadow-sunken`, `shadow-print`, `shadow-layer` replace shadcn's flat borders with paper thickness.
-- Component additions: **Photo Holder**, the four ways a print is held on a page; **Help Tip**, a "?" that explains a setting and opens on hover, tap or Enter (shadcn has only Tooltip, which phones cannot hover).
+- Component additions: **Photo Holder**, the five ways a print is held on a page; **Help Tip**, a "?" that explains a setting and opens on hover, tap or Enter (shadcn has only Tooltip, which phones cannot hover).
 
 ## Component inventory (shadcn/ui, all 57 + 2)
 

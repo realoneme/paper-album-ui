@@ -6,3 +6,8 @@
 .pa-tabs[data-orientation="vertical"] { flex-direction: column; align-items: stretch; }
 .pa-tabs-content { padding: var(--space-4) var(--space-2) 0; }
 .pa-tabs-content:focus-visible { outline-offset: 4px; }
+/* Stable height: kept panels share one grid cell under the list, so the area is as tall as the tallest panel.
+   Inactive panels stay in the layout but are hidden (and so out of the tab order and the accessibility tree). */
+.pa-tabs-root[data-orientation="horizontal"]:has(> .pa-tabs-content[data-keep-height]) { display: grid; grid-template-columns: minmax(0, 1fr); }
+.pa-tabs-root[data-orientation="horizontal"] > .pa-tabs-content[data-keep-height] { grid-row: 2; grid-column: 1; }
+.pa-tabs-content[data-keep-height][data-state="inactive"] { visibility: hidden; }

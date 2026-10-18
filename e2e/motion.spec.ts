@@ -68,3 +68,99 @@ test('Collapsible: only the chevron turns; the leading label icon stays put', as
     expect(after.chevron).toBe((await trigger.getAttribute('aria-expanded')) === 'true' ? 'matrix(-1, 0, 0, -1, 0, 0)' : 'none');
   }
 });
+
+test('Tabs: switching tabs never changes the height of the panel area', async ({ page }) => {
+  await page.goto('/?demo=Tabs&theme=parchment');
+  const root = page.locator('.pa-tabs-root').first();
+  const tabs = root.getByRole('tab');
+  const heights: number[] = [];
+  for (let i = 0; i < (await tabs.count()); i++) {
+    if (await tabs.nth(i).isDisabled()) continue;
+    await tabs.nth(i).click();
+    await page.waitForTimeout(260);
+    heights.push(Math.round((await root.boundingBox())!.height));
+    await expect(root.getByRole('tabpanel')).toHaveCount(1);
+  }
+  expect(new Set(heights).size, `heights: ${heights.join(',')}`).toBe(1);
+});
+
+const angleOf = (m: string) => {
+  const [a, b] = m.replace(/^matrix\(|\)$/g, '').split(',').map(Number);
+  return (Math.atan2(b!, a!) * 180) / Math.PI;
+};
+
+test.describe('photo holders move under the pointer', () => {
+  test('pocket lifts its print 30px out of the sleeve, and settles back', async ({ page }) => {
+    await page.goto('/?demo=PhotoHolder&theme=parchment');
+    const holder = page.locator('.pa-holder[data-variant="pocket"]');
+    await expect(holder.locator('.sleeve-note')).toHaveText('Otaru harbour');
+    const print = holder.locator('.pa-holder-pocket-print');
+    const y = () => print.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).f);
+    expect(await y()).toBeCloseTo(0, 0);
+    await holder.hover();
+    await page.waitForTimeout(700);
+    expect(await y()).toBeCloseTo(-30, 0);
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(700);
+    expect(await y()).toBeCloseTo(0, 0);
+  });
+
+  test('tape rocks the print when the pointer lands on it, then rests at its tilt', async ({ page }) => {
+    await page.goto('/?demo=PhotoHolder&theme=parchment');
+    const holder = page.locator('.pa-holder[data-variant="tape"]');
+    const print = holder.locator('.pa-holder-tape');
+    await holder.hover();
+    const angles: number[] = [];
+    for (let i = 0; i < 12; i++) {
+      angles.push(angleOf(await print.evaluate((el) => getComputedStyle(el).transform)));
+      await page.waitForTimeout(60);
+    }
+    expect(Math.min(...angles), angles.join(',')).toBeLessThan(1);
+    expect(Math.max(...angles), angles.join(',')).toBeGreaterThan(3);
+    await page.waitForTimeout(400);
+    expect(angleOf(await print.evaluate((el) => getComputedStyle(el).transform))).toBeCloseTo(2.5, 1);
+  });
+
+  test('polaroid is nudged askew on hover and springs back', async ({ page }) => {
+    await page.goto('/?demo=PhotoHolder&theme=parchment');
+    const holder = page.locator('.pa-holder[data-variant="polaroid"]');
+    const print = holder.locator('.pa-holder-polaroid');
+    const angle = async () => angleOf(await print.evaluate((el) => getComputedStyle(el).transform));
+    expect(await angle()).toBeCloseTo(-1.5, 1);
+    await holder.hover();
+    await page.waitForTimeout(800);
+    expect(await angle()).toBeCloseTo(2, 1);
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(800);
+    expect(await angle()).toBeCloseTo(-1.5, 1);
+  });
+
+  test('with reduced motion, nothing moves', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/?demo=PhotoHolder&theme=parchment');
+    const holder = page.locator('.pa-holder[data-variant="pocket"]');
+    await holder.hover();
+    await page.waitForTimeout(300);
+    expect(await holder.locator('.pa-holder-pocket-print').evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).f)).toBeCloseTo(0, 0);
+    expect(await page.locator('.pa-holder-tape').evaluate((el) => el.getAnimations().length)).toBe(0);
+  });
+});
+
+test('Carousel: the centred print turns over for its details; a neighbour is brought to the centre instead', async ({ page }) => {
+  await page.goto('/?demo=Carousel&theme=parchment');
+  const first = page.getByRole('button', { name: 'Otaru, dawn: show details' });
+  const second = page.getByRole('button', { name: 'Harbour fog: show details' });
+  const turned = (card: typeof first) =>
+    card.locator('.pa-flip-inner').evaluate((el) => Math.round(Math.abs(new DOMMatrix(getComputedStyle(el).transform).m11) * 100) / 100 === 1 && new DOMMatrix(getComputedStyle(el).transform).m11 < 0);
+  await first.click();
+  await expect(first).toHaveAttribute('aria-pressed', 'true');
+  await page.waitForTimeout(900);
+  expect(await turned(first)).toBe(true);
+  await expect(first.locator('.pa-flip-back')).toContainText('Fujifilm X100V');
+  await second.click();
+  await expect(second).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByRole('group', { name: '2 of 3' }).first()).toHaveAttribute('aria-current', 'true');
+  await expect(first).toHaveAttribute('aria-pressed', 'false');
+  await page.waitForTimeout(900);
+  expect(await turned(first)).toBe(false);
+});

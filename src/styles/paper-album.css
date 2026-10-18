@@ -311,21 +311,32 @@ svg.pa-i.sm { width: 16px; height: 16px; }
 .ph-4 { background: linear-gradient(180deg, #b9a88a 0%, #7e6a52 50%, #3b2f25 100%); }
 .ph-5 { background: linear-gradient(180deg, #d8dce2 0%, #9aa3ae 50%, #4b525c 100%); }
 .pa-corners { position: relative; }
-.pa-corners i { position: absolute; width: 36px; height: 36px; background: var(--wood); }
-.pa-corners i:nth-of-type(1) { left: -7px; top: -7px; clip-path: polygon(0 0, 100% 0, 0 100%); }
-.pa-corners i:nth-of-type(2) { right: -7px; top: -7px; clip-path: polygon(0 0, 100% 0, 100% 100%); }
-.pa-corners i:nth-of-type(3) { left: -7px; bottom: -7px; clip-path: polygon(0 0, 0 100%, 100% 100%); }
-.pa-corners i:nth-of-type(4) { right: -7px; bottom: -7px; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
-.pa-corners.slit i { background: var(--card); width: 34px; height: 34px; }
-.pa-corners.slit i:nth-of-type(1) { left: -4px; top: -4px; filter: drop-shadow(2px 2px 1.5px rgba(40, 24, 10, 0.35)); }
-.pa-corners.slit i:nth-of-type(2) { right: -4px; top: -4px; filter: drop-shadow(-2px 2px 1.5px rgba(40, 24, 10, 0.35)); }
-.pa-corners.slit i:nth-of-type(3) { left: -4px; bottom: -4px; filter: drop-shadow(2px -2px 1.5px rgba(40, 24, 10, 0.35)); }
-.pa-corners.slit i:nth-of-type(4) { right: -4px; bottom: -4px; filter: drop-shadow(-2px -2px 1.5px rgba(40, 24, 10, 0.35)); }
+/* Paper corners: one triangle drawn as the top-left corner and rotated into place, so its shadow always falls past the
+   cut edge onto the photo. Wood corners sit on a bare photo; slit flaps are page-coloured, on a print. */
+.pa-corner { position: absolute; z-index: 2; width: 44px; height: 44px; overflow: visible; pointer-events: none; filter: drop-shadow(1.4px 1.8px 1.6px rgba(40, 24, 10, 0.42)); }
+.pa-corner[data-corner="tl"] { left: -9px; top: -9px; }
+.pa-corner[data-corner="tr"] { right: -9px; top: -9px; transform: rotate(90deg); }
+.pa-corner[data-corner="br"] { right: -9px; bottom: -9px; transform: rotate(180deg); }
+.pa-corner[data-corner="bl"] { left: -9px; bottom: -9px; transform: rotate(270deg); }
+.pa-corner-paper { fill: var(--wood); }
+.pa-corner-sheen-hi { stop-color: white; stop-opacity: .22; }
+.pa-corner-sheen-mid { stop-color: white; stop-opacity: 0; }
+.pa-corner-sheen-lo { stop-color: black; stop-opacity: .12; }
+.pa-corner-edge { fill: none; stroke: white; stroke-opacity: .35; stroke-width: 1; }
+.pa-corners.slit .pa-corner { width: 40px; height: 40px; filter: drop-shadow(1.4px 1.8px 1.6px rgba(40, 24, 10, 0.32)); }
+.pa-corners.slit .pa-corner[data-corner="tl"] { left: -4px; top: -4px; }
+.pa-corners.slit .pa-corner[data-corner="tr"] { right: -4px; top: -4px; }
+.pa-corners.slit .pa-corner[data-corner="br"] { right: -4px; bottom: -4px; }
+.pa-corners.slit .pa-corner[data-corner="bl"] { left: -4px; bottom: -4px; }
+.pa-corners.slit .pa-corner-paper { fill: var(--card); }
+.pa-corners.slit .pa-corner-sheen-hi { stop-opacity: .35; }
+.pa-corners.slit .pa-corner-sheen-lo { stop-opacity: .04; }
+.pa-corners.slit .pa-corner-edge { stroke-opacity: .7; }
 .pa-pocket { position: relative; }
 .pa-pocket .sleeve { position: absolute; left: -12px; right: -12px; bottom: -12px; height: 44%; background: var(--muted); border-radius: 0 0 3px 3px; filter: drop-shadow(0 -4px 5px rgba(40, 24, 10, 0.3)); }
 .pa-pocket .sleeve svg { position: absolute; left: 0; top: -17px; width: 100%; height: 18px; display: block; }
 .pa-pocket .sleeve path { fill: var(--muted); }
-.pa-tape { position: absolute; left: 50%; top: -14px; width: 92px; height: 28px; margin-left: -46px; background: var(--tape); opacity: .85; transform: rotate(-4deg); clip-path: polygon(3% 0, 97% 6%, 100% 50%, 96% 100%, 2% 94%, 0 50%); }
+.pa-tape { position: absolute; left: 50%; top: -12px; width: 96px; height: 28px; margin-left: -48px; background: var(--tape); opacity: .85; transform: rotate(-3deg); clip-path: polygon(3% 0, 97% 6%, 100% 50%, 96% 100%, 2% 94%, 0 50%); }
 .pa-carousel { overflow: hidden; padding: 10px 0 18px; }
 .pa-carousel .track { display: flex; }
 .pa-carousel .slide { flex: 0 0 70%; margin-right: 2%; }

@@ -13,3 +13,15 @@
 .pa-carousel-counter { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; min-width: 76px; padding: 0 var(--space-3); border-radius: var(--radius-full); background: var(--muted); box-shadow: var(--shadow-sunken); color: var(--card-foreground); font: 500 13px var(--font-sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pa-carousel-counter b { font-weight: 700; }
 .pa-carousel-counter .sep { color: var(--muted-foreground); padding: 0 2px; }
+
+/* Flip card: the current print turns over for its details. Both faces share one grid cell, so the card is as tall as
+   the taller face. */
+.pa-flip { perspective: 1400px; cursor: pointer; border-radius: 2px; }
+.pa-flip-inner { display: grid; transform-style: preserve-3d; transition: transform 700ms cubic-bezier(.34, 1.3, .64, 1); }
+.pa-flip[data-state="back"] .pa-flip-inner { transform: rotateY(180deg); }
+.pa-flip-face { grid-area: 1 / 1; min-width: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.pa-flip-back { transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: center; gap: var(--space-2); padding: var(--space-5) var(--space-6); background: var(--print); color: var(--print-ink); box-shadow: var(--shadow-print); overflow: hidden; }
+.pa-flip-title { margin: 0; font: 600 26px/1.15 var(--font-display); }
+.pa-flip-meta { margin: 0; font: 600 11px/1.4 var(--font-sans); letter-spacing: .14em; text-transform: uppercase; opacity: .75; }
+.pa-flip-text { margin: 0; font: 400 14px/1.55 var(--font-sans); }
+@media (prefers-reduced-motion: reduce) { .pa-flip-inner { transition: none; } }

@@ -2,7 +2,41 @@
 .pa-holder { margin: 0; }
 .pa-holder > figcaption { margin-top: 20px; }
 .pa-holder[data-variant="pocket"] > figcaption { margin-top: 32px; }
+.pa-holder-frame { transform: rotate(var(--pa-tilt, 0deg)); }
+.pa-holder-frame.pa-pocket { transform: none; }
+.pa-holder-pocket-print { transform: rotate(var(--pa-tilt, 0deg)); }
 .pa-holder-corners { box-shadow: var(--shadow-print); }
 .pa-holder-slits.pa-print, .pa-holder-pocket-print.pa-print { padding: 10px; }
 .pa-holder-frame img { display: block; width: 100%; height: auto; object-fit: cover; }
-.pa-holder-frame > i { pointer-events: none; }
+
+/* Pocket: the photo's name is written on the sleeve. */
+.pa-pocket .sleeve-note { position: absolute; left: 18px; right: 18px; top: 14px; font: 500 24px/1.1 var(--font-hand); color: var(--print-ink); opacity: .85; transform: rotate(-3deg); transform-origin: 0 50%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Polaroid: a square photo on a white mount, the name written in the deep bottom margin. */
+.pa-holder-polaroid.pa-print { padding: 12px 12px 18px; }
+.pa-holder-polaroid :is(.pa-photo, img) { aspect-ratio: 1; }
+.pa-polaroid-note { display: block; margin-top: 12px; text-align: center; font: 500 22px/1.1 var(--font-hand); color: var(--print-ink); }
+
+/* Tape: pinned from the tape, so a press rocks the print around it. */
+.pa-holder-tape { transform-origin: 50% 0; }
+.pa-holder-tape { transition: box-shadow var(--dur-fast) var(--ease-paper); }
+.pa-holder-tape:active { box-shadow: 0 1px 3px rgba(40, 24, 10, 0.18); }
+
+/* With a pointer and motion allowed: the pocket's print lifts out, the taped print rocks as if pressed by a hand and
+   the polaroid is nudged askew, springing back when the pointer leaves. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .pa-holder[data-variant="pocket"] { padding-top: 30px; }
+  .pa-holder-pocket-print { transition: transform .55s var(--ease-paper); }
+  .pa-holder[data-variant="pocket"]:hover .pa-holder-pocket-print { transform: translateY(-30px) rotate(calc(var(--pa-tilt, 0deg) * .5)); }
+  .pa-holder[data-variant="tape"]:hover .pa-holder-tape { animation: pa-tape-rock .9s var(--ease-paper); }
+  .pa-holder-polaroid { transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+  .pa-holder[data-variant="polaroid"]:hover .pa-holder-polaroid { transform: translate(3px, -4px) rotate(calc(var(--pa-tilt, 0deg) + 3.5deg)); }
+}
+@keyframes pa-tape-rock {
+  0%   { transform: rotate(var(--pa-tilt, 0deg)) scale(1); }
+  18%  { transform: rotate(calc(var(--pa-tilt, 0deg) - 2.6deg)) scale(.985); }
+  40%  { transform: rotate(calc(var(--pa-tilt, 0deg) + 1.8deg)) scale(1); }
+  62%  { transform: rotate(calc(var(--pa-tilt, 0deg) - 1deg)); }
+  82%  { transform: rotate(calc(var(--pa-tilt, 0deg) + .4deg)); }
+  100% { transform: rotate(var(--pa-tilt, 0deg)); }
+}

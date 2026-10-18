@@ -1,7 +1,7 @@
 import { PhotoHolder, PhotoPlaceholder } from '@/components/ui/photo-holder';
 import type { DemoMeta } from '../types';
 
-export const meta: DemoMeta = { name: 'PhotoHolder', group: 'Data display', height: 300 };
+export const meta: DemoMeta = { name: 'PhotoHolder', group: 'Data display', height: 340 };
 
 export default function PhotoHolderDemo() {
   return (
@@ -15,11 +15,14 @@ export default function PhotoHolderDemo() {
       <PhotoHolder variant="slits" caption="Corner slits">
         <PhotoPlaceholder tone={2} />
       </PhotoHolder>
-      <PhotoHolder variant="pocket" rotate={-2} caption="Pocket">
+      <PhotoHolder variant="pocket" rotate={-2} note="Otaru harbour" caption="Pocket">
         <PhotoPlaceholder tone={3} />
       </PhotoHolder>
       <PhotoHolder variant="tape" rotate={2.5} note="Lisbon, May" caption="Tape">
         <PhotoPlaceholder tone={4} />
+      </PhotoHolder>
+      <PhotoHolder variant="polaroid" rotate={-1.5} note="Kyoto, 2019" caption="Polaroid">
+        <PhotoPlaceholder tone={5} />
       </PhotoHolder>
     </div>
   );

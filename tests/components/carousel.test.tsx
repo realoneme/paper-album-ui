@@ -7,6 +7,7 @@ import {
   CarouselControls,
   CarouselCounter,
   CarouselDots,
+  CarouselFlipCard,
   CarouselIndicator,
   CarouselItem,
   CarouselNext,
@@ -170,5 +171,54 @@ describe('Carousel', () => {
   it('indicator variant can be forced', () => {
     render(<Strip n={3} variant="counter" />);
     expect(screen.getByTestId('indicator')).toHaveClass('pa-carousel-counter');
+  });
+
+  function Flips() {
+    return (
+      <Carousel aria-label="Flips">
+        <CarouselContent>
+          {['Otaru, dawn', 'Harbour fog'].map((c, i) => (
+            <CarouselItem key={c} index={i} aria-label={`${i + 1} of 2`} style={{ margin: '0 20px 0 0' }}>
+              <CarouselFlipCard index={i} label={`${c}: show details`} front={<span>{c}</span>} back={<p className="pa-flip-meta">{`About ${c}`}</p>} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselNext />
+      </Carousel>
+    );
+  }
+
+  it('flip card: the current print turns over on click and Enter, and back when the slide changes', async () => {
+    render(<Flips />);
+    const user = userEvent.setup();
+    const first = screen.getByRole('button', { name: 'Otaru, dawn: show details' });
+    await expect.poll(() => first.getAttribute('tabindex')).toBe('0');
+    expect(first).toHaveAttribute('aria-pressed', 'false');
+    expect(first.querySelector('.pa-flip-back')).toHaveAttribute('aria-hidden', 'true');
+    await user.click(first);
+    expect(first).toHaveAttribute('aria-pressed', 'true');
+    expect(first).toHaveAttribute('data-state', 'back');
+    expect(first.querySelector('.pa-flip-front')).toHaveAttribute('aria-hidden', 'true');
+    expect(first.querySelector('.pa-flip-back')).not.toHaveAttribute('aria-hidden');
+    first.focus();
+    await user.keyboard('{Enter}');
+    expect(first).toHaveAttribute('aria-pressed', 'false');
+    await user.keyboard(' ');
+    expect(first).toHaveAttribute('aria-pressed', 'true');
+    await user.click(screen.getByRole('button', { name: 'Next slide' }));
+    await expect.poll(() => first.getAttribute('aria-pressed')).toBe('false');
+  });
+
+  it('flip card: clicking a neighbour brings it to the centre instead of flipping it', async () => {
+    render(<Flips />);
+    const user = userEvent.setup();
+    const second = screen.getByRole('button', { name: 'Harbour fog: show details' });
+    await expect.poll(() => screen.getByRole('group', { name: '1 of 2' }).getAttribute('aria-current')).toBe('true');
+    expect(second).toHaveAttribute('tabindex', '-1');
+    await user.click(second);
+    expect(second).toHaveAttribute('aria-pressed', 'false');
+    await expect.poll(() => screen.getByRole('group', { name: '2 of 2' }).getAttribute('aria-current')).toBe('true');
+    await user.click(second);
+    expect(second).toHaveAttribute('aria-pressed', 'true');
   });
 });

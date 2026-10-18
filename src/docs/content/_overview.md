@@ -62,7 +62,7 @@ Sheets and drawers add three 2px page edges on the side they slide from. Diorama
 
 - Every surface may carry a paper grain: an SVG `feTurbulence` noise layer at `opacity-grain`, `mix-blend-mode: multiply`, pointer-events off.
 - Photographs sit in a `print` margin (10–12px, a little more at the bottom for a caption) with `shadow-print`, rotated −8° to +8° when loose.
-- Four ways to hold a photo: corners (`wood` triangles), corner slits (paper flaps the colour of the page), pockets (a wavy-cut sleeve over the lower half) and tape (`tape`). See Photo Holder.
+- Five ways to hold a photo: corners (paper-thick `wood` triangles), corner slits (paper flaps the colour of the page), pockets (a wavy-cut sleeve over the lower half, with the photo's name on it), tape (`tape`) and a polaroid (an instant print). See Photo Holder.
 - Edges between sections are cut paper: an SVG wave in the next layer's colour with `shadow-layer`.
 
 ## Motion

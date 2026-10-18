@@ -150,6 +150,65 @@ export const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
 });
 CarouselItem.displayName = 'CarouselItem';
 
+export interface CarouselFlipCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> {
+  /** 0-based position of the slide this card sits in. */
+  index: number;
+  /** The print. */
+  front: React.ReactNode;
+  /** Its details, shown when the print is turned over (use `pa-flip-title`, `pa-flip-meta`, `pa-flip-text`). */
+  back: React.ReactNode;
+  /** Accessible name of the card while it shows the front. */
+  label?: string;
+}
+/**
+ * A print that turns over for its details. Clicking (or Enter/Space on) the current slide flips it; clicking another
+ * slide brings that slide to the centre. A drag never flips (Embla swallows the click after a drag), and moving to
+ * another slide turns the card back over.
+ */
+export const CarouselFlipCard = React.forwardRef<HTMLDivElement, CarouselFlipCardProps>(
+  ({ index, front, back, label = 'Show details', className, onClick, onKeyDown, ...props }, ref) => {
+    const { currentSlides, scrollTo } = useCarousel();
+    const current = currentSlides.includes(index);
+    const [flipped, setFlipped] = React.useState(false);
+    React.useEffect(() => {
+      if (!current) setFlipped(false);
+    }, [current]);
+    const activate = () => (current ? setFlipped((f) => !f) : scrollTo(index));
+    return (
+      <div
+        ref={ref}
+        role="button"
+        tabIndex={current ? 0 : -1}
+        aria-pressed={flipped}
+        aria-label={label}
+        data-state={flipped ? 'back' : 'front'}
+        className={cn('pa-flip', className)}
+        onClick={(event) => {
+          onClick?.(event);
+          if (!event.defaultPrevented) activate();
+        }}
+        onKeyDown={(event) => {
+          onKeyDown?.(event);
+          if (event.defaultPrevented || (event.key !== 'Enter' && event.key !== ' ')) return;
+          event.preventDefault();
+          activate();
+        }}
+        {...props}
+      >
+        <div className="pa-flip-inner">
+          <div className="pa-flip-face pa-flip-front" aria-hidden={flipped || undefined}>
+            {front}
+          </div>
+          <div className="pa-flip-face pa-flip-back" aria-hidden={!flipped || undefined}>
+            {back}
+          </div>
+        </div>
+      </div>
+    );
+  },
+);
+CarouselFlipCard.displayName = 'CarouselFlipCard';
+
 export type CarouselButtonProps = ButtonProps;
 
 export const CarouselPrevious = React.forwardRef<HTMLButtonElement, CarouselButtonProps>(

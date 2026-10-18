@@ -4,6 +4,7 @@ import {
   CarouselControls,
   CarouselCounter,
   CarouselDots,
+  CarouselFlipCard,
   CarouselIndicator,
   CarouselItem,
   CarouselNext,
@@ -14,9 +15,9 @@ import type { DemoMeta } from '../types';
 export const meta: DemoMeta = { name: 'Carousel', group: 'Data display', height: 620 };
 
 const prints = [
-  { ph: 'ph-1', caption: 'Otaru, dawn' },
-  { ph: 'ph-2', caption: 'Harbour fog' },
-  { ph: 'ph-3', caption: 'Pine road' },
+  { ph: 'ph-1', caption: 'Otaru, dawn', details: 'Fujifilm X100V · 23mm · f/8', description: 'The canal before the shops open, with snow still on the warehouse roofs.' },
+  { ph: 'ph-2', caption: 'Harbour fog', details: 'Ricoh GR III · 28mm · f/4', description: 'Fog rolled in off the bay at seven; the ferry horn was the only sound.' },
+  { ph: 'ph-3', caption: 'Pine road', details: 'Leica Q2 · 28mm · f/5.6', description: 'The coast road north of Yoichi, between two snow showers.' },
 ];
 
 const roll = [
@@ -30,12 +31,26 @@ export default function CarouselDemo() {
       <div className="pa-panel">
         <Carousel aria-label="Featured prints">
           <CarouselContent>
+            {/* Click the centred print to turn it over for its details. */}
             {prints.map((p, i) => (
-              <CarouselItem key={p.caption} aria-label={`${i + 1} of ${prints.length}`}>
-                <figure className="pa-print" style={{ margin: 0 }}>
-                  <span className={`pa-photo ${p.ph}`} style={{ aspectRatio: '16 / 9' }} />
-                  <figcaption className="cap">{p.caption}</figcaption>
-                </figure>
+              <CarouselItem key={p.caption} index={i} aria-label={`${i + 1} of ${prints.length}`}>
+                <CarouselFlipCard
+                  index={i}
+                  label={`${p.caption}: show details`}
+                  front={
+                    <figure className="pa-print" style={{ margin: 0 }}>
+                      <span className={`pa-photo ${p.ph}`} style={{ aspectRatio: '16 / 9' }} />
+                      <figcaption className="cap">{p.caption}</figcaption>
+                    </figure>
+                  }
+                  back={
+                    <>
+                      <p className="pa-flip-title">{p.caption}</p>
+                      <p className="pa-flip-meta">{p.details}</p>
+                      <p className="pa-flip-text">{p.description}</p>
+                    </>
+                  }
+                />
               </CarouselItem>
             ))}
           </CarouselContent>
