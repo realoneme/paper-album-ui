@@ -81,3 +81,10 @@ for sid, pad in (('nf', '96px 32px 128px 32px'), ('aw', '112px 32px 144px 32px')
 sets.append('SET styleP+VP4K1dN8I padding="40px 20px 64px 20px";')
 for g in ('jzC75t5dx', 'Fy37gCfvC'): sets.append(f'SET styleP+{g} ' + STACK.format(g='24px') + ';')
 print('\n'.join(create)); print('---'); print('\n'.join(sets))
+# Tablet fixes applied later (no card left alone on a row):
+#   Home sessions: the third card spans the row, photo beside text
+#     SET aWOL2xvI_+mwNYeYcXr gridItemColumnSpan="all" stackDirection="horizontal" stackAlignment="center" gap="28px" height="auto";
+#     SET aWOL2xvI_+tiPXD_x11 width="1fr";  SET aWOL2xvI_+kPvNCKT1M width="1fr";
+#   Home testimonials and Services packages: three columns on tablet
+#     SET aWOL2xvI_+K9JO8tNgU gridColumnCount="3" gridColumnMinWidth="200px" gap="20px";  SET aWOL2xvI_+f64v8XBCZ padding="24px";
+#     SET gUfbkRYXi+NIvE7HUqV gridColumnCount="3" gridColumnMinWidth="200px" gap="16px";  SET gUfbkRYXi+anV1xgiyv padding="24px 20px";
