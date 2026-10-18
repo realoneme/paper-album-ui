@@ -3,7 +3,7 @@
 from common import *
 d = D(); which = sys.argv[1]
 if which == 'home':
-    d._set('ApfkLaDA2', {'text': 'Weddings, families, portraits, and the days in between'})
+    d._set('ApfkLaDA2', {'text': 'Weddings, families, portraits, and any moment you want to keep'})
     d._set('x_9yLxzc2', {'text': 'These are the sessions we book most, not the only ones. Whatever the day, it ends the same way: a sequence of prints you choose together, bound into an album.'})
     d.stack('servMore', 'm8SMdmS5a', 'horizontal', gap='18px', align='center', name='Other sessions', stackWrapEnabled='true',
             padding='18px 24px', radius='10px', fill=tok('muted'), shadow='sunken')
@@ -29,5 +29,5 @@ elif which == 'book':
         a[f'formSelectOptions.{k}.type'] = 'option'; a[f'formSelectOptions.{k}.value'] = val; a[f'formSelectOptions.{k}.title'] = title
     d._set('OdXg91tvF', a)
 elif which == 'layout':
-    d._set('mKFZCQfw4', {'text': 'Weddings, families, portraits and the days in between, in [City]. Every session ends in an album you can hold.'})
+    d._set('mKFZCQfw4', {'text': 'Weddings, families, portraits and any moment you want to keep, in [City]. Every session ends in an album you can hold.'})
 print(d.out())
