@@ -67,23 +67,48 @@ function rng(seed: number) {
         return ((t ^ (t >>> 14)) >>> 0) / 4294967296
     }
 }
-// Jagged paper mountains in a VB × h box, with snow on the tallest peaks.
-function mountains(seed: number, h: number, n: number) {
-    const r = rng(seed)
-    const step = VB / n
-    let d = `M0 ${h} L0 ${(h * (0.5 + r() * 0.15)).toFixed(1)}`
-    const snow: string[] = []
-    for (let i = 0; i < n; i++) {
-        const x = i * step
-        const peak = h * (0.04 + r() * 0.34)
-        const mid = x + step * (0.35 + r() * 0.3)
-        d += ` L${mid.toFixed(1)} ${peak.toFixed(1)} L${(x + step).toFixed(1)} ${(h * (0.46 + r() * 0.2)).toFixed(1)}`
-        if (peak < h * 0.2) {
-            const s = h * 0.08
-            snow.push(`M${(mid - s * 0.85).toFixed(1)} ${(peak + s).toFixed(1)} L${mid.toFixed(1)} ${peak.toFixed(1)} L${(mid + s * 0.85).toFixed(1)} ${(peak + s).toFixed(1)} L${(mid + s * 0.3).toFixed(1)} ${(peak + s * 0.7).toFixed(1)} L${(mid - s * 0.2).toFixed(1)} ${(peak + s * 1.05).toFixed(1)} Z`)
+// Two big, distant snow mountains, one behind the other: broad slopes with a little scissor wobble, and snow on
+// the upper flanks that runs down in tongues.
+function bigMountains(h: number) {
+    const r = rng(311)
+    const peaks = [
+        { x: VB * 0.3, y: h * 0.06, w: VB * 0.46 },
+        { x: VB * 0.7, y: h * 0.2, w: VB * 0.4 },
+    ]
+    const height = (x: number) => {
+        let best = h
+        for (const p of peaks) {
+            const t = Math.abs(x - p.x) / p.w
+            const y = p.y + (h - p.y) * Math.pow(Math.min(1, t), 0.85)
+            best = Math.min(best, y)
         }
+        return best
     }
-    return { d: d + ` L${VB} ${h} Z`, snow: snow.join(" ") }
+    let d = `M0 ${h}`
+    const top: [number, number][] = []
+    for (let x = 0; x <= VB; x += 10) {
+        const y = height(x) + (r() - 0.5) * 6
+        top.push([x, y])
+        d += ` L${x} ${y.toFixed(1)}`
+    }
+    d += ` L${VB} ${h} Z`
+    // snow: follow the ridge line down to a ragged lower edge
+    const snow = peaks
+        .map((p, i) => {
+            const line = top.filter(([x]) => Math.abs(x - p.x) < p.w * 0.36)
+            if (!line.length) return ""
+            const down = line
+                .slice()
+                .reverse()
+                .map(([x, y], k) => {
+                    const depth = h * (0.1 + 0.07 * Math.sin(k * 1.7 + i) + 0.05 * Math.sin(k * 0.6))
+                    return `L${x} ${(Math.min(h, y + Math.max(8, depth * (1 - Math.abs(x - p.x) / (p.w * 0.36))))).toFixed(1)}`
+                })
+                .join(" ")
+            return `M${line[0][0]} ${line[0][1].toFixed(1)} ` + line.map(([x, y]) => `L${x} ${y.toFixed(1)}`).join(" ") + " " + down + " Z"
+        })
+        .join(" ")
+    return { d, snow }
 }
 // A hand-cut ridge: two sine swells and a little scissor wobble.
 function ridge(seed: number, h: number, base: number, amp: number, freq: number) {
@@ -156,8 +181,9 @@ export default function PaperBanner(props: PaperBannerProps) {
     const geo = useMemo(() => {
         const fr = rng(97)
         return {
-            far: mountains(5, 520, 11),
-            mid: mountains(17, 420, 8),
+            big: bigMountains(600),
+            r1: ridge(13, 420, 300, 40, 1.2),
+            r2: ridge(19, 380, 250, 44, 1.7),
             hills: ridge(29, 360, 220, 46, 1.5),
             front: ridge(41, 300, 150, 40, 2.1),
             ground: ridge(53, 200, 92, 22, 3.1),
@@ -173,8 +199,8 @@ export default function PaperBanner(props: PaperBannerProps) {
     }, [fireflies])
 
     // Each layer rises from below, back to front; then the photographs float up.
-    const RISE = 0.25
-    const STEP = 0.2
+    const RISE = 0.9
+    const STEP = 0.32
     const PHOTOS_AT = RISE + STEP * 4 + 0.35
     const layer = (i: number, h: string, children: ReactNode, z: number, extra: CSSProperties = {}) => (
         <div
@@ -232,8 +258,10 @@ export default function PaperBanner(props: PaperBannerProps) {
             }}
         >
             <style>{`
-                .${c}-layer { ${live ? `animation: ${c}-rise 1.5s cubic-bezier(.2,.9,.25,1.04) both;` : ""} }
-                @keyframes ${c}-rise { 0% { transform: translateY(70%); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
+                .${c}-layer { ${live ? `animation: ${c}-rise 1.6s cubic-bezier(.2,.9,.25,1.04) both;` : ""} }
+                @keyframes ${c}-rise { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+                .${c}-far { ${live ? `animation: ${c}-far 2.4s cubic-bezier(.2,.8,.2,1) .1s both;` : ""} }
+                @keyframes ${c}-far { 0% { transform: translateY(18%); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
                 .${c}-sky { ${live ? `animation: ${c}-fade 1.6s ease-out both;` : ""} }
                 @keyframes ${c}-fade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
                 .${c}-cloud { ${live ? `animation: ${c}-float 16s ease-in-out infinite alternate;` : ""} }
@@ -250,7 +278,7 @@ export default function PaperBanner(props: PaperBannerProps) {
                 .${c}-key:hover { transform: translateY(-1px); }
                 .${c}-key:active { transform: translateY(2px); }
                 @media (max-width: 809px) { .${c}-wide { display: none; } .${c}-p0 { left: 6% !important; } .${c}-p2 { left: 52% !important; } .${c}-name { font-size: clamp(40px, 11vw, 60px) !important; } }
-                @media (prefers-reduced-motion: reduce) { .${c}-layer, .${c}-sky, .${c}-cloud, .${c}-up, .${c}-bob, .${c}-title, .${c}-fly { animation: none !important; } }
+                @media (prefers-reduced-motion: reduce) { .${c}-layer, .${c}-far, .${c}-sky, .${c}-cloud, .${c}-up, .${c}-bob, .${c}-title, .${c}-fly { animation: none !important; } }
             `}</style>
             <svg aria-hidden="true" width="0" height="0" style={{ position: "absolute" }}>
                 <filter id={`${c}-cut`}>
@@ -275,9 +303,23 @@ export default function PaperBanner(props: PaperBannerProps) {
             </div>
 
             {/* the landscape, back to front */}
-            {layer(0, "64%", art(geo.far.d, `color-mix(in srgb, ${farColor} 10%, ${midColor})`, 520, 0.14, geo.far.snow), 1)}
-            {layer(1, "52%", art(geo.mid.d, `color-mix(in srgb, ${midColor} 45%, ${woodColor})`, 420, 0.2, geo.mid.snow), 2)}
-            {layer(2, "40%", art(geo.hills, woodColor, 360, 0.28), 3)}
+            {/* two big snow mountains far away, soft with distance */}
+            <div aria-hidden="true" className={`${c}-far`} style={{ position: "absolute", left: "-4%", right: "-4%", bottom: "14%", height: "74%", zIndex: 1 }}>
+                <svg viewBox={`0 0 ${VB} 600`} preserveAspectRatio="none" style={{ display: "block", width: "100%", height: "100%", filter: "blur(1.4px)", opacity: 0.85 }}>
+                    <defs>
+                        <linearGradient id={`${c}-haze`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={`color-mix(in srgb, ${midColor} 70%, ${farColor})`} />
+                            <stop offset="75%" stopColor={farColor} />
+                            <stop offset="100%" stopColor={skyColor} />
+                        </linearGradient>
+                    </defs>
+                    <path d={geo.big.d} fill={`url(#${c}-haze)`} />
+                    <path d={geo.big.snow} fill={printColor} opacity="0.92" />
+                </svg>
+            </div>
+            {layer(0, "50%", art(geo.r1, `color-mix(in srgb, ${farColor} 55%, ${midColor})`, 420, 0.14), 2)}
+            {layer(1, "44%", art(geo.r2, midColor, 380, 0.2), 2)}
+            {layer(2, "38%", art(geo.hills, `color-mix(in srgb, ${midColor} 30%, ${woodColor})`, 360, 0.28), 3)}
             {/* the photographs float up and settle between the hills */}
             <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 4, pointerEvents: "none" }}>
                 {photos.map((p, i) => (
