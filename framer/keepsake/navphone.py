@@ -26,3 +26,7 @@ print('SET navP+menuBtn onTap.0.action="SET_VARIANT" onTap.0.controls.variant="n
 print('SET navO+menuBtn onTap.0.action="SET_VARIANT" onTap.0.controls.variant="navP";')
 print('SET navO+menuBtnT text="Close";')
 print('SET navO+drawer visible="true";')
+# Later: the drawer stays in the layout, collapsed in Phone (height 0, opacity 0, clipped, no padding) and open in
+# Phone Open; both variants animate with transition="spring-duration 0.42s 0.12 0s". Every drawer link, the Book
+# button row and the brand set the variant back to Phone, so the menu closes when a page is chosen:
+#   SET <Phone Open>+<row> onTap.0.action="SET_VARIANT" onTap.0.controls.variant="<Phone>";
