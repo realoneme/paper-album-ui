@@ -9,9 +9,30 @@ test('hovering a stack with warning and error toasts keeps ribbons and stacking 
   }
   const toasts = page.locator('[data-sonner-toast]');
   await expect(toasts).toHaveCount(3);
+  // Hover only once the toasts have finished sliding in: hovering a toast mid-entry leaves the pointer outside
+  // the stack when it settles, and Sonner then collapses it again.
+  const tops = () => toasts.evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)).join(','));
+  let last = '';
+  await expect.poll(async () => {
+    const now = await tops();
+    const still = now === last;
+    last = now;
+    return still;
+  }, { intervals: [120], timeout: 4000 }).toBe(true);
   await toasts.first().hover();
   await expect(toasts.first()).toHaveAttribute('data-expanded', 'true');
-  await page.waitForTimeout(500);
+  // Wait for Sonner's fan-out (about 400ms) to finish: under load a fixed wait can catch it mid-move.
+  await expect
+    .poll(
+      () =>
+        toasts.evaluateAll((els) => {
+          const boxes = els.map((e) => e.getBoundingClientRect()).sort((a, b) => a.top - b.top);
+          return boxes.every((b, i) => i === 0 || b.top >= boxes[i - 1]!.bottom - 1);
+        }),
+      { timeout: 3000 },
+    )
+    .toBe(true);
+  await page.waitForTimeout(100);
 
   const info = await toasts.evaluateAll((els) =>
     els.map((el) => {
