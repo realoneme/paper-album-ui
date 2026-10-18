@@ -88,3 +88,7 @@ print('\n'.join(create)); print('---'); print('\n'.join(sets))
 #   Home testimonials and Services packages: three columns on tablet
 #     SET aWOL2xvI_+K9JO8tNgU gridColumnCount="3" gridColumnMinWidth="200px" gap="20px";  SET aWOL2xvI_+f64v8XBCZ padding="24px";
 #     SET gUfbkRYXi+NIvE7HUqV gridColumnCount="3" gridColumnMinWidth="200px" gap="16px";  SET gUfbkRYXi+anV1xgiyv padding="24px 20px";
+# Tablet, after the spacing pass: album grids, the album gallery and About's principles in three columns
+#   (yqatklObFH0M8uibtw, yqatklObFB8fmtx3st, yqatklObFsarjynLHY, u9jM8mM7DdRBsUUxuP, nwMCXfOuZDY74Qtu03: gridColumnCount 3);
+#   Home and Printed albums product photos fill the panel width (aWOL2xvI_vYOva4Jrz, q_c7uLd4vgTFKcBN3s width 100%);
+#   the About portrait frame is 460px high so the text follows the photo.
