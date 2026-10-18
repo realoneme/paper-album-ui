@@ -56,8 +56,10 @@ const HAND = '"Caveat", "Bradley Hand", cursive'
 // Design size of the open book (both pages) on its own plane: W wide, D deep (front edge to spine head).
 const W = 1240
 const D = 760
-const TILT = 72 // how far the book lies back from facing us
-const THICK = 50 // the page block
+const TILT = 66 // how far the book lies back from facing us
+const THICK = 50 // the page block at the fore-edge is thinner; at the spine it bulges (see hAt)
+const BOARD = 9 // cover board thickness
+const STRIPS = 26 // facets per half that make the curved page surface
 const OPEN_AT = 0.6
 const OPEN_FOR = 1.9
 
@@ -209,7 +211,7 @@ export default function StoryBook(props: StoryBookProps) {
             key={key}
             aria-hidden="true"
             className={`${c}-stand`}
-            style={{ bottom: `${at}%`, height: h, animationDelay: `${OPEN_AT + 0.25 + i * 0.07}s`, ...extra }}
+            style={{ bottom: `${at}%`, height: h, animationDelay: `${OPEN_AT + OPEN_FOR * 0.42 + i * 0.07}s`, ...extra }}
         >
             {children}
         </div>
@@ -257,8 +259,72 @@ export default function StoryBook(props: StoryBookProps) {
         boxShadow: dark ? `0 3px 0 ${edgeColor}, 0 10px 18px rgba(40, 24, 10, 0.28)` : `inset 0 0 0 1px ${midColor}, 0 3px 0 ${midColor}, 0 10px 18px rgba(40, 24, 10, 0.18)`,
     })
     const linen = `repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 1px, rgba(0,0,0,0) 1px 3px), repeating-linear-gradient(90deg, rgba(0,0,0,0.08) 0 1px, rgba(0,0,0,0) 1px 4px), ${coverColor}`
-    const leaves = `repeating-linear-gradient(0deg, ${pageColor} 0 2px, ${midColor} 2px 3px, ${pageColor} 3px 4px, rgba(169,120,74,0.55) 4px 5px)`
-    const half = W / 2
+        const half = W / 2
+    // Height of the page surface above the board, from the spine (u = 0) to the fore-edge (u = 1): the pages of a
+    // thick open book bulge near the spine and slope down to the outside edge, with a small dip in the gutter.
+    const hAt = (u: number) => THICK * (0.34 + 0.95 * Math.pow(Math.cos((Math.min(1, Math.max(0, u)) * Math.PI) / 2), 1.25)) - THICK * 0.22 * Math.exp(-Math.pow(u / 0.04, 2))
+    const strips = (side: "left" | "right") => {
+        const out: ReactNode[] = []
+        const dx = half / STRIPS
+        for (let i = 0; i < STRIPS; i++) {
+            const u0 = i / STRIPS
+            const u1 = (i + 1) / STRIPS
+            const z0 = hAt(u0) - THICK
+            const z1 = hAt(u1) - THICK
+            // right: from the spine outwards; left: from the fore-edge to the spine
+            const [zl, zr] = side === "right" ? [z0, z1] : [z1, z0]
+            const ang = (Math.atan2(zr - zl, dx) * 180) / Math.PI
+            const len = Math.hypot(dx, zr - zl) + 0.8
+            const left = side === "right" ? half + i * dx : half - (i + 1) * dx
+            const slope = (zr - zl) / dx
+            const shade = side === "right" ? Math.max(0, -slope) * 0.55 : Math.max(0, slope) * 0.25
+            const gutter = u0 < 0.06 ? 0.16 : 0
+            out.push(
+                <div
+                    key={`${side}${i}`}
+                    style={{
+                        position: "absolute",
+                        left,
+                        top: 0,
+                        bottom: 0,
+                        width: len,
+                        transformOrigin: "0 50%",
+                        transform: `translateZ(${zl.toFixed(2)}px) rotateY(${(-ang).toFixed(3)}deg)`,
+                        background: `linear-gradient(180deg, rgba(60,40,20,0.07), rgba(0,0,0,0) 45%), linear-gradient(rgba(60,40,20,${(shade + gutter).toFixed(3)}), rgba(60,40,20,${(shade + gutter).toFixed(3)})), ${pageColor}`,
+                        backfaceVisibility: "hidden",
+                    }}
+                />
+            )
+        }
+        return out
+    }
+    const frontEdge = (side: "left" | "right") => {
+        const top = Math.ceil(hAt(0.06)) + 2
+        const H = top + BOARD
+        const n = 40
+        const pts = Array.from({ length: n + 1 }, (_, i) => {
+            const u = i / n
+            const x = side === "right" ? u * half : half - u * half
+            return { x, h: hAt(u) }
+        })
+        const surf = (f: number) => pts.map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(1)} ${(top - p.h * f).toFixed(1)}`).join(" ")
+        const body = `${surf(1)} L${side === "right" ? half : 0} ${top} L${side === "right" ? 0 : half} ${top} Z`
+        const lines = Array.from({ length: 14 }, (_, i) => surf(0.1 + (i / 14) * 0.88))
+        return (
+            <svg
+                viewBox={`0 0 ${half} ${H}`}
+                preserveAspectRatio="none"
+                style={{ position: "absolute", left: side === "right" ? half : 0, width: half, bottom: 0, height: H, overflow: "visible", transformOrigin: "50% 100%", transform: `translateZ(${top - THICK}px) rotateX(-90deg)` }}
+            >
+                <path d={body} fill={pageColor} />
+                {lines.map((d, i) => (
+                    <path key={i} d={d} fill="none" stroke={i % 3 === 0 ? woodColor : midColor} strokeOpacity={i % 3 === 0 ? 0.5 : 0.9} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+                ))}
+                <rect x="0" y={top} width={half} height={BOARD} fill={coverColor} />
+                <rect x="0" y={top} width={half} height="2" fill="rgba(0,0,0,0.25)" />
+            </svg>
+        )
+    }
 
     return (
         <section
@@ -277,8 +343,8 @@ export default function StoryBook(props: StoryBookProps) {
             }}
         >
             <style>{`
-                .${c}-cover { transform-origin: 0 50%; transform-style: preserve-3d; transform: rotateY(-179deg); ${live ? `animation: ${c}-open ${OPEN_FOR}s cubic-bezier(.5,.05,.25,1) ${OPEN_AT}s both;` : ""} }
-                @keyframes ${c}-open { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(-179deg); } }
+                .${c}-cover { transform: rotateY(0deg); ${live ? `animation: ${c}-open ${OPEN_FOR}s cubic-bezier(.5,.05,.25,1) ${OPEN_AT}s both;` : ""} }
+                @keyframes ${c}-open { 0% { transform: rotateY(180deg); } 100% { transform: rotateY(0deg); } }
                 .${c}-slide { ${live ? `animation: ${c}-slide ${OPEN_FOR}s cubic-bezier(.5,.05,.25,1) ${OPEN_AT}s both;` : ""} }
                 @keyframes ${c}-slide { 0% { transform: translateX(-${half / 2}px); } 100% { transform: translateX(0); } }
                 .${c}-left { ${live ? `animation: ${c}-left ${OPEN_FOR}s steps(1, end) ${OPEN_AT}s both;` : ""} }
@@ -319,26 +385,34 @@ export default function StoryBook(props: StoryBookProps) {
             </svg>
 
             {/* the book on the table, seen from its bottom edge */}
-            <div aria-hidden="true" style={{ position: "absolute", left: "50%", bottom: narrow ? 10 : 34, width: W, height: D, marginLeft: -W / 2, transform: `scale(${k})`, transformOrigin: "50% 100%", perspective: 1500, perspectiveOrigin: "50% -10%" }}>
+            <div aria-hidden="true" style={{ position: "absolute", left: "50%", bottom: narrow ? 30 : 70, width: W, height: D, marginLeft: -W / 2, transform: `scale(${k})`, transformOrigin: "50% 100%", perspective: 1500, perspectiveOrigin: "50% -10%" }}>
                 <div className={`${c}-slide`} style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
                     <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", transform: `rotateX(${TILT}deg)`, transformOrigin: "50% 100%" }}>
-                        {/* table shadow */}
-                        <div className={`${c}-left`} style={{ position: "absolute", left: -30, width: half + 30, top: -20, bottom: -40, borderRadius: "24px 0 0 24px", background: "rgba(40, 24, 10, 0.35)", filter: "blur(30px)", transform: `translateZ(-${THICK + 2}px)` }} />
-                        <div style={{ position: "absolute", left: half, right: -30, top: -20, bottom: -40, borderRadius: "0 24px 24px 0", background: "rgba(40, 24, 10, 0.35)", filter: "blur(30px)", transform: `translateZ(-${THICK + 2}px)` }} />
-                        {/* back board under both halves, and the page block (thickness) */}
-                        <div className={`${c}-left`} style={{ position: "absolute", left: -10, width: half + 10, top: -10, bottom: -12, borderRadius: "10px 0 0 10px", background: linen, transform: `translateZ(-${THICK}px)` }} />
-                        <div style={{ position: "absolute", left: half, right: -10, top: -10, bottom: -12, borderRadius: "0 10px 10px 0", background: linen, transform: `translateZ(-${THICK}px)` }} />
-                        {/* front edges of the page blocks: the stacked leaves we look at */}
-                        <div className={`${c}-left`} style={{ position: "absolute", left: 6, width: half - 6, bottom: 0, height: THICK, transformOrigin: "50% 100%", transform: "rotateX(-90deg)", background: `linear-gradient(0deg, ${coverColor} 0 9px, rgba(0,0,0,0) 9px), ${leaves}`, boxShadow: "inset 0 -12px 10px -6px rgba(40,24,10,0.3)" }} />
-                        <div style={{ position: "absolute", left: half, width: half - 6, bottom: 0, height: THICK, transformOrigin: "50% 100%", transform: "rotateX(-90deg)", background: `linear-gradient(0deg, ${coverColor} 0 9px, rgba(0,0,0,0) 9px), ${leaves}`, boxShadow: "inset 0 -12px 10px -6px rgba(40,24,10,0.3)" }} />
-                        {/* the pages */}
-                        <div className={`${c}-left`} style={{ position: "absolute", left: 6, width: half - 6, top: 0, bottom: 0, background: `linear-gradient(270deg, rgba(60,40,20,0.28) 0%, rgba(0,0,0,0) 14%), ${pageColor}`, borderRadius: "4px 0 0 4px" }} />
-                        <div style={{ position: "absolute", left: half, width: half - 6, top: 0, bottom: 0, background: `linear-gradient(90deg, rgba(60,40,20,0.28) 0%, rgba(0,0,0,0) 14%), ${pageColor}`, borderRadius: "0 4px 4px 0" }} />
-                        {/* ribbon lying across the right page and over the front edge */}
-                        <div style={{ position: "absolute", left: half + 120, bottom: -THICK - 40, width: 26, height: 160, background: sealColor, clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 88%, 0 100%)", transform: "translateZ(1px)" }} />
+                        {/* table shadows */}
+                        <div className={`${c}-left`} style={{ position: "absolute", left: -30, width: half + 30, top: -20, bottom: -40, borderRadius: "24px 0 0 24px", background: "rgba(40, 24, 10, 0.35)", filter: "blur(30px)", transform: `translateZ(-${THICK + BOARD + 2}px)` }} />
+                        <div style={{ position: "absolute", left: half, right: -30, top: -20, bottom: -40, borderRadius: "0 24px 24px 0", background: "rgba(40, 24, 10, 0.35)", filter: "blur(30px)", transform: `translateZ(-${THICK + BOARD + 2}px)` }} />
+                        {/* right half: back board, the curved page block, its front edge and the ribbon */}
+                        <div style={{ position: "absolute", left: half, right: -8, top: -8, bottom: -6, borderRadius: "0 10px 10px 0", background: linen, transform: `translateZ(-${THICK}px)` }} />
+                        {strips("right")}
+                        {frontEdge("right")}
+                        <div style={{ position: "absolute", left: half + 150, bottom: -2, width: 26, height: THICK + 54, transformOrigin: "50% 100%", transform: `translateZ(${hAt(150 / half) - THICK}px) rotateX(-90deg)`, background: sealColor, clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 90%, 0 100%)" }} />
+                        {/* left half: the front cover and the other half of the pages, which swing over on the spine */}
+                        <div className={`${c}-cover`} style={{ position: "absolute", left: 0, width: half, top: 0, bottom: 0, transformOrigin: "100% 50%", transformStyle: "preserve-3d" }}>
+                            <div style={{ position: "absolute", left: -8, right: 0, top: -8, bottom: -6, borderRadius: "10px 0 0 10px", background: linen, transform: `translateZ(-${THICK}px)` }} />
+                            {/* the outside of the cover, facing the table when open and facing us when closed */}
+                            <div className={`${c}-face`} style={{ left: -10, top: -10, bottom: -12, right: 0, borderRadius: "10px 2px 2px 10px", background: linen, transform: `translateZ(-${THICK + 1}px) rotateY(180deg)`, boxShadow: "inset -14px 0 18px -12px rgba(0,0,0,0.55)" }}>
+                                <div style={{ position: "absolute", left: 48, right: 48, top: 48, bottom: 48, border: "1.5px solid rgba(246, 238, 219, 0.28)", borderRadius: 6 }} />
+                                <div style={{ position: "absolute", left: 0, right: 0, top: "40%", textAlign: "center", padding: "0 60px" }}>
+                                    <div style={{ fontFamily: SERIF, fontWeight: 500, fontSize: 64, lineHeight: 1.05, color: "rgba(246, 238, 219, 0.9)", textShadow: "0 -1px 0 rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.12)", ...nameFont }}>{name}</div>
+                                    {coverNote ? <div style={{ marginTop: 18, fontFamily: HAND, fontSize: 34, color: "rgba(243, 199, 126, 0.85)" }}>{coverNote}</div> : null}
+                                </div>
+                            </div>
+                            {strips("left")}
+                            {frontEdge("left")}
+                        </div>
 
                         {/* the pop-up landscape, standing across the spread */}
-                        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d" }}>
+                        <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", transform: `translateZ(-${Math.round(THICK * 0.28)}px)` }}>
                             {piece("far", 86, 330, 0, (
                                 <svg viewBox={`0 0 ${W} 330`} preserveAspectRatio="none" style={{ display: "block", width: "100%", height: "100%", filter: "drop-shadow(0 -1px 0 rgba(255,226,170,0.45)) drop-shadow(0 -6px 10px rgba(40,24,10,0.2))" }}>
                                     <path d={geo.far} fill={farColor} filter={`url(#${c}-cut)`} />
@@ -378,17 +452,6 @@ export default function StoryBook(props: StoryBookProps) {
                             ))}
                         </div>
 
-                        {/* the front cover: linen outside, endpaper inside */}
-                        <div className={`${c}-cover`} style={{ position: "absolute", left: half, width: half + 10, top: -10, bottom: -12, transform: "translateZ(2px)", zIndex: 5 }}>
-                            <div className={`${c}-face`} style={{ borderRadius: "2px 10px 10px 2px", background: linen, boxShadow: "inset 14px 0 18px -12px rgba(0,0,0,0.55)" }}>
-                                <div style={{ position: "absolute", left: 48, right: 48, top: 48, bottom: 48, border: "1.5px solid rgba(246, 238, 219, 0.28)", borderRadius: 6 }} />
-                                <div style={{ position: "absolute", left: 0, right: 0, top: "40%", textAlign: "center", padding: "0 60px" }}>
-                                    <div style={{ fontFamily: SERIF, fontWeight: 500, fontSize: 64, lineHeight: 1.05, color: "rgba(246, 238, 219, 0.9)", textShadow: "0 -1px 0 rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.12)", ...nameFont }}>{name}</div>
-                                    {coverNote ? <div style={{ marginTop: 18, fontFamily: HAND, fontSize: 34, color: "rgba(243, 199, 126, 0.85)" }}>{coverNote}</div> : null}
-                                </div>
-                            </div>
-                            <div className={`${c}-face`} style={{ transform: "rotateY(180deg)", borderRadius: "10px 2px 2px 10px", background: `radial-gradient(circle at 20% 30%, rgba(169,120,74,0.18) 0 2px, rgba(0,0,0,0) 3px) 0 0 / 26px 26px, ${pageColor}`, boxShadow: `inset -14px 0 18px -12px rgba(60,40,20,0.4)` }} />
-                        </div>
                     </div>
                 </div>
             </div>
