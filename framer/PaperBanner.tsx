@@ -67,42 +67,43 @@ function rng(seed: number) {
         return ((t ^ (t >>> 14)) >>> 0) / 4294967296
     }
 }
-// Two big, distant snow mountains, one behind the other: broad slopes with a little scissor wobble, and snow on
-// the upper flanks that runs down in tongues.
+// Two big, gentle mountains far away, one behind the other: broad rounded shoulders, a soft summit and a small
+// cap of snow, with a little scissor wobble on the outline.
 function bigMountains(h: number) {
     const r = rng(311)
     const peaks = [
-        { x: VB * 0.3, y: h * 0.06, w: VB * 0.46 },
-        { x: VB * 0.7, y: h * 0.2, w: VB * 0.4 },
+        { x: VB * 0.5, y: h * 0.16, w: VB * 0.7 },
+        { x: VB * 0.88, y: h * 0.32, w: VB * 0.56 },
     ]
+    // a bell: flat-ish near the top, long gentle slopes
+    const bell = (t: number) => 1 - Math.exp(-Math.pow(t / 0.6, 2) * 2.4)
     const height = (x: number) => {
         let best = h
         for (const p of peaks) {
             const t = Math.abs(x - p.x) / p.w
-            const y = p.y + (h - p.y) * Math.pow(Math.min(1, t), 0.85)
-            best = Math.min(best, y)
+            best = Math.min(best, p.y + (h - p.y) * bell(t))
         }
         return best
     }
     let d = `M0 ${h}`
     const top: [number, number][] = []
     for (let x = 0; x <= VB; x += 10) {
-        const y = height(x) + (r() - 0.5) * 6
+        const y = height(x) + (r() - 0.5) * 4
         top.push([x, y])
         d += ` L${x} ${y.toFixed(1)}`
     }
     d += ` L${VB} ${h} Z`
-    // snow: follow the ridge line down to a ragged lower edge
     const snow = peaks
         .map((p, i) => {
-            const line = top.filter(([x]) => Math.abs(x - p.x) < p.w * 0.36)
+            const line = top.filter(([x]) => Math.abs(x - p.x) < p.w * 0.17)
             if (!line.length) return ""
             const down = line
                 .slice()
                 .reverse()
                 .map(([x, y], k) => {
-                    const depth = h * (0.1 + 0.07 * Math.sin(k * 1.7 + i) + 0.05 * Math.sin(k * 0.6))
-                    return `L${x} ${(Math.min(h, y + Math.max(8, depth * (1 - Math.abs(x - p.x) / (p.w * 0.36))))).toFixed(1)}`
+                    const edge = 1 - Math.abs(x - p.x) / (p.w * 0.17)
+                    const depth = h * (0.05 + 0.025 * Math.sin(k * 1.3 + i)) * Math.max(0.15, edge)
+                    return `L${x} ${(y + Math.max(3, depth)).toFixed(1)}`
                 })
                 .join(" ")
             return `M${line[0][0]} ${line[0][1].toFixed(1)} ` + line.map(([x, y]) => `L${x} ${y.toFixed(1)}`).join(" ") + " " + down + " Z"
@@ -199,9 +200,11 @@ export default function PaperBanner(props: PaperBannerProps) {
     }, [fireflies])
 
     // Each layer rises from below, back to front; then the photographs float up.
-    const RISE = 0.9
+    const RISE = 0.35
     const STEP = 0.32
-    const PHOTOS_AT = RISE + STEP * 4 + 0.35
+    // order, front to back: ground, deep wood, hills, two ranges, the far mountains
+    const ORDER = { ground: 0, deep: 1, hills: 2, r2: 3, r1: 4, far: 5 }
+    const PHOTOS_AT = RISE + STEP * 5 + 0.6
     const layer = (i: number, h: string, children: ReactNode, z: number, extra: CSSProperties = {}) => (
         <div
             aria-hidden="true"
@@ -250,6 +253,8 @@ export default function PaperBanner(props: PaperBannerProps) {
                 minHeight: 620,
                 maxHeight: fullScreen ? 1100 : undefined,
                 overflow: "hidden",
+                perspective: 1300,
+                perspectiveOrigin: "50% 20%",
                 background: `radial-gradient(ellipse 45% 50% at 72% 26%, ${glowColor} 0%, rgba(0,0,0,0) 72%), ${skyColor}`,
                 color: textColor,
                 fontFamily: SANS,
@@ -258,10 +263,8 @@ export default function PaperBanner(props: PaperBannerProps) {
             }}
         >
             <style>{`
-                .${c}-layer { ${live ? `animation: ${c}-rise 1.6s cubic-bezier(.2,.9,.25,1.04) both;` : ""} }
-                @keyframes ${c}-rise { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
-                .${c}-far { ${live ? `animation: ${c}-far 2.4s cubic-bezier(.2,.8,.2,1) .1s both;` : ""} }
-                @keyframes ${c}-far { 0% { transform: translateY(18%); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+                .${c}-layer, .${c}-far { transform-origin: 50% 100%; ${live ? `animation: ${c}-stand 1.25s cubic-bezier(.3,.7,.4,1) both;` : ""} }
+                @keyframes ${c}-stand { 0% { transform: rotateX(88deg); opacity: 0; } 12% { opacity: 1; } 68% { transform: rotateX(-7deg); } 84% { transform: rotateX(3deg); } 100% { transform: rotateX(0deg); opacity: 1; } }
                 .${c}-sky { ${live ? `animation: ${c}-fade 1.6s ease-out both;` : ""} }
                 @keyframes ${c}-fade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
                 .${c}-cloud { ${live ? `animation: ${c}-float 16s ease-in-out infinite alternate;` : ""} }
@@ -304,12 +307,12 @@ export default function PaperBanner(props: PaperBannerProps) {
 
             {/* the landscape, back to front */}
             {/* two big snow mountains far away, soft with distance */}
-            <div aria-hidden="true" className={`${c}-far`} style={{ position: "absolute", left: "-4%", right: "-4%", bottom: "14%", height: "74%", zIndex: 1 }}>
-                <svg viewBox={`0 0 ${VB} 600`} preserveAspectRatio="none" style={{ display: "block", width: "100%", height: "100%", filter: "blur(1.4px)", opacity: 0.85 }}>
+            <div aria-hidden="true" className={`${c}-far`} style={{ position: "absolute", left: "-4%", right: "-4%", bottom: "18%", height: "min(70%, 55vw)", zIndex: 1, animationDelay: `${RISE + ORDER.far * STEP}s` }}>
+                <svg viewBox={`0 0 ${VB} 600`} preserveAspectRatio="none" style={{ display: "block", width: "100%", height: "100%", filter: "blur(0.8px)", opacity: 0.95 }}>
                     <defs>
                         <linearGradient id={`${c}-haze`} x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor={`color-mix(in srgb, ${midColor} 70%, ${farColor})`} />
-                            <stop offset="75%" stopColor={farColor} />
+                            <stop offset="0%" stopColor={`color-mix(in srgb, ${midColor} 85%, ${woodColor})`} />
+                            <stop offset="70%" stopColor={`color-mix(in srgb, ${farColor} 60%, ${midColor})`} />
                             <stop offset="100%" stopColor={skyColor} />
                         </linearGradient>
                     </defs>
@@ -317,9 +320,9 @@ export default function PaperBanner(props: PaperBannerProps) {
                     <path d={geo.big.snow} fill={printColor} opacity="0.92" />
                 </svg>
             </div>
-            {layer(0, "50%", art(geo.r1, `color-mix(in srgb, ${farColor} 55%, ${midColor})`, 420, 0.14), 2)}
-            {layer(1, "44%", art(geo.r2, midColor, 380, 0.2), 2)}
-            {layer(2, "38%", art(geo.hills, `color-mix(in srgb, ${midColor} 30%, ${woodColor})`, 360, 0.28), 3)}
+            {layer(ORDER.r1, "50%", art(geo.r1, `color-mix(in srgb, ${farColor} 55%, ${midColor})`, 420, 0.14), 2)}
+            {layer(ORDER.r2, "44%", art(geo.r2, midColor, 380, 0.2), 2)}
+            {layer(ORDER.hills, "38%", art(geo.hills, `color-mix(in srgb, ${midColor} 30%, ${woodColor})`, 360, 0.28), 3)}
             {/* the photographs float up and settle between the hills */}
             <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 4, pointerEvents: "none" }}>
                 {photos.map((p, i) => (
@@ -343,8 +346,8 @@ export default function PaperBanner(props: PaperBannerProps) {
                     </div>
                 ))}
             </div>
-            {layer(3, "28%", art(geo.front, deepColor, 300, 0.34), 5)}
-            {layer(4, "15%", art(geo.ground, edgeColor, 200, 0.32), 6)}
+            {layer(ORDER.deep, "28%", art(geo.front, deepColor, 300, 0.34), 5)}
+            {layer(ORDER.ground, "15%", art(geo.ground, edgeColor, 200, 0.32), 6)}
             <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 7, pointerEvents: "none" }}>
                 {geo.flies.map((f, i) => (
                     <span key={i} className={`${c}-fly`} style={{ left: f.x, top: f.y, ["--dx" as string]: f.dx, ["--dy" as string]: f.dy, ["--d" as string]: f.d, animationDelay: `${f.delay}, ${f.delay}` }} />
