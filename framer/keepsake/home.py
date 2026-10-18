@@ -35,7 +35,7 @@ d.text('heroP', 'heroL', '[Studio Name] photographs weddings, families and portr
 d.stack('heroBtns', 'heroL', 'horizontal', gap='16px', align='center', name='Hero actions', stackWrapEnabled=True)
 d.button('heroB1', 'heroBtns', 'Book a session', 'seal', '/book', 'lg')
 d.button('heroB2', 'heroBtns', 'See the albums', 'secondary', '/albums', 'lg')
-d.text('heroNote', 'heroL', 'now booking spring 2027', 'Note Sm', 'wood', width='auto', rotation='-2')
+d.text('heroNote', 'heroL', 'replies within 2 days', 'Note Sm', 'wood', width='auto', rotation='-2')
 d.frame('heroArt', 'heroIn', name='Hero prints', position='relative', width='520px', height='580px')
 d.inst('heroP1', 'heroArt', 'PhotoHolder', holder='tape', photo=P['hero'], name='Lake Como, June', tilt='1', ratio='4 / 5',
        position='absolute', width='330px', left='150px', top='10px', right='null', bottom='null')
@@ -102,6 +102,7 @@ d.frame('qList', tin, name='Testimonials', layout='grid', gridColumnCount='3', g
 d.stack('qItem', 'qList', 'vertical', gap='20px', width='1fr', height='1fr', fill=tok('print'), radius='2px', padding='28px', shadow='print', name='Testimonial')
 d.text('qMark', 'qItem', '“', 'Display', 'wood', lineHeight='0.6em')
 d.text('qText', 'qItem', v(Q['quote']), 'Lead', 'printInk')
+d.stack('qSpacer', 'qItem', 'vertical', height='1fr', name='Spacer')  # keeps the names on the bottom edge of every card
 d.stack('qWho', 'qItem', 'horizontal', gap='12px', align='center', name='Who')
 d.frame('qAv', 'qWho', name='Photo', position='relative', width='44px', height='44px', radius='999px', fill=v(Q['photo']), shadow=[f'0px 0px 0px 2px {tok("card")}', '0px 2px 6px 0px rgba(40, 24, 10, 0.25)'])
 d.stack('qNames', 'qWho', 'vertical', gap='2px', width='1fr', name='Names')
@@ -113,5 +114,5 @@ d.stack('ctaIn', 'cta', 'vertical', gap='24px', align='center', maxWidth='1136px
 rich('ctaH', 'ctaIn', 'Display', 'primaryFg', 'h2', [('Let’s make something ', None), ('you’ll keep.', {'fontStyle': 'italic', 'fontWeight': '300'})], textAlignment='center')
 d.text('ctaP', 'ctaIn', 'Tell us the date and the place. We reply within two days with what we have free.', 'Lead', 'primaryFg', textAlignment='center', opacity='0.85')
 d.button('ctaB', 'ctaIn', 'Check my date', 'seal', '/book', 'lg')
-d.text('ctaNote', 'ctaIn', 'two June weekends left', 'Note Sm', 'glow', width='auto', rotation='-2')
+d.text('ctaNote', 'ctaIn', '* book at least 2 weeks ahead', 'Note Sm', 'glow', width='auto', rotation='-2')
 print(d.out())

@@ -17,4 +17,6 @@ for k, (i, old, parent, img, alt, dk, ph) in enumerate(shots):
             width=f'{dk[0]}px', height=f'{dk[1]}px', left=f'{dk[2]}px', top=f'{dk[3]}px', right='null', bottom='null', **({'zIndex': '1'} if k else {}))
     d.raw(f'SET {BP["P"]}+{i} width="{ph[0]}px" height="{ph[1]}px" left="{ph[2]}px" top="{ph[3]}px";')
     d.raw(f'DEL {old};')
+# side by side, never overlapping, so every product shot can be seen whole (sizes as applied: 2 × 1fr at 300px high
+# on Home, 310px on Printed albums, 200px on Phone, with a 16px gap; see the commit for the exact SETs)
 print(d.out())
