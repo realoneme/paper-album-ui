@@ -1,7 +1,8 @@
 #!/bin/sh
 # Apply a phased DSL file to the connected Framer project. Phases are separated by lines "---"; each phase runs
 # after the previous one, with temporary ids from earlier phases resolved to canonical ids.
-# "a+b" denotes the compound id of node b inside replica variant a.
+# "a+b" denotes the compound id of node b inside replica variant a. $control__<tempId> and parent="item/var"
+# (CMS rich text) are resolved too.
 # Usage: framer/apply2.sh file.dsl   (prints diagnostics; saves the id map to /tmp/pa-framer-ids-<name>.json)
 S=${FRAMER_SESSION:-1}
 cp "$1" /tmp/pa-framer-apply.dsl
@@ -17,7 +18,8 @@ for (const [i, raw] of phases.entries()) {
     .replace(/\b([A-Za-z0-9_]+)\+([A-Za-z0-9_]+)\b/g, (_, v, n) => resolve(v) + resolve(n))
     .replace(/var\(--(variable|token)-([A-Za-z0-9_-]+)\)/g, (m, k, t) => `var(--${k}-${resolve(t)})`)
     .replace(/^(SET|CREATE_VARIANT|DEL|MOVE|DUPE)\s+([A-Za-z0-9_]+)/gm, (_, c, t) => `${c} ${resolve(t)}`)
-    .replace(/\b(from|parent|component|scope)="([A-Za-z0-9_]+)"/g, (_, k, t) => `${k}="${resolve(t)}"`);
+    .replace(/\b(from|parent|component|scope)="([A-Za-z0-9_]+)(\/([A-Za-z0-9_]+))?"/g, (_, k, t, _s, v) => `${k}="${resolve(t)}${v ? '/' + resolve(v) : ''}"`)
+    .replace(/\$control__([A-Za-z0-9_]+)/g, (m, t) => (ids[t] ? `$control__${ids[t]}` : m));
   if (!dsl.trim()) continue;
   const r = await framer.agent.applyChanges(dsl, { pagePath: '/' });
   Object.assign(ids, r.renamedIds || {});
