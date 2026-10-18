@@ -30,7 +30,7 @@ d.stack('footIn', 'foot', 'vertical', gap='40px', maxWidth='1136px', name='Foote
 d.stack('footTop', 'footIn', 'horizontal', gap='48px', align='start', name='Footer columns')
 d.stack('fBrand', 'footTop', 'vertical', gap='12px', width='1fr', name='Footer brand')
 d.text('fBrandT', 'fBrand', '[Studio Name]', 'H3', 'primaryFg')
-d.text('fBrandS', 'fBrand', 'Weddings, families and portraits in [City]. Every session ends in an album you can hold.', 'Body', 'primaryFg', opacity='0.8')
+d.text('fBrandS', 'fBrand', 'Weddings, families, portraits and the days in between, in [City]. Every session ends in an album you can hold.', 'Body', 'primaryFg', opacity='0.8')
 cols = [('Visit', [('Albums', '/albums'), ('Services', '/services'), ('Printed albums', '/printed-albums'), ('About', '/about')]),
         ('Book', [('Book a session', '/book'), ('[hello@studio.com]', 'mailto:hello@studio.com'), ('[+1 555 0100]', 'tel:+15550100')]),
         ('Follow', [('Instagram', 'https://instagram.com/'), ('Pinterest', 'https://pinterest.com/')])]

@@ -2,7 +2,7 @@ from common import *
 ROOT = 'gSPXJeRCl'
 d = D(); section = page(d, ROOT)
 hin = section('sHead', 'Header', pad='72px 32px 48px 32px', gap='20px')
-heading(d, 'sH', hin, 'Services & prices', 'Three ways to spend a day with us.', 'Every package ends with a private gallery and an album. Prices include travel within [80 km] of [City].', preset='Display', tag='h1')
+heading(d, 'sH', hin, 'Services & prices', 'Ways to spend a day with us.', 'Three starting points, and a quote for anything else. Every session ends with a private gallery and an album. Prices include travel within [80 km] of [City].', preset='Display', tag='h1')
 pin = section('sPacks', 'Packages', pad='16px 32px 88px 32px', gap='0px')
 d.frame('pList', pin, name='Packages', layout='grid', gridColumnCount='3', gridColumnMinWidth='300px', gridRowHeightType='auto', gridAlignment='start', gap='28px',
         position='relative', width='100%', height='auto', **{'collectionList.collection': 'Packages', 'collectionList.repeatedDescendantId': 'pItem'})

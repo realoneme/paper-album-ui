@@ -61,7 +61,7 @@ d.text('featTitle', 'featTxt', v(A['title']), 'H3', 'fg', tag='h3')
 d.text('featPlace', 'featTxt', v(A['place']), 'Small', 'groundMuted')
 # ---------------- 3 services
 sin = section('serv', 'What we photograph', pad='24px 32px 96px 32px')
-heading('servH', sin, 'Sessions', 'Three kinds of day, one way of seeing them', 'Every session ends the same way: a sequence of prints you choose together, bound into an album.')
+heading('servH', sin, 'Sessions', 'Weddings, families, portraits, and the days in between', 'These are the sessions we book most, not the only ones. Whatever the day, it ends the same way: a sequence of prints you choose together, bound into an album.')
 d.frame('servGrid', sin, name='Session cards', layout='grid', gridColumnCount='3', gridColumnMinWidth='300px', gridRowHeightType='auto', gridAlignment='start',
         gap='28px', position='relative', width='100%', height='auto')
 cards = [('Weddings', U(2), 'The whole day, from the first coffee to the last dance, with a second photographer.', 'from $3,800', 'wedding'),

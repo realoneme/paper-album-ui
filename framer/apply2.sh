@@ -3,14 +3,16 @@
 # after the previous one, with temporary ids from earlier phases resolved to canonical ids.
 # "a+b" denotes the compound id of node b inside replica variant a. $control__<tempId> and parent="item/var"
 # (CMS rich text) are resolved too.
-# Usage: framer/apply2.sh file.dsl   (prints diagnostics; saves the id map to /tmp/pa-framer-ids-<name>.json)
+# Usage: [PAGE=/services] framer/apply2.sh file.dsl   (prints diagnostics; saves the id map to /tmp/pa-framer-ids-<name>.json)
 S=${FRAMER_SESSION:-1}
 cp "$1" /tmp/pa-framer-apply.dsl
 basename "$1" .dsl > /tmp/pa-framer-apply-name.txt
+echo "${PAGE:-/}" > /tmp/pa-framer-apply-page.txt
 npx @framer/agent@latest exec -s "$S" <<'FRAMER_EXEC'
 const fs = require('fs');
 const phases = fs.readFileSync('/tmp/pa-framer-apply.dsl', 'utf8').split(/^---$/m);
 const name = fs.readFileSync('/tmp/pa-framer-apply-name.txt', 'utf8').trim();
+const pagePath = fs.readFileSync('/tmp/pa-framer-apply-page.txt', 'utf8').trim() || '/';
 const ids = {};
 const resolve = (t) => ids[t] ?? t;
 for (const [i, raw] of phases.entries()) {
@@ -21,7 +23,7 @@ for (const [i, raw] of phases.entries()) {
     .replace(/\b(from|parent|component|scope)="([A-Za-z0-9_]+)(\/([A-Za-z0-9_]+))?"/g, (_, k, t, _s, v) => `${k}="${resolve(t)}${v ? '/' + resolve(v) : ''}"`)
     .replace(/\$control__([A-Za-z0-9_]+)/g, (m, t) => (ids[t] ? `$control__${ids[t]}` : m));
   if (!dsl.trim()) continue;
-  const r = await framer.agent.applyChanges(dsl, { pagePath: '/' });
+  const r = await framer.agent.applyChanges(dsl, { pagePath });
   Object.assign(ids, r.renamedIds || {});
   const { renamedIds: _, ...d } = r;
   console.log(`phase ${i + 1}`, JSON.stringify(d).slice(0, 2500));
