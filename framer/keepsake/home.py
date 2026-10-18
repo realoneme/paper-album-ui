@@ -114,5 +114,5 @@ d.stack('ctaIn', 'cta', 'vertical', gap='24px', align='center', maxWidth='1136px
 rich('ctaH', 'ctaIn', 'Display', 'primaryFg', 'h2', [('Let’s make something ', None), ('you’ll keep.', {'fontStyle': 'italic', 'fontWeight': '300'})], textAlignment='center')
 d.text('ctaP', 'ctaIn', 'Tell us the date and the place. We reply within two days with what we have free.', 'Lead', 'primaryFg', textAlignment='center', opacity='0.85')
 d.button('ctaB', 'ctaIn', 'Check my date', 'seal', '/book', 'lg')
-d.text('ctaNote', 'ctaIn', '* book at least 2 weeks ahead', 'Note Sm', 'glow', width='auto', rotation='-2')
+d.text('ctaNote', 'ctaIn', '* book at least 2 weeks ahead', 'Caption', 'primaryFg', width='auto', opacity='0.75')
 print(d.out())

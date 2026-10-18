@@ -376,7 +376,7 @@ export default function PaperBanner(props: PaperBannerProps) {
                             {secondaryLabel}
                         </a>
                     ) : null}
-                    {note ? <span style={{ fontFamily: HAND, fontSize: 22, color: woodColor, transform: "rotate(-3deg)", marginLeft: 4 }}>{note}</span> : null}
+                    {note ? <span style={{ fontFamily: SANS, fontSize: 13, fontWeight: 500, letterSpacing: "0.01em", color: inkColor, opacity: 0.75, marginLeft: 4 }}>{note}</span> : null}
                 </div>
             </div>
 
