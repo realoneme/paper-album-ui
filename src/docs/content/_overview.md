@@ -83,7 +83,9 @@ Paper settles, springs back or tucks away. Use the motion variables defined at t
 - Modals grow out of the button that opened them and shrink back into it on close; sheets slide in with a small overshoot; popovers and tooltips pop from the side they open on.
 - Hover content opens with no delay: tooltips, hover cards and navigation panels appear the moment the pointer arrives. The hover card is a tall card that drops from the pointer and swings on its thread before it settles.
 - Living feedback: progress fills smoothly with a light sweeping across the filled part; the spinner is a gooey comet circling.
-- Pocket: on hover the print slides up 28–34px out of its pocket.
+- Photo holders answer the pointer: a pocketed print slides 30px up out of its sleeve, a taped print rocks around its tape as if pressed, a polaroid is nudged askew and springs back.
+- Carousel prints turn over (a 3D flip with a little overshoot) to show their details on the back.
+- Tabs: only the cards move; the panel area keeps the tallest panel's height so nothing below jumps.
 - Respect `prefers-reduced-motion`: animations collapse to an instant state change (modals and popovers fade only).
 
 ## Focus and accessibility
