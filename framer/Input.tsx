@@ -1,7 +1,8 @@
 // Paper Album UI · Input for Framer
 // A labelled text field pressed into the paper. On focus the groove lightens to card paper, deepens and a warm
-// halo lifts it; an error keeps a red inset and replaces the helper text. Optional leading icon, and a show/hide
-// key for passwords.
+// halo lifts it; an error keeps a red inset and replaces the helper text. Required fields carry a red asterisk.
+// When you leave the field it checks itself: empty and required, or not an email / URL / number when it should be,
+// shows the error (and clears it as soon as the value is fixed). Optional leading icon, show/hide key for passwords.
 import { useEffect, useId, useState, startTransition, type CSSProperties, type ReactNode } from "react"
 import { addPropertyControls, ControlType } from "framer"
 
@@ -18,6 +19,8 @@ interface InputProps {
     error: string
     invalid: boolean
     required: boolean
+    validate: boolean
+    requiredMessage: string
     disabled: boolean
     grooveColor: string
     focusColor: string
@@ -89,6 +92,8 @@ export default function Input(props: InputProps) {
         error = "Enter an email address, like name@studio.com.",
         invalid = false,
         required = false,
+        validate = true,
+        requiredMessage = "Fill in this field.",
         disabled = false,
         grooveColor = "#e4d3af",
         focusColor = "#f6eedb",
@@ -105,12 +110,22 @@ export default function Input(props: InputProps) {
     const [value, setValue] = useState(valueProp)
     const [focused, setFocused] = useState(false)
     const [reveal, setReveal] = useState(false)
+    const [touched, setTouched] = useState(false)
+    const [problem, setProblem] = useState<string | null>(null)
     const id = useId()
     const cls = `pa-input-${id.replace(/[^a-zA-Z0-9_-]/g, "")}`
     useEffect(() => startTransition(() => setValue(valueProp)), [valueProp])
 
-    const note = invalid ? error : helper
-    const ring = invalid ? `, inset 0 0 0 2px ${errorColor}` : ""
+    // The browser's own checks (required, email/url/number format) decide; the messages are ours.
+    function check(el: HTMLInputElement) {
+        if (!validate) return setProblem(null)
+        if (el.validity.valueMissing) setProblem(requiredMessage)
+        else if (!el.validity.valid) setProblem(error)
+        else setProblem(null)
+    }
+    const bad = invalid || !!problem
+    const note = invalid ? error : (problem ?? helper)
+    const ring = bad ? `, inset 0 0 0 2px ${errorColor}` : ""
     const isPassword = type === "password"
     return (
         <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 8, width: "100%", opacity: disabled ? 0.55 : 1, ...props.style }}>
@@ -147,15 +162,21 @@ export default function Input(props: InputProps) {
                     required={required}
                     disabled={disabled}
                     aria-label={showLabel ? undefined : label}
-                    aria-invalid={invalid || undefined}
+                    aria-invalid={bad || undefined}
+                    aria-required={required || undefined}
                     aria-describedby={note ? `${id}-note` : undefined}
-                    onChange={(e) => setValue(e.target.value)}
+                    onChange={(e) => {
+                        setValue(e.target.value)
+                        if (touched) check(e.target)
+                    }}
                     onFocus={() => {
                         setFocused(true)
                         onFocus?.()
                     }}
-                    onBlur={() => {
+                    onBlur={(e) => {
                         setFocused(false)
+                        setTouched(true)
+                        check(e.target)
                         onBlur?.()
                     }}
                     className={cls}
@@ -180,7 +201,7 @@ export default function Input(props: InputProps) {
             </div>
             <style>{`.${cls}::placeholder { color: ${mutedColor}; opacity: 1; }`}</style>
             {note ? (
-                <p id={`${id}-note`} role={invalid ? "alert" : undefined} style={{ margin: 0, color: invalid ? errorColor : mutedColor, fontSize: 13, lineHeight: 1.45, fontWeight: invalid ? 600 : 400, ...helperFont }}>
+                <p id={`${id}-note`} role={bad ? "alert" : undefined} style={{ margin: 0, color: bad ? errorColor : mutedColor, fontSize: 13, lineHeight: 1.45, fontWeight: bad ? 600 : 400, ...helperFont }}>
                     {note}
                 </p>
             ) : null}
@@ -209,8 +230,10 @@ addPropertyControls(Input, {
     },
     helper: { type: ControlType.String, title: "Helper", defaultValue: "We send the gallery link here." },
     invalid: { type: ControlType.Boolean, title: "Invalid", defaultValue: false },
-    error: { type: ControlType.String, title: "Error", defaultValue: "Enter an email address, like name@studio.com.", hidden: (p) => !p.invalid },
+    error: { type: ControlType.String, title: "Error", defaultValue: "Enter an email address, like name@studio.com.", description: "Shown when Invalid is on, or when the value is in the wrong format." },
     required: { type: ControlType.Boolean, title: "Required", defaultValue: false },
+    requiredMessage: { type: ControlType.String, title: "Required Error", defaultValue: "Fill in this field.", hidden: (p) => !p.required },
+    validate: { type: ControlType.Boolean, title: "Check on Leave", defaultValue: true, description: "Check required and format when the field loses focus." },
     disabled: { type: ControlType.Boolean, title: "Disabled", defaultValue: false },
     grooveColor: { type: ControlType.Color, title: "Groove", defaultValue: "#e4d3af" },
     focusColor: { type: ControlType.Color, title: "Focused", defaultValue: "#f6eedb" },

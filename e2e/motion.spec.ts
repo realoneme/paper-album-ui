@@ -173,3 +173,20 @@ test('Carousel: the centred print turns over for its details; a neighbour is bro
   await page.waitForTimeout(900);
   expect(await turned(first)).toBe(false);
 });
+
+test('Button: a quick tap (trackpad tap-to-click) still sinks the key onto its edge, dropping only the soft shadow', async ({ page }) => {
+  await page.goto('/?demo=Button&theme=parchment');
+  const btn = page.locator('.pa-btn-default').first();
+  const box = (await btn.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.waitForTimeout(250);
+  await page.mouse.down();
+  await page.mouse.up();
+  await page.waitForTimeout(90);
+  const s = await btn.evaluate((e) => ({ y: new DOMMatrix(getComputedStyle(e).transform).f, shadow: getComputedStyle(e).boxShadow }));
+  expect(s.y).toBeGreaterThan(1);
+  expect(s.shadow).toMatch(/0px 3px 0px/);
+  expect(s.shadow).not.toMatch(/16px/);
+  await page.waitForTimeout(400);
+  expect(await btn.evaluate((e) => getComputedStyle(e).boxShadow)).toMatch(/16px/);
+});

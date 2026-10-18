@@ -76,7 +76,7 @@ Paper settles, springs back or tucks away. Use the motion variables defined at t
 | `--ease-in-paper` | cubic-bezier(.4, 0, 1, 1) | Things leaving: closing menus, a dot scaling out |
 | `--dur-instant` / `--dur-fast` / `--dur-base` / `--dur-slow` | 80 / 140 / 220 / 360ms | Hover feedback / exits / most enters / larger moves |
 
-- Press: keys sink 2px and spring back. Toggles move between raised and pressed-in paper.
+- Press: keys sink 2px onto their edge (the edge stays, the soft shadow goes) and spring back; even a trackpad tap shows the press. Toggles move between raised and pressed-in paper.
 - Selection slides: Toggle Group and Menubar move one paper slip to the chosen item instead of swapping fills.
 - Checks draw: the checkbox tick draws in and undraws; the radio dot springs in and scales out.
 - Dropdowns (Select, Combobox, Date Picker, menus) slide down from their trigger and back up on close; they slide up when they open above.

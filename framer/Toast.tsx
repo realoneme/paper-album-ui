@@ -83,7 +83,7 @@ const ICON: Record<Tone, ReactNode> = {
  */
 export default function Toast(props: ToastProps) {
     const {
-        buttonLabel = "Upload photos",
+        buttonLabel = "Show toast",
         tone = "cycle",
         title = "Uploaded",
         description = "24 photos added to Winter in Hokkaido.",
@@ -401,7 +401,7 @@ function ToastCard({ item, live, tone, title, description, actionLabel, colors, 
 }
 
 addPropertyControls(Toast, {
-    buttonLabel: { type: ControlType.String, title: "Button", defaultValue: "Upload photos" },
+    buttonLabel: { type: ControlType.String, title: "Button", defaultValue: "Show toast" },
     tone: {
         type: ControlType.Enum,
         title: "Tone",

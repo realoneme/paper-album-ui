@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Button } from '@/components/ui/button';
 
@@ -31,5 +31,28 @@ describe('Button', () => {
     const link = screen.getByRole('link', { name: 'Albums' });
     expect(link).toHaveClass('pa-btn', 'pa-btn-link');
     expect(link).not.toHaveAttribute('type');
+  });
+
+  it('a trackpad tap (down and up at once) still shows the press for a moment', async () => {
+    const onPointerDown = vi.fn();
+    render(<Button onPointerDown={onPointerDown}>Book</Button>);
+    const btn = screen.getByRole('button', { name: 'Book' });
+    fireEvent.pointerDown(btn, { button: 0 });
+    fireEvent.pointerUp(btn, { button: 0 });
+    expect(onPointerDown).toHaveBeenCalled();
+    expect(btn).toHaveAttribute('data-pressed');
+    await waitFor(() => expect(btn).not.toHaveAttribute('data-pressed'), { timeout: 400 });
+  });
+
+  it('Enter and Space press the key; a disabled key never shows a press', () => {
+    render(<Button>Book</Button>);
+    const btn = screen.getByRole('button', { name: 'Book' });
+    fireEvent.keyDown(btn, { key: 'Enter' });
+    expect(btn).toHaveAttribute('data-pressed');
+    render(<Button disabled>Off</Button>);
+    const off = screen.getByRole('button', { name: 'Off' });
+    fireEvent.pointerDown(off, { button: 0 });
+    fireEvent.keyDown(off, { key: ' ' });
+    expect(off).not.toHaveAttribute('data-pressed');
   });
 });
