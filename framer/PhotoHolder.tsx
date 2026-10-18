@@ -31,7 +31,7 @@ interface PhotoHolderProps {
 const EASE_PAPER = [0.2, 0.8, 0.2, 1] as const
 /** Each style's own angle; the Tilt control is added on top. */
 const REST_SHADOW = "0px 5px 12px rgba(40, 24, 10, 0.26)"
-const LIFT_SHADOW = "0px 16px 22px rgba(40, 24, 10, 0.28)"
+const LIFT_SHADOW = "0px 9px 16px rgba(40, 24, 10, 0.27)"
 const BASE_TILT: Record<HolderStyle, number> = { corners: 0, slits: 0, pocket: -2, tape: 2, polaroid: -1.5 }
 const WAVE = "M0 18 L0 9 C 50 1 100 14 150 8 C 200 2 250 13 300 6 L300 18 Z"
 const IMAGE: { src: string; srcSet?: string; alt?: string } = { src: "https://framerusercontent.com/images/BYnxEV1zjYb9bhWh1IwBZ1ZoS60.jpg", alt: "Otaru, dawn" }
@@ -114,7 +114,7 @@ export default function PhotoHolder(props: PhotoHolderProps) {
             // Lifted from the tape: the bottom edge rises towards the viewer and the shadow deepens, then it drops
             // back with a small bounce.
             rock.start({
-                rotateX: [0, 9, -1.5, 1, 0],
+                rotateX: [0, 3.5, -0.6, 0.3, 0],
                 boxShadow: [REST_SHADOW, LIFT_SHADOW, REST_SHADOW, REST_SHADOW, REST_SHADOW],
                 transition: { duration: 1, ease: EASE_PAPER, times: [0, 0.38, 0.7, 0.86, 1] },
             })

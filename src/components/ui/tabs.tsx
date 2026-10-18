@@ -20,9 +20,26 @@ export type TabsListProps = React.ComponentPropsWithoutRef<typeof TabsPrimitive.
  * (a phone) the row scrolls sideways, the side with more tabs fades out, and the selected tab scrolls into view.
  */
 export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.List>, TabsListProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, onPointerDown, onKeyDown, ...props }, ref) => {
     const scrollRef = useScrollEdges(ref, '[role="tab"][data-state="active"]');
-    return <TabsPrimitive.List ref={scrollRef} className={cn('pa-tabs pa-hscroll', className)} {...props} />;
+    // Once the reader uses the tabs, a newly selected card is pulled up and springs back (not on first render).
+    const [touched, setTouched] = React.useState(false);
+    return (
+      <TabsPrimitive.List
+        ref={scrollRef}
+        data-touched={touched ? '' : undefined}
+        onPointerDown={(event) => {
+          setTouched(true);
+          onPointerDown?.(event);
+        }}
+        onKeyDown={(event) => {
+          setTouched(true);
+          onKeyDown?.(event);
+        }}
+        className={cn('pa-tabs pa-hscroll', className)}
+        {...props}
+      />
+    );
   },
 );
 TabsList.displayName = 'TabsList';

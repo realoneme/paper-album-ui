@@ -69,6 +69,18 @@ test('Collapsible: only the chevron turns; the leading label icon stays put', as
   }
 });
 
+test('Tabs: a newly selected card stretches past its height and springs back, while the panel below stays put', async ({ page }) => {
+  await page.goto('/?demo=Tabs&theme=parchment');
+  const story = page.getByRole('tab', { name: 'Story' });
+  const panelTop = () => page.locator('.pa-tabs-content:not([hidden])').evaluate((e) => Math.round(e.getBoundingClientRect().top));
+  const top0 = await panelTop();
+  expect(await page.evaluate(() => Array.from(document.querySelectorAll('.pa-tab')).flatMap((e) => e.getAnimations()).length)).toBe(0);
+  const heights = await heightsDuring(page, '.pa-tab', 1, () => story.click(), 650);
+  expect(Math.max(...heights), heights.join(',')).toBeGreaterThan(56);
+  expect(heights.at(-1)).toBe(51);
+  expect(await panelTop()).toBe(top0);
+});
+
 const angleOf = (m: string) => {
   const [a, b] = m.replace(/^matrix\(|\)$/g, '').split(',').map(Number);
   return (Math.atan2(b!, a!) * 180) / Math.PI;
@@ -109,7 +121,8 @@ test.describe('photo holders move under the pointer', () => {
       await page.waitForTimeout(60);
     }
     // It lifts (a few degrees, towards the viewer) but does not swing side to side.
-    expect(Math.max(...lifts.map(Math.abs)), lifts.join(',')).toBeGreaterThan(4);
+    expect(Math.max(...lifts.map(Math.abs)), lifts.join(',')).toBeGreaterThan(2.5);
+    expect(Math.max(...lifts.map(Math.abs)), lifts.join(',')).toBeLessThan(4.5);
     expect(Math.max(...angles) - Math.min(...angles), angles.join(',')).toBeLessThan(0.5);
     await page.waitForTimeout(500);
     const end = await state();

@@ -3,6 +3,7 @@
 // fit (a phone), the row scrolls sideways, the side with more tabs fades, and the selected tab scrolls into view.
 import { useEffect, useId, useRef, useState, startTransition, type CSSProperties, type KeyboardEvent } from "react"
 import { addPropertyControls, ControlType } from "framer"
+import { motion, useReducedMotion } from "framer-motion"
 
 interface Tab {
     label: string
@@ -46,6 +47,7 @@ export default function Tabs(props: TabsProps) {
     const listRef = useRef<HTMLDivElement>(null)
     const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
     const base = useId()
+    const reduce = useReducedMotion()
 
     useEffect(() => startTransition(() => setIndex(Math.min(initial, Math.max(0, tabs.length - 1)))), [initial, tabs.length])
 
@@ -128,8 +130,13 @@ export default function Tabs(props: TabsProps) {
                 {tabs.map((tab, i) => {
                     const on = i === index
                     return (
-                        <button
+                        <motion.button
                             key={i}
+                            // A newly selected card is pulled up past its height and springs back; the one it leaves
+                            // settles. `initial={false}` keeps the first render still.
+                            initial={false}
+                            animate={on ? { height: reduce ? 51 : [42, 58, 49, 51], marginBottom: 0 } : { height: 42, marginBottom: 3 }}
+                            transition={on && !reduce ? { duration: 0.46, times: [0, 0.4, 0.7, 1], ease: [0.2, 0.8, 0.2, 1] } : { duration: reduce ? 0 : 0.22, ease: [0.2, 0.8, 0.2, 1] }}
                             ref={(el) => {
                                 tabRefs.current[i] = el
                             }}
@@ -143,8 +150,6 @@ export default function Tabs(props: TabsProps) {
                             style={{
                                 flex: "none",
                                 whiteSpace: "nowrap",
-                                height: on ? 51 : 42,
-                                marginBottom: on ? 0 : 3,
                                 padding: "0 20px",
                                 border: 0,
                                 borderRadius: "8px 8px 0 0",
@@ -154,12 +159,12 @@ export default function Tabs(props: TabsProps) {
                                 cursor: "pointer",
                                 fontSize: 15,
                                 fontWeight: 600,
-                                transition: "height 220ms cubic-bezier(.2,.8,.2,1), background-color 220ms, color 220ms",
+                                transition: "background-color 220ms, color 220ms",
                                 ...tabFont,
                             }}
                         >
                             {tab.label}
-                        </button>
+                        </motion.button>
                     )
                 })}
             </div>

@@ -33,8 +33,8 @@
 /* The bottom edge rises towards the viewer and the shadow deepens, then it drops back, with a small bounce. */
 @keyframes pa-tape-lift {
   0%   { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(0deg); box-shadow: var(--shadow-print); }
-  38%  { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(9deg); box-shadow: 0 16px 22px rgba(40, 24, 10, 0.28); }
-  70%  { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(-1.5deg); box-shadow: var(--shadow-print); }
-  86%  { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(1deg); }
+  38%  { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(3.5deg); box-shadow: 0 9px 16px rgba(40, 24, 10, 0.27); }
+  70%  { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(-0.6deg); box-shadow: var(--shadow-print); }
+  86%  { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(0.3deg); }
   100% { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(0deg); box-shadow: var(--shadow-print); }
 }
