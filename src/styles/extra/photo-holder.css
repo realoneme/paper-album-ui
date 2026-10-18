@@ -17,26 +17,24 @@
 .pa-holder-polaroid :is(.pa-photo, img) { aspect-ratio: 1; }
 .pa-polaroid-note { display: block; margin-top: 12px; text-align: center; font: 500 22px/1.1 var(--font-hand); color: var(--print-ink); }
 
-/* Tape: pinned from the tape, so a press rocks the print around it. */
+/* Tape: hinged at the tape, so the print lifts from there. */
 .pa-holder-tape { transform-origin: 50% 0; }
-.pa-holder-tape { transition: box-shadow var(--dur-fast) var(--ease-paper); }
-.pa-holder-tape:active { box-shadow: 0 1px 3px rgba(40, 24, 10, 0.18); }
 
-/* With a pointer and motion allowed: the pocket's print lifts out, the taped print rocks as if pressed by a hand and
+/* With a pointer and motion allowed: the pocket's print lifts out, the taped print is lifted from its tape and laid back down and
    the polaroid is nudged askew, springing back when the pointer leaves. */
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .pa-holder[data-variant="pocket"] { padding-top: 30px; }
   .pa-holder-pocket-print { transition: transform .55s var(--ease-paper); }
   .pa-holder[data-variant="pocket"]:hover .pa-holder-pocket-print { transform: translateY(-30px) rotate(calc(var(--pa-tilt, 0deg) * .5)); }
-  .pa-holder[data-variant="tape"]:hover .pa-holder-tape { animation: pa-tape-rock .9s var(--ease-paper); }
+  .pa-holder[data-variant="tape"]:hover .pa-holder-tape { animation: pa-tape-lift 1s var(--ease-paper); }
   .pa-holder-polaroid { transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
   .pa-holder[data-variant="polaroid"]:hover .pa-holder-polaroid { transform: translate(3px, -4px) rotate(calc(var(--pa-tilt, 0deg) + 3.5deg)); }
 }
-@keyframes pa-tape-rock {
-  0%   { transform: rotate(var(--pa-tilt, 0deg)) scale(1); }
-  18%  { transform: rotate(calc(var(--pa-tilt, 0deg) - 2.6deg)) scale(.985); }
-  40%  { transform: rotate(calc(var(--pa-tilt, 0deg) + 1.8deg)) scale(1); }
-  62%  { transform: rotate(calc(var(--pa-tilt, 0deg) - 1deg)); }
-  82%  { transform: rotate(calc(var(--pa-tilt, 0deg) + .4deg)); }
-  100% { transform: rotate(var(--pa-tilt, 0deg)); }
+/* The bottom edge rises towards the viewer and the shadow deepens, then it drops back, with a small bounce. */
+@keyframes pa-tape-lift {
+  0%   { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(0deg); box-shadow: var(--shadow-print); }
+  38%  { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(9deg); box-shadow: 0 16px 22px rgba(40, 24, 10, 0.28); }
+  70%  { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(-1.5deg); box-shadow: var(--shadow-print); }
+  86%  { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(1deg); }
+  100% { transform: perspective(700px) rotate(var(--pa-tilt, 0deg)) rotateX(0deg); box-shadow: var(--shadow-print); }
 }

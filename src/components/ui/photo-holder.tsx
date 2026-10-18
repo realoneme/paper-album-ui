@@ -52,7 +52,7 @@ function Corners() {
 
 /**
  * A print on an album page: wood corners, corner slits, a pocket sleeve, tape, or an instant print. One holder per
- * photo. With a pointer, the pocket's print lifts out, the taped print rocks as if pressed, and the polaroid is
+ * photo. With a pointer, the pocket's print lifts out, the taped print is lifted from its tape and laid back down, and the polaroid is
  * nudged askew (none of it with reduced motion).
  */
 export const PhotoHolder = React.forwardRef<HTMLElement, PhotoHolderProps>(

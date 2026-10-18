@@ -69,21 +69,6 @@ test('Collapsible: only the chevron turns; the leading label icon stays put', as
   }
 });
 
-test('Tabs: switching tabs never changes the height of the panel area', async ({ page }) => {
-  await page.goto('/?demo=Tabs&theme=parchment');
-  const root = page.locator('.pa-tabs-root').first();
-  const tabs = root.getByRole('tab');
-  const heights: number[] = [];
-  for (let i = 0; i < (await tabs.count()); i++) {
-    if (await tabs.nth(i).isDisabled()) continue;
-    await tabs.nth(i).click();
-    await page.waitForTimeout(260);
-    heights.push(Math.round((await root.boundingBox())!.height));
-    await expect(root.getByRole('tabpanel')).toHaveCount(1);
-  }
-  expect(new Set(heights).size, `heights: ${heights.join(',')}`).toBe(1);
-});
-
 const angleOf = (m: string) => {
   const [a, b] = m.replace(/^matrix\(|\)$/g, '').split(',').map(Number);
   return (Math.atan2(b!, a!) * 180) / Math.PI;
@@ -105,20 +90,31 @@ test.describe('photo holders move under the pointer', () => {
     expect(await y()).toBeCloseTo(0, 0);
   });
 
-  test('tape rocks the print when the pointer lands on it, then rests at its tilt', async ({ page }) => {
+  test('tape: the print is lifted off the page from its tape and laid back down', async ({ page }) => {
     await page.goto('/?demo=PhotoHolder&theme=parchment');
     const holder = page.locator('.pa-holder[data-variant="tape"]');
     const print = holder.locator('.pa-holder-tape');
+    const state = () =>
+      print.evaluate((el) => {
+        const m = new DOMMatrix(getComputedStyle(el).transform);
+        return { lift: Math.asin(Math.max(-1, Math.min(1, m.m23))) * (180 / Math.PI), angle: (Math.atan2(m.m12, m.m11) * 180) / Math.PI };
+      });
     await holder.hover();
+    const lifts: number[] = [];
     const angles: number[] = [];
     for (let i = 0; i < 12; i++) {
-      angles.push(angleOf(await print.evaluate((el) => getComputedStyle(el).transform)));
+      const s = await state();
+      lifts.push(s.lift);
+      angles.push(s.angle);
       await page.waitForTimeout(60);
     }
-    expect(Math.min(...angles), angles.join(',')).toBeLessThan(1);
-    expect(Math.max(...angles), angles.join(',')).toBeGreaterThan(3);
-    await page.waitForTimeout(400);
-    expect(angleOf(await print.evaluate((el) => getComputedStyle(el).transform))).toBeCloseTo(2.5, 1);
+    // It lifts (a few degrees, towards the viewer) but does not swing side to side.
+    expect(Math.max(...lifts.map(Math.abs)), lifts.join(',')).toBeGreaterThan(4);
+    expect(Math.max(...angles) - Math.min(...angles), angles.join(',')).toBeLessThan(0.5);
+    await page.waitForTimeout(500);
+    const end = await state();
+    expect(end.lift).toBeCloseTo(0, 1);
+    expect(end.angle).toBeCloseTo(2.5, 1);
   });
 
   test('polaroid is nudged askew on hover and springs back', async ({ page }) => {

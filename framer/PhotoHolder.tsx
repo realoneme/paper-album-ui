@@ -3,7 +3,7 @@
 //   corners  – wood photo corners with paper thickness, over the bare photo
 //   slits    – the print tucked into four slits cut in the page (page-colour flaps)
 //   pocket   – the print slipped into a wave-cut sleeve with its name written on it; lifts out on hover
-//   tape     – a strip of tape across the top; on hover it is pressed by a hand and rocks on the tape
+//   tape     – a strip of tape across the top; on hover it is lifted a little off the page from the tape and laid back down
 //   polaroid – an instant print with a wide written margin; on hover it is nudged askew, then settles back
 import { useState, startTransition, type CSSProperties, type ReactNode } from "react"
 import { addPropertyControls, ControlType, useIsStaticRenderer } from "framer"
@@ -30,6 +30,8 @@ interface PhotoHolderProps {
 
 const EASE_PAPER = [0.2, 0.8, 0.2, 1] as const
 /** Each style's own angle; the Tilt control is added on top. */
+const REST_SHADOW = "0px 5px 12px rgba(40, 24, 10, 0.26)"
+const LIFT_SHADOW = "0px 16px 22px rgba(40, 24, 10, 0.28)"
 const BASE_TILT: Record<HolderStyle, number> = { corners: 0, slits: 0, pocket: -2, tape: 2, polaroid: -1.5 }
 const WAVE = "M0 18 L0 9 C 50 1 100 14 150 8 C 200 2 250 13 300 6 L300 18 Z"
 const IMAGE: { src: string; srcSet?: string; alt?: string } = { src: "https://framerusercontent.com/images/BYnxEV1zjYb9bhWh1IwBZ1ZoS60.jpg", alt: "Otaru, dawn" }
@@ -109,11 +111,12 @@ export default function PhotoHolder(props: PhotoHolderProps) {
     function enter() {
         startTransition(() => setHover(true))
         if (live && holder === "tape") {
-            // A hand presses the print against the page, and it rocks on the tape before it settles.
+            // Lifted from the tape: the bottom edge rises towards the viewer and the shadow deepens, then it drops
+            // back with a small bounce.
             rock.start({
-                rotate: [angle, angle - 2.6, angle + 1.8, angle - 1, angle + 0.4, angle],
-                scale: [1, 0.985, 1, 1, 1, 1],
-                transition: { duration: 0.9, ease: "easeOut", times: [0, 0.18, 0.42, 0.62, 0.82, 1] },
+                rotateX: [0, 9, -1.5, 1, 0],
+                boxShadow: [REST_SHADOW, LIFT_SHADOW, REST_SHADOW, REST_SHADOW, REST_SHADOW],
+                transition: { duration: 1, ease: EASE_PAPER, times: [0, 0.38, 0.7, 0.86, 1] },
             })
         }
     }
@@ -198,7 +201,7 @@ export default function PhotoHolder(props: PhotoHolderProps) {
             <motion.div
                 initial={false}
                 animate={rock}
-                style={{ position: "relative", padding: "12px 12px 14px", background: printColor, rotate: angle, transformOrigin: "50% 0%", boxShadow: hover && live ? "0 2px 6px rgba(40, 24, 10, 0.22)" : "0 5px 12px rgba(40, 24, 10, 0.26)", transition: "box-shadow 300ms" }}
+                style={{ position: "relative", padding: "12px 12px 14px", background: printColor, rotate: angle, rotateX: 0, transformPerspective: 700, transformOrigin: "50% 0%", boxShadow: REST_SHADOW }}
             >
                 <span
                     aria-hidden="true"

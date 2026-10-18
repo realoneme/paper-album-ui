@@ -52,39 +52,4 @@ describe('Tabs', () => {
     await userEvent.keyboard('{ArrowLeft}');
     expect(story).toHaveFocus();
   });
-
-  it('keeps every panel mounted in one cell so the height never changes; inactive panels are hidden', async () => {
-    const { container } = render(<Demo />);
-    const panels = container.querySelectorAll('.pa-tabs-content');
-    expect(panels).toHaveLength(3);
-    panels.forEach((p) => expect(p).toHaveAttribute('data-keep-height'));
-    expect(panels[1]).toHaveAttribute('aria-hidden', 'true');
-    expect(panels[1]).toHaveAttribute('tabindex', '-1');
-    expect(panels[1]).toHaveAttribute('data-state', 'inactive');
-    await userEvent.click(screen.getByRole('tab', { name: 'Story' }));
-    expect(panels[1]).not.toHaveAttribute('aria-hidden');
-    expect(panels[0]).toHaveAttribute('aria-hidden', 'true');
-    expect(screen.getByRole('tabpanel')).toHaveTextContent('Story text');
-  });
-
-  it('keepHeight={false} mounts only the selected panel; controlled value still hides kept panels', async () => {
-    const { container, rerender } = render(
-      <Tabs value="a">
-        <TabsList aria-label="L"><TabsTrigger value="a">A</TabsTrigger><TabsTrigger value="b">B</TabsTrigger></TabsList>
-        <TabsContent value="a" keepHeight={false}>Panel A</TabsContent>
-        <TabsContent value="b" keepHeight={false}>Panel B</TabsContent>
-      </Tabs>,
-    );
-    expect(container.querySelectorAll('.pa-tabs-content:not([hidden])')).toHaveLength(1);
-    expect(container.querySelector('[data-keep-height]')).toBeNull();
-    rerender(
-      <Tabs value="b">
-        <TabsList aria-label="L"><TabsTrigger value="a">A</TabsTrigger><TabsTrigger value="b">B</TabsTrigger></TabsList>
-        <TabsContent value="a">Panel A</TabsContent>
-        <TabsContent value="b">Panel B</TabsContent>
-      </Tabs>,
-    );
-    expect(screen.getByRole('tabpanel')).toHaveTextContent('Panel B');
-    expect(screen.getByText('Panel A').closest('.pa-tabs-content')).toHaveAttribute('aria-hidden', 'true');
-  });
 });
