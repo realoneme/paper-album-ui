@@ -13,6 +13,7 @@ on a fresh breakpoint, but the node and variable ids inside them belong to proje
 | `layout.py`, `navphone.py` | the Nav component (Desktop, Phone, Phone Open drawer) and the Main layout template with the footer |
 | `submit.py` | `Paper/Submit`, the form button with Pending, Success, Error and Incomplete states |
 | `home.py` … `about.py` | the pages (about.py also builds 404 and Away) |
+| `prodimg.py` | the album product shots on Home and Printed albums as plain images (no corners, tape or polaroid) |
 | `open.py` | copy that names weddings, families and portraits as the most booked sessions and invites every other kind (an "and also" row on Home, a "Not on the list?" panel on Services, more choices in the booking form) |
 | `resp.py` | Tablet (810) and Phone (390) breakpoints for every page |
 | `shot.sh`, `tile.py` | screenshots of a node, and tiling tall phone screenshots for review |
