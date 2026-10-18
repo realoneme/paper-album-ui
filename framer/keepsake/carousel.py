@@ -11,3 +11,6 @@ SET p48z9sGxg width="300px";'''
 CAR2 = '''+ComponentInstanceNode featCar component="codeFile/BUeAvnJ:default" parent="d29voVERx" index="1";
 ---
 SET featCar name="Albums carousel" position="relative" width="100%" height="auto" $control__content.0="<featRow id>" $control__arrows="below-right";'''
+# Phone: the heading row stays horizontal so "All albums" sits on the right, as a small button.
+PHONE_HEAD = '''SET QJ8uOwmU9+F1AN6B0nG stackDirection="horizontal" stackDistribution="space-between" stackAlignment="end";
+SET QJ8uOwmU9+k_CrFcyzx $control__size="sm";'''

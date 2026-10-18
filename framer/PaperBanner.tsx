@@ -246,6 +246,7 @@ export default function PaperBanner(props: PaperBannerProps) {
     return (
         <section
             aria-label={name}
+            className={`${c}-sec`}
             style={{
                 position: "relative",
                 width: "100%",
@@ -287,7 +288,13 @@ export default function PaperBanner(props: PaperBannerProps) {
                     .${c}-c1 { left: 6% !important; top: auto !important; bottom: 45% !important; }
                     .${c}-c2 { right: 3% !important; top: auto !important; bottom: 45% !important; }
                 }
-                @media (max-width: 600px) { .${c}-c2 { display: none; } .${c}-sun { bottom: 50% !important; right: 10% !important; } }
+                @media (max-width: 600px) {
+                    .${c}-c2 { display: none; }
+                    .${c}-sun { bottom: 45% !important; right: 10% !important; }
+                    .${c}-c1 { bottom: 41% !important; }
+                    /* a tall phone screen would leave a wide empty sky between the buttons and the hills */
+                    ${fullScreen ? `.${c}-sec { height: min(calc(100svh - ${offset}px), 195vw) !important; min-height: 720px !important; }` : ""}
+                }
                 @media (prefers-reduced-motion: reduce) { .${c}-layer, .${c}-far, .${c}-sky, .${c}-cloud, .${c}-up, .${c}-bob, .${c}-title, .${c}-fly { animation: none !important; } }
             `}</style>
             <svg aria-hidden="true" width="0" height="0" style={{ position: "absolute" }}>
