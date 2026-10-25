@@ -41,54 +41,6 @@ export function parseShadow(v) {
   });
 }
 
-// Component specs for the plugin's Build commands. Colours and spacing are token names the plugin binds;
-// a number is a literal px value, and a shadow colour is either a token name or a parsed rgba.
-
-// Lucide strokes are in viewBox units (24), so a stroke-width renders at width * size / 24 px.
-export const iconStroke = (width, size) => Math.round((width * size / 24) * 100) / 100;
-
-// Badge, mirroring .pa-badge in src/styles/paper-album.css and src/styles/extra/badge.css.
-export const BADGE = {
-  sizes: {
-    default: { height: 28, padX: 'space-3', gap: 6, fontSize: 13, fontWeight: 600, icon: 16, iconStroke: iconStroke(1.8, 16) },
-    sm: { height: 22, padX: 'space-2', gap: 'space-1', fontSize: 10, fontWeight: 400, icon: 10, iconStroke: iconStroke(2.2, 10) },
-    xs: { height: 18, padX: 6, gap: 3, fontSize: 10, fontWeight: 400, letterSpacing: 1, icon: 10, iconStroke: iconStroke(2.2, 10) },
-  },
-  variants: {
-    default: { fill: 'primary', text: 'primary-foreground', label: 'Featured' },
-    secondary: { fill: 'muted', text: 'card-foreground', label: 'Draft', inner: { y: 1, blur: 2, color: parseColor('rgba(40, 24, 10, 0.2)') } },
-    outline: { text: 'foreground', stroke: { color: 'ground-muted', weight: 1.5 }, label: 'Film' },
-    destructive: { fill: 'destructive', text: 'destructive-foreground', label: 'Overdue' },
-    seal: { fill: 'seal', text: 'on-seal', label: 'New' },
-    wood: { fill: 'wood', text: 'on-wood', label: 'Album' },
-    success: { fill: 'success-soft', text: 'success', label: 'Paid' },
-    warning: { fill: 'warning-soft', text: 'warning-text', label: 'In review' },
-    info: { fill: 'info-soft', text: 'info', label: 'Shared' },
-  },
-};
-
-// Card, mirroring .pa-card* in src/styles/paper-album.css.
-export const CARD = {
-  width: 360,
-  radius: 'radius-lg',
-  variants: { default: 'shadow-raised-1', stack: 'shadow-raised-2' },
-  title: { family: 'display', fontSize: 26, fontWeight: 400, lineHeight: 115, color: 'card-foreground' },
-  description: { family: 'sans', fontSize: 14, fontWeight: 400, lineHeight: 160, color: 'muted-foreground' },
-  body: { family: 'sans', fontSize: 15, fontWeight: 400, lineHeight: 160, color: 'card-foreground' },
-  // CSS spaces header, content and footer with the content's 16px padding; here it is the card's gap, which
-  // looks the same and keeps the header and footer apart when Show content is off.
-  gap: 'space-4',
-  header: { top: 'space-6', x: 'space-6', gap: 6 },
-  content: { x: 'space-6' },
-  footer: { x: 'space-6', bottom: 'space-6', gap: 'space-3', buttonSize: 'sm' },
-};
-
-// Strokes fixed by the Repair command (the first Figma pass drew them in px instead of viewBox units).
-export const STROKES = {
-  icon: iconStroke(1.8, 18), // svg.pa-i, 18px
-  checkbox: iconStroke(3, 14), // .pa-check .box svg, 14px
-};
-
 const families = (css) => css.split(',').map((f) => f.trim().replace(/^"|"$/g, '')).filter((f) => !GENERIC.includes(f));
 
 /** Everything the plugin needs, already parsed, so the plugin only writes. */
@@ -125,9 +77,6 @@ export function figmaData(t) {
       fontWeight: s.fontWeight,
       italic: s.fontStyle === 'italic',
     }))),
-    badge: BADGE,
-    card: CARD,
-    strokes: STROKES,
   };
 }
 
