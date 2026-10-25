@@ -1,0 +1,15 @@
+{
+  "name": "Paper Album Tokens",
+  "id": "paper-album-tokens",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "menu": [
+    { "name": "Sync tokens", "command": "tokens" },
+    { "name": "Build Badge", "command": "badge" },
+    { "name": "Build Card", "command": "card" },
+    { "name": "Repair strokes and Field", "command": "repair" }
+  ],
+  "networkAccess": { "allowedDomains": ["none"] }
+}
