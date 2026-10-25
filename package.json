@@ -19,7 +19,8 @@
     "pretest:unit": "npm run tokens",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "test": "npm run typecheck && npm run lint && npm run test:unit && npm run build && npm run test:e2e"
+    "test": "npm run typecheck && npm run lint && npm run test:unit && npm run build && npm run test:e2e",
+    "figma": "node scripts/figma.mjs"
   },
   "dependencies": {
     "@tanstack/react-table": "8.21.3",

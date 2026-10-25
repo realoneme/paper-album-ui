@@ -58,6 +58,7 @@ const PAIRS: [string, string, number][] = [
   ['foreground', 'background', 4.5], ['ground-muted', 'background', 4.5],
   ['card-foreground', 'card', 4.5], ['card-foreground', 'muted', 4.5], ['card-foreground', 'popover', 4.5],
   ['muted-foreground', 'card', 4.5], ['muted-foreground', 'muted', 4.5],
+  ['muted-foreground', 'input', 4.5], ['muted-foreground', 'accent', 4.5], ['card-foreground', 'input', 4.5],
   ['primary-foreground', 'primary', 4.5], ['secondary-foreground', 'secondary', 4.5], ['accent-foreground', 'accent', 4.5],
   ['on-wood', 'wood', 4.5], ['on-seal', 'seal', 4.5], ['print-ink', 'print', 4.5], ['destructive-foreground', 'destructive', 4.5],
   ['sidebar-foreground', 'sidebar', 4.5], ['sidebar-primary-foreground', 'sidebar-primary', 4.5], ['sidebar-accent-foreground', 'sidebar-accent', 4.5],
@@ -79,6 +80,23 @@ describe.each(themes)('contrast in %s', (th) => {
   });
 });
 
+// Surfaces that sit on or beside each other must not share a colour, or the upper one disappears
+// (a secondary key on a card, an input in the sidebar). 1.08:1 is a visible step on paper; equal is 1:1.
+// Deliberate twins are not listed: popover is card paper, chart colours borrow the materials.
+const ADJACENT: [string, string][] = [
+  ['card', 'background'], ['muted', 'background'], ['sidebar', 'background'], ['input', 'background'], ['secondary', 'background'],
+  ['secondary', 'card'], ['muted', 'card'], ['input', 'card'], ['accent', 'card'],
+  ['accent', 'muted'], ['accent', 'sidebar'], ['input', 'sidebar'], ['sidebar-accent', 'sidebar'],
+  ['seal', 'destructive'],
+];
+const SURFACE_STEP = 1.08;
+
+describe.each(themes)('adjacent surfaces differ in %s', (th) => {
+  it.each(ADJACENT)('%s next to %s', (a, b) => {
+    expect(contrast(resolveColor(a, th as Theme), resolveColor(b, th as Theme))).toBeGreaterThanOrEqual(SURFACE_STEP);
+  });
+});
+
 describe('compiled tokens.css', () => {
   const css = readFileSync('src/styles/tokens.css', 'utf8');
   it('declares the first theme on :root', () => {
@@ -86,6 +104,6 @@ describe('compiled tokens.css', () => {
   });
   it.each(['oak', 'walnut'])('redeclares aliases inside the %s block', (th) => {
     const block = css.split(`[data-theme="${th}"]`)[1].split('}')[0];
-    for (const alias of ['--popover: var(--card)', '--accent: var(--muted)', '--input: var(--muted)']) expect(block).toContain(alias);
+    expect(block).toContain('--popover: var(--card)');
   });
 });

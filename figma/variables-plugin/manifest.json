@@ -1,0 +1,9 @@
+{
+  "name": "Paper Album Tokens",
+  "id": "paper-album-tokens",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": { "allowedDomains": ["none"] }
+}
