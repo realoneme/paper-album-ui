@@ -15,8 +15,8 @@ export default function CardDemo() {
           <CardDescription>Snow light, harbour mornings and a very cold ferry.</CardDescription>
         </CardHeader>
         <CardFooter style={{ paddingTop: 18 }}>
-          <Button>Open album</Button>
-          <Button variant="secondary">Share</Button>
+          <Button size="sm">Open album</Button>
+          <Button size="sm" variant="secondary">Share</Button>
         </CardFooter>
       </article>
     </Card>
