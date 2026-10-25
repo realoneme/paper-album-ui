@@ -1,0 +1,41 @@
+# Visual regression tests: e2e/visual.spec.ts snapshots every demo in every theme, Chromatic compares them.
+# Needs the repository secret CHROMATIC_PROJECT_TOKEN; without it (or on a fork's PR) the upload is skipped.
+name: Chromatic
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: chromatic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    env:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Chromatic walks the git history to find the baseline build.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npm run test:visual
+      - name: Upload to Chromatic
+        if: env.CHROMATIC_PROJECT_TOKEN != ''
+        # Changes don't fail the job; Chromatic reports them as its own "UI Tests" check to review and accept.
+        # Merges to main are accepted automatically so they become the new baseline.
+        run: npm run chromatic
+      - name: Skip Chromatic
+        if: env.CHROMATIC_PROJECT_TOKEN == ''
+        run: echo "::notice::CHROMATIC_PROJECT_TOKEN is not set, so the snapshots were taken but not uploaded."
