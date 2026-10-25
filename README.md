@@ -31,8 +31,16 @@ npm test             # typecheck, lint, unit tests, production build, end-to-end
 | `npm run test:unit` | Vitest: tokens and contrast in every theme, style/token references, component inventory, component behaviour (Testing Library) |
 | `npm run build` | Production build of the docs site into `dist/` |
 | `npm run test:e2e` | Playwright on the built site: every component in every theme (no errors, no overflow) and an axe accessibility scan per component |
+| `npm run test:visual` | Only `e2e/visual.spec.ts`: one Chromatic snapshot per component per theme (177), archived into `test-results/` |
+| `npm run chromatic` | Uploads those snapshots to Chromatic for visual review; needs `CHROMATIC_PROJECT_TOKEN` in the environment |
 
 `npx playwright install chromium` is needed once before the end-to-end tests.
+
+### Visual regression (Chromatic)
+
+`.github/workflows/chromatic.yml` runs `test:visual` and `chromatic` on pull requests to `main` and on pushes to `main`. Visual changes don't fail the job; Chromatic adds its own UI Tests check to the pull request, where changes are reviewed and accepted. Builds on `main` are accepted automatically and become the baseline. Chromatic's free plan covers 5,000 snapshots a month, about 28 builds at 177 snapshots each; once that runs out, testing pauses until the next month (nothing is charged).
+
+To run it locally: `npm run build && npm run test:visual && CHROMATIC_PROJECT_TOKEN=… npm run chromatic`. The token comes from the project's Manage page on chromatic.com; in CI it is the repository secret `CHROMATIC_PROJECT_TOKEN` (without it the workflow takes the snapshots but skips the upload).
 
 ## Repository layout
 
