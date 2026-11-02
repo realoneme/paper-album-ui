@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/dialog.css';
 import * as React from 'react';
 import { Dialog as DialogPrimitive } from 'radix-ui';

@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/checkbox.css';
 import * as React from 'react';
 import { Checkbox as CheckboxPrimitive } from 'radix-ui';

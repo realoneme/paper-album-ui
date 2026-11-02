@@ -9,12 +9,28 @@ A layered-paper React design system for photography portfolios. Every control is
 
 ## Use
 
+```bash
+npm install paper-album-ui
+```
+
 ```tsx
-import '@/styles/index.css';              // tokens + component styles (load Fraunces, Instrument Sans and Caveat from Google Fonts)
-import { Button, Card, CardHeader, CardTitle } from '@/components/ui';
+import 'paper-album-ui/styles.css';       // tokens + component styles, once in the app (load Fraunces, Instrument Sans and Caveat, e.g. from Google Fonts)
+import { Button, Card, CardHeader, CardTitle } from 'paper-album-ui';
 
 <html data-theme="walnut">                // parchment (default) · oak · walnut
 ```
+
+React 18.3 or 19. Interactive components carry `'use client'`, so they work in Next.js server components as they are. For the colours alone, import `paper-album-ui/tokens.css` (CSS variables) or `paper-album-ui/tokens.json`.
+
+### Publish a new version
+
+```bash
+npm version minor    # or patch / major; commits and tags
+npm publish          # typecheck, unit tests and build:lib run first (prepublishOnly)
+git push --follow-tags
+```
+
+`npm run build:lib` writes the package into `lib/`: one ES module per component, type declarations and `styles.css`.
 
 ## Develop
 

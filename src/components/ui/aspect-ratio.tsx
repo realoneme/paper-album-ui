@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/aspect-ratio.css';
 import * as React from 'react';
 import { AspectRatio as AspectRatioPrimitive } from 'radix-ui';

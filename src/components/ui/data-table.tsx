@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/data-table.css';
 import * as React from 'react';
 import { DropdownMenu } from 'radix-ui';

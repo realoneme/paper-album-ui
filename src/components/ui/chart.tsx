@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/chart.css';
 import * as React from 'react';
 import { Bar, BarChart, CartesianGrid, Rectangle, Tooltip, XAxis, YAxis, type BarShapeProps, type TooltipContentProps } from 'recharts';

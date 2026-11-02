@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/textarea.css';
 import * as React from 'react';
 import { cn } from '@/lib/cn';

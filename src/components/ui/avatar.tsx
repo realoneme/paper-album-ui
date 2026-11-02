@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/avatar.css';
 import * as React from 'react';
 import { Avatar as AvatarPrimitive } from 'radix-ui';

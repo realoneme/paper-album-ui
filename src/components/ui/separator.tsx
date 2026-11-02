@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/separator.css';
 import * as React from 'react';
 import { Separator as SeparatorPrimitive } from 'radix-ui';

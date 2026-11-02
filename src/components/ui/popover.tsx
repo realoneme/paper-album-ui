@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/popover.css';
 import * as React from 'react';
 import { Popover as PopoverPrimitive } from 'radix-ui';

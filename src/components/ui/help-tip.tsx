@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/popover.css';
 import '@/styles/extra/help-tip.css';
 import * as React from 'react';

@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/hscroll.css';
 import '@/styles/extra/navigation-menu.css';
 import * as React from 'react';

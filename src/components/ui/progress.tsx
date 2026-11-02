@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/progress.css';
 import * as React from 'react';
 import { Progress as ProgressPrimitive } from 'radix-ui';
