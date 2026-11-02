@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/pagination.css';
 import * as React from 'react';
 import { Slot } from 'radix-ui';

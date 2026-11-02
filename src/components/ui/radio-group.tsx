@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/radio-group.css';
 import * as React from 'react';
 import { RadioGroup as RadioGroupPrimitive } from 'radix-ui';

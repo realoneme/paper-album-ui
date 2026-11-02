@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/sidebar.css';
 import * as React from 'react';
 import { Collapsible as CollapsiblePrimitive, Slot } from 'radix-ui';

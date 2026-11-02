@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/slide-down.css';
 import '@/styles/extra/dropdown-menu.css';
 import * as React from 'react';

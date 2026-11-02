@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/dialog.css';
 import '@/styles/extra/alert-dialog.css';
 import * as React from 'react';

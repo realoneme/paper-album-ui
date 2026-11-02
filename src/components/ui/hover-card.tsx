@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/hover-card.css';
 import * as React from 'react';
 import { HoverCard as HoverCardPrimitive } from 'radix-ui';

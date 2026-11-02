@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/resizable.css';
 import * as React from 'react';
 import {

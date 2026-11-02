@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/switch.css';
 import * as React from 'react';
 import { Switch as SwitchPrimitive } from 'radix-ui';

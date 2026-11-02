@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/command.css';
 import * as React from 'react';
 import { Command as CommandPrimitive } from 'cmdk';

@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/calendar.css';
 import * as React from 'react';
 import { DayPicker, type DayButtonProps, type ChevronProps } from 'react-day-picker';

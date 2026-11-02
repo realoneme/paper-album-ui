@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/accordion.css';
 import * as React from 'react';
 import { Accordion as AccordionPrimitive } from 'radix-ui';

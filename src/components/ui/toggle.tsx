@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/toggle.css';
 import * as React from 'react';
 import { Toggle as TogglePrimitive } from 'radix-ui';

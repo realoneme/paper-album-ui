@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/field.css';
 import * as React from 'react';
 import { cn } from '@/lib/cn';

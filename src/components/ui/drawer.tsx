@@ -1,3 +1,5 @@
+'use client';
+
 import '@/styles/extra/dialog.css';
 import '@/styles/extra/drawer.css';
 import * as React from 'react';
