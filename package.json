@@ -1,6 +1,6 @@
 {
   "name": "paper-album-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Paper Album UI — a layered-paper React design system for photography portfolios, aligned with shadcn/ui.",
   "license": "MIT",
   "repository": {
